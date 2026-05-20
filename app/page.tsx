@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Layout } from "@/components/Layout";
 
-export default function Home() {
+export default function IndexPage() {
   return (
     <Layout>
       <h1 className="text-3xl font-semibold mb-4">
