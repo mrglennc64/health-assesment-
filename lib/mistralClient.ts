@@ -16,7 +16,7 @@ const ENDPOINT = "https://api.mistral.ai/v1/chat/completions";
 export async function callMistral(
   systemPrompt: string,
   userContent: string
-): Promise<string> {
+): Promise<{ content: string; model: string }> {
   const key = process.env.MISTRAL_API_KEY;
   if (!key) throw new Error("MISTRAL_API_KEY not set");
 
@@ -50,5 +50,5 @@ export async function callMistral(
   };
   const text = data.choices?.[0]?.message?.content;
   if (!text) throw new Error("Mistral returned no content.");
-  return text;
+  return { content: text, model };
 }

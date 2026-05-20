@@ -96,6 +96,21 @@ export default function ReportPage() {
       ).length
     : 0;
 
+  const severityTotals = run
+    ? channels.reduce(
+        (acc, ch) => {
+          const findings = run.jobs[ch].result?.findings ?? [];
+          for (const f of findings) {
+            if (f.severity === "issue") acc.critical++;
+            else if (f.severity === "warn") acc.watch++;
+            else acc.ok++;
+          }
+          return acc;
+        },
+        { critical: 0, watch: 0, ok: 0 }
+      )
+    : { critical: 0, watch: 0, ok: 0 };
+
   return (
     <Layout>
       <h1 className="text-2xl font-semibold mb-4">Health Report</h1>
@@ -135,22 +150,45 @@ export default function ReportPage() {
 
       {run && (
         <div>
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xl font-semibold">
-              Overall Score: {overall} / 100
-            </h2>
+          <div className="flex justify-between items-start mb-3 flex-wrap gap-3">
+            <div>
+              <h2 className="text-xl font-semibold">
+                Overall Score: {overall} / 100
+              </h2>
+              <div className="text-sm mt-1 flex gap-3">
+                <span className="text-rose-700">
+                  <span className="font-semibold">{severityTotals.critical}</span> critical
+                </span>
+                <span className="text-amber-700">
+                  <span className="font-semibold">{severityTotals.watch}</span> watch
+                </span>
+                <span className="text-emerald-700">
+                  <span className="font-semibold">{severityTotals.ok}</span> pass
+                </span>
+              </div>
+            </div>
             <div className="flex items-center gap-3">
               <span className="text-sm text-slate-500">
                 {completedCount} / {channels.length} channels complete
               </span>
               {completedCount === channels.length && (
-                <button
-                  className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
-                  onClick={startRun}
-                  disabled={loading || !text.trim()}
-                >
-                  Run again
-                </button>
+                <>
+                  <a
+                    className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
+                    href={`/api/runs/${run.id}/pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download PDF
+                  </a>
+                  <button
+                    className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
+                    onClick={startRun}
+                    disabled={loading || !text.trim()}
+                  >
+                    Run again
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -165,7 +203,11 @@ export default function ReportPage() {
                     onClick={() => canOpen && setOpenChannel(isOpen ? null : ch)}
                     className={canOpen ? "cursor-pointer" : ""}
                   >
-                    <ChannelScoreRow job={job} />
+                    <ChannelScoreRow
+                      job={job}
+                      isOpen={isOpen}
+                      expandable={!!canOpen}
+                    />
                   </div>
                   {isOpen && job.result && (
                     <div className="border-l-2 border-slate-200 ml-2 pl-4 pb-4 -mt-1 mb-2">

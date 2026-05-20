@@ -32,7 +32,7 @@ export async function runWithRules(
   text: string
 ): Promise<JobResult> {
   const preferred = pickPreferred(channel);
-  const { content, modelUsed, fallbackFrom, fallbackReason } =
+  const { content, provider, model, fallbackFromProvider, fallbackReason } =
     await callModelWithFallback(preferred, prompt, text);
 
   let parsed: RuleResult;
@@ -40,7 +40,7 @@ export async function runWithRules(
     parsed = JSON.parse(content) as RuleResult;
   } catch {
     throw new Error(
-      `Model output was not valid JSON (${modelUsed}): ${content.slice(0, 200)}`
+      `Model output was not valid JSON (${model}): ${content.slice(0, 200)}`
     );
   }
 
@@ -60,9 +60,9 @@ export async function runWithRules(
   };
 
   let summary = `${counts.critical} critical · ${counts.watch} watch · ${counts.ok} pass.`;
-  if (fallbackFrom) {
-    summary += ` (Fallback: ${fallbackFrom} → ${modelUsed})`;
-  } else if (modelUsed === "stub") {
+  if (fallbackFromProvider) {
+    summary += ` (Fallback: ${fallbackFromProvider} → ${provider})`;
+  } else if (provider === "stub") {
     summary += ` (Stub — no provider available)`;
   }
 
@@ -73,9 +73,10 @@ export async function runWithRules(
     requiredActions,
     details: {
       raw: parsed,
-      modelUsed,
+      provider,
+      model,
       preferred,
-      fallbackFrom,
+      fallbackFromProvider,
       fallbackReason,
     },
   };

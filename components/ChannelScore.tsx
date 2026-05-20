@@ -20,7 +20,18 @@ function classifyError(msg: string | undefined): string {
   return "Failed";
 }
 
-export const ChannelScoreRow: React.FC<{ job: Job }> = ({ job }) => {
+function prettyModel(model: string): string {
+  if (!model || model === "stub") return "stub";
+  // truncate org/model:tag style names so badges stay narrow
+  const tail = model.split("/").pop() ?? model;
+  return tail.length > 32 ? tail.slice(0, 30) + "…" : tail;
+}
+
+export const ChannelScoreRow: React.FC<{
+  job: Job;
+  isOpen?: boolean;
+  expandable?: boolean;
+}> = ({ job, isOpen, expandable }) => {
   const label = channelLabels[job.channel];
 
   if (job.status === "pending") {
@@ -69,31 +80,54 @@ export const ChannelScoreRow: React.FC<{ job: Job }> = ({ job }) => {
   const status = classifyScore(score);
   const details = job.result?.details as
     | {
-        modelUsed?: string;
-        fallbackFrom?: string;
+        provider?: string;
+        model?: string;
+        fallbackFromProvider?: string;
       }
     | undefined;
-  const usedFallback = details?.fallbackFrom && details?.modelUsed;
-  const usedStub = details?.modelUsed === "stub";
+  const provider = details?.provider ?? "";
+  const model = details?.model ?? "";
+  const fellBack = !!details?.fallbackFromProvider && provider !== "stub";
+  const isStub = provider === "stub";
 
   return (
-    <div className="border p-3 rounded mb-2 bg-white">
-      <div className="flex justify-between items-center">
-        <span className="font-medium">{label}</span>
-        <div className="flex items-center gap-2">
-          {usedStub && (
+    <div
+      className={`border rounded mb-2 bg-white p-3 ${expandable ? "hover:bg-slate-50 transition-colors" : ""}`}
+    >
+      <div className="flex justify-between items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          {expandable && (
+            <span
+              className="text-slate-400 text-sm w-4 inline-block select-none"
+              aria-hidden
+            >
+              {isOpen ? "▾" : "▸"}
+            </span>
+          )}
+          <span className="font-medium truncate">{label}</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {isStub ? (
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 uppercase tracking-wide">
               stub
             </span>
-          )}
-          {usedFallback && !usedStub && (
+          ) : model ? (
             <span
-              className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 uppercase tracking-wide"
-              title={`Preferred ${details!.fallbackFrom} was rate-limited; used ${details!.modelUsed}`}
+              className={`text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide ${
+                fellBack
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-slate-100 text-slate-700"
+              }`}
+              title={
+                fellBack
+                  ? `Preferred ${details!.fallbackFromProvider} was rate-limited; used ${provider}/${model}`
+                  : `${provider} / ${model}`
+              }
             >
-              via {details!.modelUsed}
+              {fellBack && "↳ "}
+              {prettyModel(model)}
             </span>
-          )}
+          ) : null}
           <span
             className={`text-xs px-2 py-1 rounded border ${statusColor[status]}`}
           >

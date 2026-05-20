@@ -6,8 +6,9 @@ export type ModelName = "gemini" | "openrouter" | "mistral" | "openai" | "groq";
 
 export type ModelResult = {
   content: string;
-  modelUsed: ModelName | "stub";
-  fallbackFrom?: ModelName;
+  provider: ModelName | "stub";
+  model: string;
+  fallbackFromProvider?: ModelName;
   fallbackReason?: string;
 };
 
@@ -35,18 +36,25 @@ export async function callModelWithFallback(
     ...configured.filter((p) => p !== preferred),
   ];
   if (chain.length === 0) {
-    return { content: stubJson("any provider"), modelUsed: "stub" };
+    return {
+      content: stubJson("any provider"),
+      provider: "stub",
+      model: "stub",
+    };
   }
   let lastErr: Error | undefined;
   for (let i = 0; i < chain.length; i++) {
-    const m = chain[i];
+    const p = chain[i];
     try {
-      const content = await callModel(m, systemPrompt, userContent);
-      if (i === 0) return { content, modelUsed: m };
+      const out = await callOneProvider(p, systemPrompt, userContent);
+      if (i === 0) {
+        return { content: out.content, provider: p, model: out.model };
+      }
       return {
-        content,
-        modelUsed: m,
-        fallbackFrom: chain[0],
+        content: out.content,
+        provider: p,
+        model: out.model,
+        fallbackFromProvider: chain[0],
         fallbackReason: lastErr?.message?.slice(0, 120),
       };
     } catch (e) {
@@ -56,9 +64,11 @@ export async function callModelWithFallback(
   }
   return {
     content: stubJson("all providers rate-limited"),
-    modelUsed: "stub",
-    fallbackFrom: preferred,
-    fallbackReason: lastErr?.message?.slice(0, 120) ?? "all providers rate-limited",
+    provider: "stub",
+    model: "stub",
+    fallbackFromProvider: preferred,
+    fallbackReason:
+      lastErr?.message?.slice(0, 120) ?? "all providers rate-limited",
   };
 }
 
@@ -76,44 +86,49 @@ function stubJson(envHint: string): string {
   });
 }
 
-export async function callModel(
-  model: ModelName,
+async function callOneProvider(
+  provider: ModelName,
   systemPrompt: string,
   userContent: string
-): Promise<string> {
-  if (model === "gemini") {
+): Promise<{ content: string; model: string }> {
+  if (provider === "gemini") {
     const key = process.env.GOOGLE_AI_KEY;
-    if (!key) return stubJson("GOOGLE_AI_KEY");
+    if (!key) return { content: stubJson("GOOGLE_AI_KEY"), model: "stub" };
     return callGemini(key, systemPrompt, userContent);
   }
-  if (model === "openrouter") {
-    if (!process.env.OPENROUTER_API_KEY) return stubJson("OPENROUTER_API_KEY");
-    const { content } = await callOpenRouterWithFallback(
+  if (provider === "openrouter") {
+    if (!process.env.OPENROUTER_API_KEY) {
+      return { content: stubJson("OPENROUTER_API_KEY"), model: "stub" };
+    }
+    const { content, modelUsed } = await callOpenRouterWithFallback(
       systemPrompt,
       userContent
     );
-    return content;
+    return { content, model: modelUsed };
   }
-  if (model === "mistral") {
-    if (!process.env.MISTRAL_API_KEY) return stubJson("MISTRAL_API_KEY");
+  if (provider === "mistral") {
+    if (!process.env.MISTRAL_API_KEY) {
+      return { content: stubJson("MISTRAL_API_KEY"), model: "stub" };
+    }
     return callMistral(systemPrompt, userContent);
   }
-  if (model === "openai") {
+  if (provider === "openai") {
     throw new Error("OpenAI provider not implemented yet.");
   }
-  if (model === "groq") {
+  if (provider === "groq") {
     throw new Error("Groq provider not implemented yet.");
   }
-  throw new Error(`Unknown model: ${model}`);
+  throw new Error(`Unknown model: ${provider}`);
 }
 
 async function callGemini(
   key: string,
   systemPrompt: string,
   userContent: string
-): Promise<string> {
+): Promise<{ content: string; model: string }> {
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
   const url =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=` +
     encodeURIComponent(key);
 
   const body = {
@@ -133,7 +148,7 @@ async function callGemini(
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Gemini ${res.status}: ${errText.slice(0, 300)}`);
+    throw new Error(`Gemini ${res.status} (${model}): ${errText.slice(0, 300)}`);
   }
 
   const data = (await res.json()) as {
@@ -142,5 +157,5 @@ async function callGemini(
 
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no text part.");
-  return text;
+  return { content: text, model };
 }
