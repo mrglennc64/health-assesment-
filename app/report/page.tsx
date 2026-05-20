@@ -139,9 +139,20 @@ export default function ReportPage() {
             <h2 className="text-xl font-semibold">
               Overall Score: {overall} / 100
             </h2>
-            <span className="text-sm text-slate-500">
-              {completedCount} / {channels.length} channels complete
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-slate-500">
+                {completedCount} / {channels.length} channels complete
+              </span>
+              {completedCount === channels.length && (
+                <button
+                  className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
+                  onClick={startRun}
+                  disabled={loading || !text.trim()}
+                >
+                  Run again
+                </button>
+              )}
+            </div>
           </div>
           <div className="mb-4">
             {channels.map((ch) => {

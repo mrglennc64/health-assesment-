@@ -16,10 +16,14 @@ const handlers: Record<Channel, (text: string) => Promise<JobResult>> = {
   synthetic: runSynthetic,
 };
 
+const STAGGER_MS = 300;
+
 export function startRun(run: Run) {
-  for (const ch of channels) {
-    void runChannel(run.id, ch, run.text);
-  }
+  channels.forEach((ch, i) => {
+    setTimeout(() => {
+      void runChannel(run.id, ch, run.text);
+    }, i * STAGGER_MS);
+  });
 }
 
 async function runChannel(runId: string, ch: Channel, text: string) {

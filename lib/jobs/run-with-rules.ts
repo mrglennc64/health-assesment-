@@ -1,6 +1,6 @@
-import { callModel } from "../aiClient";
+import { callModelWithFallback, type ModelName } from "../aiClient";
 import type { RuleResult, RuleSeverity } from "../rules/types";
-import type { Finding, FindingSeverity, JobResult } from "./types";
+import type { Channel, Finding, FindingSeverity, JobResult } from "./types";
 
 const severityMap: Record<RuleSeverity, FindingSeverity> = {
   critical: "issue",
@@ -8,17 +8,40 @@ const severityMap: Record<RuleSeverity, FindingSeverity> = {
   info: "ok",
 };
 
+const KNOWN_PROVIDERS = new Set<ModelName>([
+  "gemini",
+  "openrouter",
+  "mistral",
+  "openai",
+  "groq",
+]);
+
+function pickPreferred(channel: Channel): ModelName {
+  const override = process.env[`${channel.toUpperCase()}_PROVIDER`];
+  if (override && KNOWN_PROVIDERS.has(override as ModelName)) {
+    return override as ModelName;
+  }
+  if (process.env.MISTRAL_API_KEY) return "mistral";
+  if (process.env.OPENROUTER_API_KEY) return "openrouter";
+  return "gemini";
+}
+
 export async function runWithRules(
+  channel: Channel,
   prompt: string,
   text: string
 ): Promise<JobResult> {
-  const raw = await callModel("gemini", prompt, text);
+  const preferred = pickPreferred(channel);
+  const { content, modelUsed, fallbackFrom, fallbackReason } =
+    await callModelWithFallback(preferred, prompt, text);
 
   let parsed: RuleResult;
   try {
-    parsed = JSON.parse(raw) as RuleResult;
+    parsed = JSON.parse(content) as RuleResult;
   } catch {
-    throw new Error(`Model output was not valid JSON: ${raw.slice(0, 200)}`);
+    throw new Error(
+      `Model output was not valid JSON (${modelUsed}): ${content.slice(0, 200)}`
+    );
   }
 
   const findings: Finding[] = (parsed.findings ?? []).map((f) => ({
@@ -36,11 +59,24 @@ export async function runWithRules(
     ok: findings.filter((f) => f.severity === "ok").length,
   };
 
+  let summary = `${counts.critical} critical · ${counts.watch} watch · ${counts.ok} pass.`;
+  if (fallbackFrom) {
+    summary += ` (Fallback: ${fallbackFrom} → ${modelUsed})`;
+  } else if (modelUsed === "stub") {
+    summary += ` (Stub — no provider available)`;
+  }
+
   return {
     score,
-    summary: `${counts.critical} critical · ${counts.watch} watch · ${counts.ok} pass.`,
+    summary,
     findings,
     requiredActions,
-    details: { raw: parsed },
+    details: {
+      raw: parsed,
+      modelUsed,
+      preferred,
+      fallbackFrom,
+      fallbackReason,
+    },
   };
 }
