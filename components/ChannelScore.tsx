@@ -44,15 +44,10 @@ export const ChannelScoreRow: React.FC<{
   }
 
   if (job.status === "running") {
-    const elapsed = job.startedAt
-      ? Math.max(0, Math.round((Date.now() - Date.parse(job.startedAt)) / 1000))
-      : 0;
     return (
       <div className="border p-3 rounded mb-2 bg-white flex justify-between items-center">
         <span className="font-medium">{label}</span>
-        <span className="text-slate-500 text-sm">
-          Analyzing… {elapsed > 0 && `(${elapsed}s)`}
-        </span>
+        <span className="text-slate-500 text-sm">Analyzing…</span>
       </div>
     );
   }

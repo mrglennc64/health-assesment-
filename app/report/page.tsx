@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { ChannelScoreRow } from "@/components/ChannelScore";
 import { Findings } from "@/components/Findings";
@@ -20,40 +20,12 @@ Site uses http://, not https. No CSP header. Google Analytics fires before conse
 Claim submitted without payer-required NPI field. No appointment reminder set.
 Patient education content cites 2018 guidelines (now superseded).`;
 
-function isRunComplete(run: Run): boolean {
-  return channels.every((ch) => {
-    const status = run.jobs[ch].status;
-    return status === "done" || status === "failed";
-  });
-}
-
 export default function ReportPage() {
   const [text, setText] = useState("");
   const [run, setRun] = useState<Run | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openChannel, setOpenChannel] = useState<Channel | null>(null);
-
-  const runId = run?.id ?? null;
-
-  useEffect(() => {
-    if (!runId) return;
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/runs/${runId}`);
-        if (!res.ok) return;
-        const data = (await res.json()) as RunResponse;
-        setRun(data.run);
-        if (isRunComplete(data.run)) {
-          clearInterval(interval);
-          setLoading(false);
-        }
-      } catch {
-        // ignore transient errors; poll again next tick
-      }
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [runId]);
 
   const startRun = async () => {
     setError(null);
@@ -69,13 +41,39 @@ export default function ReportPage() {
       const data = (await res.json()) as RunResponse | { error: string };
       if (!res.ok || !("run" in data)) {
         setError(("error" in data && data.error) || "Failed to start run.");
-        setLoading(false);
         return;
       }
       setRun(data.run);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    if (!run) return;
+    try {
+      const res = await fetch("/api/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run }),
+      });
+      if (!res.ok) {
+        setError("PDF generation failed.");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `health-report-${run.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
     }
   };
 
@@ -116,8 +114,8 @@ export default function ReportPage() {
       <h1 className="text-2xl font-semibold mb-4">Health Report</h1>
       <p className="mb-3 text-sm text-slate-600">
         Paste a description of the site, claim workflow, or clinical
-        documentation context. The engine fans out to six audit channels and
-        polls until each is complete.
+        documentation context. The engine fans out to six audit channels in
+        parallel and returns the full report (typically 15–40 seconds).
       </p>
       <textarea
         className="w-full border rounded p-2 mb-2 h-40 text-sm"
@@ -131,7 +129,7 @@ export default function ReportPage() {
           onClick={startRun}
           disabled={loading || !text.trim()}
         >
-          {loading ? "Analyzing…" : "Generate Report"}
+          {loading ? "Analyzing all 6 channels…" : "Generate Report"}
         </button>
         <button
           className="text-sm text-slate-600 underline"
@@ -148,6 +146,14 @@ export default function ReportPage() {
         </div>
       )}
 
+      {loading && !run && (
+        <div className="mb-4 p-4 border rounded bg-slate-50 text-sm text-slate-600">
+          Running clinical, HIPAA, claims, communication, content, and
+          synthetic checks in parallel… this can take 15–40 seconds depending
+          on provider latency.
+        </div>
+      )}
+
       {run && (
         <div>
           <div className="flex justify-between items-start mb-3 flex-wrap gap-3">
@@ -157,13 +163,18 @@ export default function ReportPage() {
               </h2>
               <div className="text-sm mt-1 flex gap-3">
                 <span className="text-rose-700">
-                  <span className="font-semibold">{severityTotals.critical}</span> critical
+                  <span className="font-semibold">
+                    {severityTotals.critical}
+                  </span>{" "}
+                  critical
                 </span>
                 <span className="text-amber-700">
-                  <span className="font-semibold">{severityTotals.watch}</span> watch
+                  <span className="font-semibold">{severityTotals.watch}</span>{" "}
+                  watch
                 </span>
                 <span className="text-emerald-700">
-                  <span className="font-semibold">{severityTotals.ok}</span> pass
+                  <span className="font-semibold">{severityTotals.ok}</span>{" "}
+                  pass
                 </span>
               </div>
             </div>
@@ -171,25 +182,19 @@ export default function ReportPage() {
               <span className="text-sm text-slate-500">
                 {completedCount} / {channels.length} channels complete
               </span>
-              {completedCount === channels.length && (
-                <>
-                  <a
-                    className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
-                    href={`/api/runs/${run.id}/pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download PDF
-                  </a>
-                  <button
-                    className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
-                    onClick={startRun}
-                    disabled={loading || !text.trim()}
-                  >
-                    Run again
-                  </button>
-                </>
-              )}
+              <button
+                className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
+                onClick={downloadPdf}
+              >
+                Download PDF
+              </button>
+              <button
+                className="text-sm bg-slate-100 hover:bg-slate-200 border px-3 py-1 rounded"
+                onClick={startRun}
+                disabled={loading || !text.trim()}
+              >
+                Run again
+              </button>
             </div>
           </div>
           <div className="mb-4">
@@ -200,7 +205,9 @@ export default function ReportPage() {
               return (
                 <div key={ch}>
                   <div
-                    onClick={() => canOpen && setOpenChannel(isOpen ? null : ch)}
+                    onClick={() =>
+                      canOpen && setOpenChannel(isOpen ? null : ch)
+                    }
                     className={canOpen ? "cursor-pointer" : ""}
                   >
                     <ChannelScoreRow
