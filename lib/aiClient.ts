@@ -62,8 +62,21 @@ export async function callModelWithFallback(
       if (!isRateLimitError(e)) throw e;
     }
   }
+  const tried = chain.join(", ");
   return {
-    content: stubJson("all providers rate-limited"),
+    content: JSON.stringify({
+      score: 0,
+      findings: [
+        {
+          code: "ALL_PROVIDERS_RATE_LIMITED",
+          severity: "critical",
+          message: `All configured providers (${tried}) returned rate-limit errors. Last error: ${lastErr?.message?.slice(0, 160) ?? "unknown"}`,
+        },
+      ],
+      requiredActions: [
+        `Wait ~60s and retry, or add an additional provider key (currently configured: ${configured.join(", ") || "none"}).`,
+      ],
+    }),
     provider: "stub",
     model: "stub",
     fallbackFromProvider: preferred,
