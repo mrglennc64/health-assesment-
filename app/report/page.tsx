@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Download, ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
@@ -10,6 +11,7 @@ import {
   engineSeverityToDisplay,
   ENGINE_TO_DISPLAY,
 } from "@/components/site/data";
+import { CALENDLY_URL } from "@/lib/config";
 
 type EngineFinding = {
   severity: "issue" | "warn" | "ok";
@@ -224,6 +226,18 @@ export default function ReportPage() {
                     <Button variant="secondary" size="sm" onClick={() => setRun(null)}>
                       Run again
                     </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => window.open(CALENDLY_URL, "_blank", "noopener,noreferrer")}
+                    >
+                      Book a 15-min demo
+                    </Button>
+                    <Link href="/waitlist" style={{ textDecoration: "none" }}>
+                      <Button variant="secondary" size="sm">
+                        Join the waitlist
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
