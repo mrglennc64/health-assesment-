@@ -41,7 +41,7 @@ export function MarketingNav() {
           <Link href="/#channels" style={navLink}>Channels</Link>
           <Link href="/#pricing" style={navLink}>Pricing</Link>
           <Link href="/#who-its-for" style={navLink}>Who it&apos;s for</Link>
-          <Link href="/report" style={navLink}>Sample report</Link>
+          <Link href="/waitlist" style={navLink}>Join</Link>
           <Link href="/dashboard" style={{ textDecoration: "none" }}>
             <Button variant="secondary" size="sm">Sign in</Button>
           </Link>
