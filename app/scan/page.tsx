@@ -325,10 +325,10 @@ function ScanResults({ run }: { run: EngineRun }) {
           Unlock the full audit to see every finding, required action, and download the PDF for auditors.
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/report" style={{ textDecoration: "none" }}>
+          <Link href="/waitlist" style={{ textDecoration: "none" }}>
             <Button variant="accent" icon={ArrowRight}>Unlock full report</Button>
           </Link>
-          <Link href="/dashboard" style={{ textDecoration: "none" }}>
+          <Link href="/waitlist" style={{ textDecoration: "none" }}>
             <Button variant="secondary">Subscribe instead</Button>
           </Link>
         </div>
