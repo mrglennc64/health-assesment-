@@ -7,6 +7,8 @@ import {
   Upload,
   Clock,
   ArrowRight,
+  ShieldAlert,
+  FileText,
 } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
@@ -91,6 +93,34 @@ export default function SuiteIndexPage() {
               "Section completeness check",
               "Severity-rated findings",
               "Remediation suggestions",
+            ]}
+          />
+          <SuiteToolCard
+            href="/suite/risk-assessment"
+            icon={ShieldAlert}
+            iconColor="#a85a8a"
+            tier="FREE"
+            title="HIPAA Risk Assessment"
+            description="The annual risk analysis required under 45 CFR §164.308(a)(1)(ii)(A). NIST 800-30 methodology with full risk register."
+            bullets={[
+              "Likelihood × impact scoring",
+              "Inherent vs residual risk",
+              "Recommended controls per row",
+              "OCR-ready format",
+            ]}
+          />
+          <SuiteToolCard
+            href="/suite/policy"
+            icon={FileText}
+            iconColor="#5a9f6a"
+            tier="FREE"
+            title="Policy / SOP Generator"
+            description="Draft a complete HIPAA-aware policy or SOP with all required sections — purpose, scope, roles, procedure, training, sanctions, review."
+            bullets={[
+              "9-section structure",
+              "Operational, signable language",
+              "Clause references included",
+              "Word + PDF export",
             ]}
           />
         </div>

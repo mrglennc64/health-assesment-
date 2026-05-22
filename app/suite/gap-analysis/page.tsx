@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Download, Upload } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Upload, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
@@ -228,8 +228,11 @@ function ResultView({ result, onReset }: { result: Result; onReset: () => void }
   return (
     <div>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+        <a href={`/api/suite/pdf/${result.id}`} style={{ textDecoration: "none" }} download>
+          <Button variant="primary" size="sm" icon={Download}>Download PDF</Button>
+        </a>
         <a href={`/api/suite/docx/${result.id}`} style={{ textDecoration: "none" }} download>
-          <Button variant="primary" size="sm" icon={Download}>Download Word</Button>
+          <Button variant="secondary" size="sm" icon={FileText}>Download Word</Button>
         </a>
         <Button variant="secondary" size="sm" onClick={onReset}>Analyse another</Button>
         <Link href="/suite/history" style={{ textDecoration: "none" }}>

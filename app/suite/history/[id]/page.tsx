@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import { HistoryDeleteButton } from "@/components/site/HistoryDeleteButton";
+import { SUITE_SEVERITY_BG, SUITE_SEVERITY_COLOR } from "@/lib/suite/severity";
 import { getOutput } from "@/lib/suite/db";
 import type {
   AuditPlanOutput,
   GapAnalysisOutput,
   StandardsMappingOutput,
+  RiskAssessmentOutput,
+  PolicyOutput,
+  SuiteSeverity,
 } from "@/lib/suite/types";
 
 export const dynamic = "force-dynamic";
@@ -56,8 +60,11 @@ export default async function HistoryDetailPage({ params }: { params: Promise<{ 
         </div>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          <a href={`/api/suite/pdf/${record.id}`} style={{ textDecoration: "none" }} download>
+            <Button variant="primary" size="sm" icon={Download}>Download PDF</Button>
+          </a>
           <a href={`/api/suite/docx/${record.id}`} style={{ textDecoration: "none" }} download>
-            <Button variant="primary" size="sm" icon={Download}>Download Word</Button>
+            <Button variant="secondary" size="sm" icon={FileText}>Download Word</Button>
           </a>
           <HistoryDeleteButton id={record.id} />
         </div>
@@ -65,6 +72,8 @@ export default async function HistoryDetailPage({ params }: { params: Promise<{ 
         {record.tool === "audit-plan" && <AuditPlanBody record={record} />}
         {record.tool === "standards-mapping" && <StandardsMappingBody record={record} />}
         {record.tool === "gap-analysis" && <GapAnalysisBody record={record} />}
+        {record.tool === "risk-assessment" && <RiskAssessmentBody record={record} />}
+        {record.tool === "policy" && <PolicyBody record={record} />}
       </div>
       <MarketingFooter />
     </>
@@ -129,6 +138,121 @@ function StandardsMappingBody({ record }: { record: { outputJson: string } }) {
       </div>
       <h2 style={sectionH}>Notes</h2>
       <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)", whiteSpace: "pre-wrap" }}>{output.notes}</p>
+    </>
+  );
+}
+
+function SevPill({ s }: { s: SuiteSeverity }) {
+  return (
+    <span
+      className="mono"
+      style={{
+        fontSize: 10, padding: "3px 7px", borderRadius: 4, fontWeight: 600,
+        background: SUITE_SEVERITY_BG[s], color: SUITE_SEVERITY_COLOR[s], letterSpacing: "0.04em",
+      }}
+    >
+      {s.toUpperCase()}
+    </span>
+  );
+}
+
+function RiskAssessmentBody({ record }: { record: { outputJson: string } }) {
+  const o = JSON.parse(record.outputJson) as RiskAssessmentOutput;
+  return (
+    <>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 16, marginBottom: 8 }}>
+        {(["critical", "high", "medium", "low"] as const).map((sev) => {
+          const key = `${sev}Count` as keyof typeof o.summary;
+          const count = (o.summary?.[key] as number | undefined) ?? 0;
+          return (
+            <div key={sev} style={{ background: SUITE_SEVERITY_BG[sev], borderRadius: 10, padding: "12px 14px" }}>
+              <div className="mono" style={{ fontSize: 10, color: SUITE_SEVERITY_COLOR[sev], letterSpacing: "0.06em", fontWeight: 600 }}>{sev.toUpperCase()}</div>
+              <div className="serif" style={{ fontSize: 26, fontWeight: 500, color: SUITE_SEVERITY_COLOR[sev] }}>{count}</div>
+            </div>
+          );
+        })}
+      </div>
+      <h2 style={sectionH}>Scope</h2>
+      <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)" }}>{o.scope}</p>
+      <h2 style={sectionH}>Methodology</h2>
+      <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)" }}>{o.methodology}</p>
+      {o.assumptions?.length > 0 && (
+        <>
+          <h2 style={sectionH}>Assumptions</h2>
+          <ul style={{ paddingLeft: 20 }}>{o.assumptions.map((a, i) => <li key={i} style={{ fontSize: 13.5, lineHeight: 1.6, marginBottom: 3, color: "var(--ink-2)" }}>{a}</li>)}</ul>
+        </>
+      )}
+      <h2 style={sectionH}>Risk register</h2>
+      <div style={{ overflowX: "auto", border: "1px solid var(--line)", borderRadius: 10 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+          <thead>
+            <tr style={{ background: "var(--paper-2)" }}>
+              {["Asset", "Threat", "Vulnerability", "Likeli.", "Impact", "Inherent", "Residual", "Recommended controls"].map((h) => (
+                <th key={h} style={{ textAlign: "left", padding: "10px 12px", fontSize: 10.5, fontWeight: 700, color: "var(--muted-2)", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid var(--line)" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {(o.rows ?? []).map((r, i) => (
+              <tr key={i} style={{ borderBottom: "1px solid var(--line)" }}>
+                <td style={{ padding: "10px 12px", verticalAlign: "top", fontWeight: 600 }}>{r.asset}</td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}>{r.threat}</td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}>{r.vulnerability}</td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}><SevPill s={r.likelihood} /></td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}><SevPill s={r.impact} /></td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}><SevPill s={r.inherentRisk} /></td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top" }}><SevPill s={r.residualRisk} /></td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top", fontSize: 12, lineHeight: 1.5 }}>
+                  <ul style={{ paddingLeft: 16, margin: 0 }}>{(r.recommendedControls ?? []).map((c, j) => <li key={j} style={{ marginBottom: 2 }}>{c}</li>)}</ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {o.summary?.topRecommendations?.length > 0 && (
+        <>
+          <h2 style={sectionH}>Top recommendations</h2>
+          <ol style={{ paddingLeft: 20 }}>{o.summary.topRecommendations.map((r, i) => <li key={i} style={{ fontSize: 14, lineHeight: 1.6, marginBottom: 4, color: "var(--ink-2)" }}>{r}</li>)}</ol>
+        </>
+      )}
+    </>
+  );
+}
+
+function PolicyBody({ record }: { record: { outputJson: string } }) {
+  const o = JSON.parse(record.outputJson) as PolicyOutput;
+  return (
+    <>
+      <div style={{ background: "var(--paper-2)", borderRadius: 10, padding: "16px 18px", marginTop: 16, marginBottom: 16, fontSize: 13.5 }}>
+        <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", letterSpacing: "0.04em" }}>
+          {o.policyId} · v{o.version} · effective {o.effectiveDate} · review {o.reviewCycle} · owner {o.owner}
+        </div>
+      </div>
+      {(o.sections ?? []).map((s, i) => (
+        <div key={i}>
+          <h2 style={sectionH}>{s.heading}</h2>
+          {s.body && <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)", whiteSpace: "pre-wrap" }}>{s.body}</p>}
+          {s.bullets?.length && (
+            <ul style={{ paddingLeft: 20 }}>
+              {s.bullets.map((b, j) => <li key={j} style={{ fontSize: 13.5, lineHeight: 1.6, marginBottom: 3, color: "var(--ink-2)" }}>{b}</li>)}
+            </ul>
+          )}
+        </div>
+      ))}
+      {o.references?.length > 0 && (
+        <>
+          <h2 style={sectionH}>References</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {o.references.map((c, i) => (
+              <div key={i} style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
+                <div style={{ fontWeight: 600, fontSize: 13.5 }}>{c.framework} <span style={{ color: "var(--accent)" }}>{c.citation}</span></div>
+                {c.note && <div style={{ fontSize: 12.5, color: "var(--ink-2)", marginTop: 2 }}>{c.note}</div>}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 }

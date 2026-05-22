@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Download, ArrowLeft } from "lucide-react";
+import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
@@ -118,8 +118,11 @@ export default function StandardsMappingPage() {
         {result && (
           <div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+              <a href={`/api/suite/pdf/${result.id}`} style={{ textDecoration: "none" }} download>
+                <Button variant="primary" size="sm" icon={Download}>Download PDF</Button>
+              </a>
               <a href={`/api/suite/docx/${result.id}`} style={{ textDecoration: "none" }} download>
-                <Button variant="primary" size="sm" icon={Download}>Download Word</Button>
+                <Button variant="secondary" size="sm" icon={FileText}>Download Word</Button>
               </a>
               <Button variant="secondary" size="sm" onClick={() => setResult(null)}>Map another</Button>
               <Link href="/suite/history" style={{ textDecoration: "none" }}>
