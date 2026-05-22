@@ -18,7 +18,7 @@ const COLS: FooterCol[] = [
   {
     heading: "Company",
     links: [
-      { label: "About", href: "/about" },
+      { label: "Company", href: "/company" },
       { label: "Who it's for", href: "/who-its-for" },
       { label: "Contact", href: "/contact" },
       { label: "Waitlist", href: "/waitlist" },
@@ -27,10 +27,11 @@ const COLS: FooterCol[] = [
   {
     heading: "Resources",
     links: [
-      { label: "Documentation", href: "/docs" },
+      { label: "Documentation", href: "/documentation" },
       { label: "Status", href: "/status" },
       { label: "Safety", href: "/safety" },
       { label: "Security", href: "/security" },
+      { label: "Monitoring", href: "/monitoring" },
     ],
   },
   {

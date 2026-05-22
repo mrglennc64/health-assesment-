@@ -1,0 +1,76 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowRight, Activity, Bell, LineChart, ShieldCheck } from "lucide-react";
+import { MarketingNav } from "@/components/site/MarketingNav";
+import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { Button } from "@/components/ui/primitives";
+
+const FEATURES = [
+  { icon: Activity, title: "Weekly automated audits", desc: "Set a target once. Receive a fresh report every week, no manual re-run required." },
+  { icon: LineChart, title: "Trend tracking", desc: "Per-channel score history across runs. See regressions early; see improvements clearly." },
+  { icon: Bell, title: "Regression alerts", desc: "Get notified by email when overall score drops or a new critical finding appears." },
+  { icon: ShieldCheck, title: "Historical comparisons", desc: "Diff the current run against the last 4 weeks. Track which findings recurred and which closed." },
+];
+
+export default function MonitoringPage() {
+  return (
+    <>
+      <MarketingNav />
+      <section style={{ maxWidth: 980, margin: "0 auto", padding: "80px 32px" }}>
+        <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 18 }}>
+          MONITORING
+        </div>
+        <h1 className="serif" style={{ fontSize: 48, fontWeight: 500, lineHeight: 1.05, margin: "0 0 18px" }}>
+          Weekly audits. Trend tracking. Alerts.
+        </h1>
+        <p style={{ fontSize: 17, color: "var(--muted)", lineHeight: 1.65, marginBottom: 48, maxWidth: 680 }}>
+          One-off audits surface today&apos;s findings. Monitoring tells you whether they&apos;re getting better
+          or worse over time — and pages you when something regresses.
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 48 }}>
+          {FEATURES.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div
+                key={f.title}
+                className="lift"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 12,
+                  padding: 24,
+                }}
+              >
+                <Icon size={22} strokeWidth={1.5} color="var(--accent)" style={{ marginBottom: 14 }} />
+                <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px" }}>{f.title}</h3>
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ background: "var(--paper-2)", borderRadius: 12, padding: "20px 24px", marginBottom: 36 }}>
+          <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
+            PRICING
+          </div>
+          <div style={{ fontSize: 14, color: "var(--ink-2)", lineHeight: 1.7 }}>
+            Clinics from $49/mo · Networks from $199/mo · SaaS from $499/mo · Enterprise $999+/mo. See the
+            full <Link href="/pricing" style={{ color: "var(--accent)" }}>pricing page</Link> for what each tier includes.
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <Link href="/waitlist" style={{ textDecoration: "none" }}>
+            <Button variant="primary" icon={ArrowRight}>Join the waitlist</Button>
+          </Link>
+          <Link href="/scan" style={{ textDecoration: "none" }}>
+            <Button variant="secondary">Run a one-off audit first</Button>
+          </Link>
+        </div>
+      </section>
+      <MarketingFooter />
+    </>
+  );
+}
