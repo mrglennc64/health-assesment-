@@ -1,9 +1,38 @@
+import Link from "next/link";
 import { Logo } from "@/components/ui/primitives";
 
-const cols = [
-  { h: "Product", l: ["Channels", "Sample report", "Pricing", "Free scan"] },
-  { h: "Company", l: ["Who it's for", "Customers", "Security", "Contact"] },
-  { h: "Resources", l: ["Documentation", "Changelog", "Status", "Privacy"] },
+type FooterLink = { label: string; href: string; external?: boolean };
+type FooterCol = { heading: string; links: FooterLink[] };
+
+const COLS: FooterCol[] = [
+  {
+    heading: "Product",
+    links: [
+      { label: "Free audit", href: "/scan" },
+      { label: "Compliance suite", href: "/suite" },
+      { label: "Sample report", href: "/report" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Safety", href: "/safety" },
+      { label: "Contact", href: "/contact" },
+      { label: "Waitlist", href: "/waitlist" },
+    ],
+  },
+  {
+    heading: "Tools",
+    links: [
+      { label: "Audit plans", href: "/suite/audit-plan" },
+      { label: "Standards mapping", href: "/suite/standards-mapping" },
+      { label: "Gap analysis", href: "/suite/gap-analysis" },
+      { label: "Risk assessment", href: "/suite/risk-assessment" },
+      { label: "Policy / SOP", href: "/suite/policy" },
+    ],
+  },
 ];
 
 export function MarketingFooter() {
@@ -35,9 +64,8 @@ export function MarketingFooter() {
               lineHeight: 1.6,
             }}
           >
-            Six-channel automated audits for healthcare documentation, HIPAA,
-            claims, communication, content, and browser behavior. File in.
-            Report out.
+            One platform for healthcare audits and compliance documentation. Six-channel audit
+            engine plus a suite of HIPAA-aligned document generators. File in. Report out.
           </p>
           <p
             className="mono"
@@ -51,8 +79,8 @@ export function MarketingFooter() {
             © 2026 AEGIS HEALTH AUDIT
           </p>
         </div>
-        {cols.map((col) => (
-          <div key={col.h}>
+        {COLS.map((col) => (
+          <div key={col.heading}>
             <h4
               className="mono"
               style={{
@@ -64,19 +92,16 @@ export function MarketingFooter() {
                 letterSpacing: "0.1em",
               }}
             >
-              {col.h.toUpperCase()}
+              {col.heading.toUpperCase()}
             </h4>
-            {col.l.map((item) => (
-              <div
-                key={item}
-                style={{
-                  fontSize: 13,
-                  color: "var(--ink-2)",
-                  marginBottom: 9,
-                  cursor: "pointer",
-                }}
-              >
-                {item}
+            {col.links.map((link) => (
+              <div key={link.label} style={{ marginBottom: 9 }}>
+                <Link
+                  href={link.href}
+                  style={{ fontSize: 13, color: "var(--ink-2)", textDecoration: "none" }}
+                >
+                  {link.label}
+                </Link>
               </div>
             ))}
           </div>

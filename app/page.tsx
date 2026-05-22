@@ -4,20 +4,24 @@ import Link from "next/link";
 import {
   ArrowRight,
   Eye,
-  Check,
-  Hash,
-  AlertCircle,
   FileCheck,
-  Layers,
-  Download,
-  Clock,
-  FileBarChart,
+  BookOpen,
+  Upload,
+  ShieldAlert,
+  FileText,
   Stethoscope,
   Briefcase,
   Globe,
   Wrench,
   Building2,
-  Users,
+  Gavel,
+  ClipboardCheck,
+  Lock,
+  Trash2,
+  Cloud,
+  HardDrive,
+  Ban,
+  ShieldCheck,
 } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
@@ -34,37 +38,34 @@ export default function HomePage() {
     <>
       <MarketingNav />
 
-      {/* HERO */}
+      {/* ====================================================================
+          HERO
+          ==================================================================== */}
       <section style={{ maxWidth: 1240, margin: "0 auto", padding: "88px 32px 72px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1.25fr 1fr", gap: 72, alignItems: "center" }}>
           <div className="fade-up">
             <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 24 }}>
-              SIX-CHANNEL HEALTHCARE AUDIT ENGINE
+              AUDIT ENGINE + COMPLIANCE SUITE
             </div>
             <h1 className="serif" style={{ fontSize: "clamp(44px, 5.8vw, 72px)", fontWeight: 500, lineHeight: 1.0, margin: "0 0 28px" }}>
-              Surface what payers,
+              One platform for
               <br />
-              auditors, and regulators
+              healthcare audits and
               <br />
-              <em style={{ color: "var(--accent)", fontStyle: "italic" }}>
-                will find first
-              </em>
-              .
+              <em style={{ color: "var(--accent)", fontStyle: "italic" }}>compliance documentation</em>.
             </h1>
             <p style={{ fontSize: 18, color: "var(--muted)", lineHeight: 1.6, maxWidth: 560, marginBottom: 36 }}>
-              Aegis runs six parallel audit channels — documentation, HIPAA,
-              claims, patient communication, clinical content, and synthetic
-              browser behavior. One report. Zero integration.
+              Run six-channel audits, generate HIPAA-aligned documents, map standards, and close gaps — all in minutes.
             </p>
             <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
               <Link href="/scan" style={{ textDecoration: "none" }}>
                 <Button variant="primary" size="lg" icon={ArrowRight}>
-                  Run free scan
+                  Run a free audit
                 </Button>
               </Link>
-              <Link href="/report" style={{ textDecoration: "none" }}>
+              <Link href="/suite" style={{ textDecoration: "none" }}>
                 <Button variant="secondary" size="lg" iconLeft={Eye}>
-                  View sample report
+                  Explore the compliance suite
                 </Button>
               </Link>
             </div>
@@ -85,7 +86,7 @@ export default function HomePage() {
                 LLM + SYNTHETIC BROWSER
               </span>
               <span style={{ width: 1, height: 12, background: "var(--line-2)" }} />
-              <span>PDF EXPORT</span>
+              <span>WORD + PDF EXPORT</span>
               <span style={{ width: 1, height: 12, background: "var(--line-2)" }} />
               <span>ZERO INTEGRATION</span>
             </div>
@@ -99,8 +100,7 @@ export default function HomePage() {
               borderRadius: 14,
               border: "1px solid var(--line)",
               padding: 24,
-              boxShadow:
-                "0 1px 0 rgba(11, 18, 32, 0.04), 0 24px 56px -20px rgba(11, 18, 32, 0.12)",
+              boxShadow: "0 1px 0 rgba(11, 18, 32, 0.04), 0 24px 56px -20px rgba(11, 18, 32, 0.12)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
@@ -135,16 +135,7 @@ export default function HomePage() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                    <span
-                      className="mono"
-                      style={{
-                        fontSize: 9.5,
-                        color: "var(--muted-2)",
-                        width: 56,
-                        flexShrink: 0,
-                        letterSpacing: "0.04em",
-                      }}
-                    >
+                    <span className="mono" style={{ fontSize: 9.5, color: "var(--muted-2)", width: 56, flexShrink: 0, letterSpacing: "0.04em" }}>
                       {row.ch}
                     </span>
                     <span style={{ fontSize: 12.5, color: "var(--ink-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -165,75 +156,186 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* TRUST STRIP */}
+      {/* ====================================================================
+          SECTION 1 — Two Products. One Platform.
+          ==================================================================== */}
       <section style={{ borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", background: "var(--paper-2)" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto", padding: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 24 }}>
-          <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", letterSpacing: "0.1em", fontWeight: 600 }}>BUILT FOR</div>
-          {["Clinics", "Billing companies", "Telehealth", "Healthcare SaaS", "Hospitals", "Consultants"].map((item) => (
-            <div key={item} className="serif" style={{ fontSize: 19, color: "var(--ink-2)", fontWeight: 500 }}>
-              {item}
+        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "112px 32px" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>
+              TWO PRODUCTS · ONE PLATFORM
             </div>
-          ))}
+            <h2 className="serif" style={{ fontSize: 52, fontWeight: 500, lineHeight: 1.02, margin: 0 }}>
+              Find the gaps.<br />
+              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>Then close them.</em>
+            </h2>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            {/* AEGIS AUDITS */}
+            <div
+              className="lift"
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--line)",
+                borderRadius: 14,
+                padding: 36,
+              }}
+            >
+              <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 14 }}>
+                PRODUCT ONE
+              </div>
+              <h3 className="serif" style={{ fontSize: 32, fontWeight: 500, margin: "0 0 12px" }}>
+                Aegis Audits
+              </h3>
+              <p style={{ fontSize: 14.5, color: "var(--muted)", lineHeight: 1.6, marginBottom: 24 }}>
+                Six parallel audit channels that surface what payers, auditors, and regulators will find first.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  "Claims",
+                  "HIPAA & security",
+                  "Documentation",
+                  "Patient communication",
+                  "Clinical content",
+                  "Synthetic browser behavior",
+                ].map((label) => (
+                  <li key={label} style={{ fontSize: 13.5, color: "var(--ink-2)", display: "flex", gap: 10 }}>
+                    <span style={{ color: "var(--accent)", flexShrink: 0 }}>›</span>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/scan" style={{ textDecoration: "none" }}>
+                <Button variant="primary" icon={ArrowRight}>Run a free audit</Button>
+              </Link>
+            </div>
+
+            {/* MEDREADY SUITE */}
+            <div
+              className="lift"
+              style={{
+                background: "var(--ink)",
+                color: "var(--paper)",
+                border: "1px solid var(--ink)",
+                borderRadius: 14,
+                padding: 36,
+              }}
+            >
+              <div className="mono" style={{ fontSize: 10.5, color: "rgba(250,248,244,0.5)", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 14 }}>
+                PRODUCT TWO
+              </div>
+              <h3 className="serif" style={{ fontSize: 32, fontWeight: 500, margin: "0 0 12px" }}>
+                MedReady Suite
+              </h3>
+              <p style={{ fontSize: 14.5, color: "rgba(250,248,244,0.72)", lineHeight: 1.6, marginBottom: 24 }}>
+                Compliance documentation generated in minutes.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  "Audit plans",
+                  "Standards mapping",
+                  "Document gap analysis",
+                  "HIPAA risk assessments",
+                  "Policy & SOP generator",
+                ].map((label) => (
+                  <li key={label} style={{ fontSize: 13.5, color: "rgba(250,248,244,0.9)", display: "flex", gap: 10 }}>
+                    <span style={{ color: "var(--accent)", flexShrink: 0 }}>›</span>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/suite" style={{ textDecoration: "none" }}>
+                <Button variant="accent" icon={ArrowRight}>View the full suite</Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* ====================================================================
+          SECTION 2 — Compliance Documents, Generated in Minutes
+          ==================================================================== */}
       <section style={{ maxWidth: 1240, margin: "0 auto", padding: "112px 32px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, marginBottom: 56 }}>
           <div>
-            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>HOW IT WORKS</div>
+            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>THE SUITE</div>
             <h2 className="serif" style={{ fontSize: 52, fontWeight: 500, lineHeight: 1.02, margin: 0 }}>
-              File in.<br />Report out.<br />That&apos;s it.
+              Compliance<br />
+              documents,<br />
+              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>generated in minutes</em>.
             </h2>
           </div>
           <p style={{ fontSize: 18, color: "var(--muted)", lineHeight: 1.65, marginTop: 8 }}>
-            Drop in a clinical note, a claim workflow description, or a healthcare website URL.
-            Aegis runs six independent audit channels with isolated rulesets and dedicated prompts.
-            Findings are returned with severity, code, and required actions, then combined into a
-            structured report with an overall score, model attribution, and PDF export.
+            Five tools that share the same engine and the same data model. Inputs are structured. Outputs cite real clauses. Every artifact downloads as a polished PDF and an editable Word document.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
           {[
-            { n: "01", t: "Submit", d: "Paste text, upload a file, or enter a URL. No integration, no API keys, no SDK." },
-            { n: "02", t: "Run", d: "Six channels execute in parallel. Each is bounded — no overlap, no leakage between rulesets." },
-            { n: "03", t: "Export", d: "Overall score, structured findings, required actions. PDF for auditors. JSON for your stack." },
-          ].map((step) => (
-            <div key={step.n}>
-              <div className="divider-rule" style={{ marginBottom: 24 }} />
-              <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginBottom: 14, letterSpacing: "0.06em" }}>
-                {step.n}
-              </div>
-              <h3 className="serif" style={{ fontSize: 32, fontWeight: 500, margin: "0 0 14px" }}>{step.t}</h3>
-              <p style={{ fontSize: 14.5, color: "var(--muted)", lineHeight: 1.65, margin: 0 }}>{step.d}</p>
-            </div>
-          ))}
+            { href: "/suite/audit-plan", icon: FileCheck, color: "#b94545", title: "Audit Plan Generator", desc: "Complete internal audit plans — scope, objectives, methodology, schedule, checklist, and risk areas. Word + JSON export." },
+            { href: "/suite/standards-mapping", icon: BookOpen, color: "#5a7a9f", title: "Standards Mapping", desc: "Paste a finding or requirement and get the exact HIPAA, CMS, OCR, NIST, and ISO clauses that apply." },
+            { href: "/suite/gap-analysis", icon: Upload, color: "#d49640", title: "Document Gap Analysis", desc: "Upload an SOP or policy. AI flags missing sections, weak language, and clause gaps." },
+            { href: "/suite/risk-assessment", icon: ShieldAlert, color: "#a85a8a", title: "HIPAA Risk Assessment", desc: "NIST 800-30 methodology with full risk register, likelihood/impact scoring, and recommended controls." },
+            { href: "/suite/policy", icon: FileText, color: "#5a9f6a", title: "Policy / SOP Generator", desc: "Draft complete HIPAA-aligned policies and SOPs with required sections and clause references." },
+          ].map((t) => {
+            const Icon = t.icon;
+            return (
+              <Link key={t.href} href={t.href} style={{ textDecoration: "none", color: "inherit" }}>
+                <div
+                  className="lift"
+                  style={{
+                    background: "var(--card)",
+                    border: "1px solid var(--line)",
+                    borderRadius: 14,
+                    padding: 24,
+                    height: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 40, height: 40, borderRadius: 10,
+                      background: `${t.color}1a`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      marginBottom: 18,
+                    }}
+                  >
+                    <Icon size={20} strokeWidth={1.75} color={t.color} />
+                  </div>
+                  <h3 className="serif" style={{ fontSize: 20, fontWeight: 500, margin: "0 0 8px" }}>{t.title}</h3>
+                  <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>{t.desc}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 48 }}>
+          <Link href="/suite" style={{ textDecoration: "none" }}>
+            <Button variant="primary" icon={ArrowRight}>Open the suite</Button>
+          </Link>
         </div>
       </section>
 
-      {/* CHANNELS */}
-      <section id="channels" style={{ background: "var(--ink)", color: "var(--paper)", padding: "112px 32px" }}>
+      {/* ====================================================================
+          SECTION 3 — Six-Channel Audit Engine
+          ==================================================================== */}
+      <section id="audit" style={{ background: "var(--ink)", color: "var(--paper)", padding: "112px 32px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, marginBottom: 64 }}>
             <div>
-              <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>SIX AUDIT CHANNELS</div>
+              <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>THE AUDIT ENGINE</div>
               <h2 className="serif" style={{ fontSize: 52, fontWeight: 500, lineHeight: 1.02, margin: 0 }}>
-                Six bounded
-                <br />perspectives.
-                <br />
-                <em style={{ fontStyle: "italic", color: "var(--accent)" }}>Zero overlap.</em>
+                File in.<br />Report out.<br />
+                <em style={{ fontStyle: "italic", color: "var(--accent)" }}>That&apos;s it.</em>
               </h2>
             </div>
             <p style={{ fontSize: 18, color: "rgba(250, 248, 244, 0.72)", lineHeight: 1.65, marginTop: 8 }}>
-              Each channel is isolated by design. Prompts and rulesets are strictly bounded so
-              documentation, HIPAA, claims, communication, content, and browser behavior are
-              evaluated independently. Cross-channel patterns surface only at report aggregation —
-              never inside a channel.
+              Upload a file, paste text, or enter a URL. Six bounded audit channels run in parallel. Export structured findings, required actions, and a PDF/JSON report. No integration, no SDK, no agent installed on your network.
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "rgba(250, 248, 244, 0.08)" }}>
+          <div id="channels" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "rgba(250, 248, 244, 0.08)", marginBottom: 48 }}>
             {CHANNELS.map((ch) => {
               const Icon = ch.icon;
               return (
@@ -250,59 +352,18 @@ export default function HomePage() {
               );
             })}
           </div>
-        </div>
-      </section>
 
-      {/* WHAT'S INCLUDED */}
-      <section style={{ maxWidth: 1240, margin: "0 auto", padding: "112px 32px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, marginBottom: 56 }}>
-          <div>
-            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>WHAT&apos;S INCLUDED</div>
-            <h2 className="serif" style={{ fontSize: 52, fontWeight: 500, lineHeight: 1.02, margin: 0 }}>
-              Every<br />report.<br />
-              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>Every time.</em>
-            </h2>
+          <div style={{ textAlign: "center" }}>
+            <Link href="/scan" style={{ textDecoration: "none" }}>
+              <Button variant="accent" size="lg" icon={ArrowRight}>Run a free audit</Button>
+            </Link>
           </div>
-          <p style={{ fontSize: 18, color: "var(--muted)", lineHeight: 1.65, marginTop: 8 }}>
-            A consistent, structured output is the point. Whether you run one audit or one thousand,
-            every report includes the same fields, in the same order, with the same provenance.
-            Auditable. Reproducible. Diff-able.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0, border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden", background: "var(--card)" }}>
-          {[
-            { icon: Hash, label: "79-point audit", sub: "Across all six channels" },
-            { icon: AlertCircle, label: "Severity counts", sub: "Critical · Watch · Info · Pass" },
-            { icon: FileCheck, label: "Required actions", sub: "Per-channel action list" },
-            { icon: Layers, label: "Model attribution", sub: "Primary + fallback per channel" },
-            { icon: Download, label: "PDF export", sub: "Auditor-ready, paginated" },
-            { icon: Hash, label: "Scan ID", sub: "Stable, sharable identifier" },
-            { icon: Clock, label: "RFC timestamp", sub: "UTC, second-level precision" },
-            { icon: FileBarChart, label: "JSON output", sub: "For your stack and dashboards" },
-          ].map((item, i) => {
-            const Icon = item.icon;
-            const isLastRow = i >= 4;
-            const isLastCol = (i + 1) % 4 === 0;
-            return (
-              <div
-                key={item.label}
-                style={{
-                  padding: "28px 24px",
-                  borderRight: isLastCol ? "none" : "1px solid var(--line)",
-                  borderTop: isLastRow ? "1px solid var(--line)" : "none",
-                }}
-              >
-                <Icon size={20} strokeWidth={1.5} color="var(--accent)" style={{ marginBottom: 14 }} />
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
-                <div style={{ fontSize: 12.5, color: "var(--muted)" }}>{item.sub}</div>
-              </div>
-            );
-          })}
         </div>
       </section>
 
-      {/* WHO IT'S FOR */}
+      {/* ====================================================================
+          SECTION 4 — Who It's For
+          ==================================================================== */}
       <section id="who-its-for" style={{ background: "var(--paper-2)", padding: "112px 32px", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, marginBottom: 56 }}>
@@ -314,19 +375,20 @@ export default function HomePage() {
               </h2>
             </div>
             <p style={{ fontSize: 18, color: "var(--muted)", lineHeight: 1.65, marginTop: 8 }}>
-              If you generate clinical documentation, submit claims, or handle patient data — Aegis
-              gives you the same view payers and auditors will have, before they have it.
+              If you generate clinical documentation, submit claims, handle patient data, write policies, or run audits — this platform gives you the same view your reviewers will have, before they have it.
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
             {[
-              { icon: Stethoscope, label: "Clinics", sub: "Primary care, specialty, dental, mental health. No new system. Just an audit on what you already produce." },
-              { icon: Briefcase, label: "Billing companies", sub: "Audit client workflows for missing taxonomy, NPI, payer ID. Reduce denials and shorten the appeal cycle." },
-              { icon: Globe, label: "Telehealth", sub: "Validate documentation, claims, HIPAA, and patient-facing content across your platform — in minutes." },
-              { icon: Wrench, label: "Healthcare SaaS", sub: "EHR add-ons, AI documentation tools, portal vendors. Catch issues before customer security reviews do." },
-              { icon: Building2, label: "Hospitals", sub: "Outpatient and ambulatory services. Department-level visibility into documentation and claim quality." },
-              { icon: Users, label: "Consultants", sub: "White-label audit layer. Deliver structured, defensible reports to clients without manual scoring." },
+              { icon: Stethoscope, label: "Clinics", sub: "Primary care, specialty, dental, mental health." },
+              { icon: Briefcase, label: "Billing companies", sub: "Audit client workflows; reduce denials." },
+              { icon: Globe, label: "Healthcare SaaS", sub: "EHR add-ons, AI documentation, portals." },
+              { icon: Building2, label: "Networks", sub: "IDNs, ACOs, multi-location practices." },
+              { icon: Wrench, label: "Consultants", sub: "White-label audit + documentation layer." },
+              { icon: ShieldCheck, label: "Compliance officers", sub: "Recurring audits + policy upkeep." },
+              { icon: ClipboardCheck, label: "Internal audit teams", sub: "Plans, evidence, defensible reports." },
+              { icon: Gavel, label: "Regulators", sub: "Independent verification workflows." },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -337,12 +399,12 @@ export default function HomePage() {
                     background: "var(--card)",
                     borderRadius: 12,
                     border: "1px solid var(--line)",
-                    padding: 28,
+                    padding: 24,
                   }}
                 >
-                  <Icon size={22} strokeWidth={1.5} color="var(--accent)" style={{ marginBottom: 18 }} />
-                  <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: "0 0 10px" }}>{item.label}</h3>
-                  <p style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, margin: 0 }}>{item.sub}</p>
+                  <Icon size={22} strokeWidth={1.5} color="var(--accent)" style={{ marginBottom: 16 }} />
+                  <h3 className="serif" style={{ fontSize: 19, fontWeight: 500, margin: "0 0 6px" }}>{item.label}</h3>
+                  <p style={{ fontSize: 12.5, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>{item.sub}</p>
                 </div>
               );
             })}
@@ -350,138 +412,105 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRICING */}
-      <section id="pricing" style={{ maxWidth: 1240, margin: "0 auto", padding: "112px 32px" }}>
+      {/* ====================================================================
+          SECTION 5 — Why It's Safe
+          ==================================================================== */}
+      <section style={{ maxWidth: 1240, margin: "0 auto", padding: "112px 32px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, marginBottom: 56 }}>
           <div>
-            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>PRICING</div>
+            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>WHY IT&apos;S SAFE</div>
             <h2 className="serif" style={{ fontSize: 52, fontWeight: 500, lineHeight: 1.02, margin: 0 }}>
-              One audit,<br />or many.<br />
-              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>You choose.</em>
+              Built for<br />
+              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>healthcare data</em>.
             </h2>
           </div>
           <p style={{ fontSize: 18, color: "var(--muted)", lineHeight: 1.65, marginTop: 8 }}>
-            Start with a single audit to find what matters most. Add monitoring once your team has
-            cleared the first round of findings. No contracts, no setup fees, no minimums.
+            We designed for the only regulated data class that matters here: PHI. Everything below is the default — no checkboxes to flip, no enterprise tier required to get safety basics.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 40 }}>
           {[
-            {
-              name: "Claims Audit",
-              price: 49,
-              kicker: "SINGLE CHANNEL · FAST",
-              tag: null,
-              tagline: "Checks taxonomy, NPI, payer ID, clearinghouse, EDI 837.",
-              features: ["Claims channel only", "Critical / Watch / Info findings", "Required actions list", "PDF + JSON export", "Scan ID + timestamp"],
-            },
-            {
-              name: "Full Compliance Audit",
-              price: 149,
-              kicker: "ALL SIX CHANNELS",
-              tag: "MOST POPULAR",
-              tagline: "All six channels. HIPAA + documentation + claims + content + communication + synthetic.",
-              features: ["All six audit channels", "Overall score + per-channel scores", "Model + fallback attribution", "Required actions, per channel", "PDF + JSON export"],
-            },
-            {
-              name: "Exceptions & Denial Audit",
-              price: 199,
-              kicker: "DEEP DIVE",
-              tag: null,
-              tagline: "Deep dive into denials, missing fields, payer-specific rules.",
-              features: ["Everything in Full Compliance", "Denial pattern analysis", "Payer-specific rule matrix", "Missing-field heat map", "Priority remediation queue"],
-            },
-          ].map((p) => (
-            <div
-              key={p.name}
-              className="lift"
-              style={{
-                background: p.tag ? "var(--ink)" : "var(--card)",
-                color: p.tag ? "var(--paper)" : "var(--ink)",
-                borderRadius: 14,
-                border: p.tag ? "1px solid var(--ink)" : "1px solid var(--line)",
-                padding: 28,
-                position: "relative",
-              }}
-            >
-              {p.tag && (
-                <span
-                  className="mono"
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 24,
-                    background: "var(--accent)",
-                    color: "white",
-                    fontSize: 10,
-                    fontWeight: 600,
-                    padding: "5px 11px",
-                    borderRadius: 4,
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {p.tag}
-                </span>
-              )}
-              <div className="mono" style={{ fontSize: 10.5, color: p.tag ? "rgba(250,248,244,0.5)" : "var(--muted-2)", marginBottom: 16, letterSpacing: "0.1em" }}>
-                {p.kicker}
+            { icon: Ban, title: "No PHI stored on the audit side", desc: "Scan inputs are processed and discarded — not retained, not indexed, not aggregated." },
+            { icon: Trash2, title: "Inputs deleted after processing", desc: "Audit run inputs are not persisted beyond the run. The engine is stateless by design." },
+            { icon: Lock, title: "Encrypted in transit", desc: "TLS 1.2+ on every endpoint. HSTS enforced. No mixed content. No plaintext fallback." },
+            { icon: HardDrive, title: "Local SQLite for Suite outputs", desc: "Suite documents live on your server, not in a third-party cloud index. You hold the file." },
+            { icon: Cloud, title: "Not used for training", desc: "Inference runs against providers with signed BAAs. Inputs are not shared with training pipelines." },
+            { icon: ShieldCheck, title: "HIPAA-aligned workflows", desc: "Audit logging, least-privilege access, retention controls, and breach reporting are first-class." },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="lift"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 12,
+                  padding: 24,
+                }}
+              >
+                <Icon size={22} strokeWidth={1.5} color="var(--accent)" style={{ marginBottom: 14 }} />
+                <h3 style={{ fontSize: 14.5, fontWeight: 600, margin: "0 0 6px" }}>{item.title}</h3>
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>{item.desc}</p>
               </div>
-              <h3 className="serif" style={{ fontSize: 26, fontWeight: 500, margin: "0 0 8px" }}>{p.name}</h3>
-              <p style={{ fontSize: 13, color: p.tag ? "rgba(250,248,244,0.7)" : "var(--muted)", lineHeight: 1.5, margin: "0 0 20px", minHeight: 56 }}>
-                {p.tagline}
-              </p>
-              <div style={{ marginBottom: 24, display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontSize: 14, opacity: 0.65 }}>$</span>
-                <span className="serif" style={{ fontSize: 48, fontWeight: 500, lineHeight: 1 }}>{p.price}</span>
-                <span style={{ fontSize: 13, opacity: 0.65, marginLeft: 4 }}>per audit</span>
-              </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 11 }}>
-                {p.features.map((f) => (
-                  <li key={f} style={{ fontSize: 13, lineHeight: 1.5, display: "flex", gap: 9 }}>
-                    <Check size={14} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 3, color: "var(--accent)" }} />
-                    <span style={{ opacity: 0.92 }}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/scan" style={{ display: "block", textDecoration: "none" }}>
-                <Button variant={p.tag ? "accent" : "secondary"} style={{ width: "100%", justifyContent: "center" }}>
-                  Run this audit
-                </Button>
-              </Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div style={{ padding: "20px 28px", background: "var(--paper-2)", borderRadius: 12, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Need weekly monitoring instead of one-off audits?</div>
-            <div style={{ fontSize: 13, color: "var(--muted)" }}>
-              Subscriptions from <strong style={{ color: "var(--ink)" }}>$49/mo</strong> (clinics) to <strong style={{ color: "var(--ink)" }}>$999+/mo</strong> (enterprise) with weekly runs and trend tracking.
-            </div>
-          </div>
-          <Link href="/scan" style={{ textDecoration: "none" }}>
-            <Button variant="primary" icon={ArrowRight}>View monitoring plans</Button>
+        <div style={{ textAlign: "center" }}>
+          <Link href="/safety" style={{ textDecoration: "none" }}>
+            <Button variant="secondary" icon={ArrowRight}>Learn more about safety</Button>
           </Link>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ====================================================================
+          SECTION 6 — Pricing Overview
+          ==================================================================== */}
+      <section style={{ background: "var(--paper-2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", padding: "96px 32px" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.14em", marginBottom: 18 }}>PRICING</div>
+            <h2 className="serif" style={{ fontSize: 48, fontWeight: 500, lineHeight: 1.05, margin: "0 0 14px" }}>
+              Pay for what you need.
+            </h2>
+            <p style={{ fontSize: 17, color: "var(--muted)", lineHeight: 1.6, maxWidth: 680, marginInline: "auto" }}>
+              Run a one-off audit, generate a single document, or subscribe for unlimited.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
+            <PricingPreview kicker="ONE-OFF AUDITS" headline="From $49" body="Claims · Full · Denial." />
+            <PricingPreview kicker="COMPLIANCE SUITE" headline="From $29" body="Per document, or $99/mo subscription." accent />
+            <PricingPreview kicker="BUNDLE" headline="$199/mo" body="4 audits + 10 documents per month." />
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <Link href="/pricing" style={{ textDecoration: "none" }}>
+              <Button variant="primary" size="lg" icon={ArrowRight}>View pricing</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ====================================================================
+          CLOSING CTA
+          ==================================================================== */}
       <section style={{ background: "var(--ink)", color: "var(--paper)", padding: "112px 32px" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
           <h2 className="serif" style={{ fontSize: "clamp(48px, 6vw, 72px)", fontWeight: 500, lineHeight: 1.02, margin: "0 0 28px" }}>
             See what your <em style={{ fontStyle: "italic", color: "var(--accent)" }}>auditors</em> would.
           </h2>
           <p style={{ fontSize: 18, color: "rgba(250,248,244,0.7)", lineHeight: 1.6, marginBottom: 40 }}>
-            Run a free scan now. Top three critical findings shown in the UI, no signup required.
-            Unlock the full audit and PDF for $49.
+            Run a free audit now. Top critical findings shown in the UI, no signup required.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/scan" style={{ textDecoration: "none" }}>
-              <Button variant="accent" size="lg" icon={ArrowRight}>Run free scan</Button>
+              <Button variant="accent" size="lg" icon={ArrowRight}>Run a free audit</Button>
             </Link>
-            <Link href="/report" style={{ textDecoration: "none" }}>
-              <Button variant="inverse" size="lg" iconLeft={Eye}>View sample report</Button>
+            <Link href="/suite" style={{ textDecoration: "none" }}>
+              <Button variant="inverse" size="lg" iconLeft={Eye}>Explore the suite</Button>
             </Link>
           </div>
         </div>
@@ -489,5 +518,30 @@ export default function HomePage() {
 
       <MarketingFooter />
     </>
+  );
+}
+
+function PricingPreview({ kicker, headline, body, accent }: { kicker: string; headline: string; body: string; accent?: boolean }) {
+  return (
+    <div
+      style={{
+        background: accent ? "var(--ink)" : "var(--card)",
+        color: accent ? "var(--paper)" : "var(--ink)",
+        border: accent ? "1px solid var(--ink)" : "1px solid var(--line)",
+        borderRadius: 14,
+        padding: 28,
+        textAlign: "center",
+      }}
+    >
+      <div className="mono" style={{ fontSize: 10.5, color: accent ? "rgba(250,248,244,0.55)" : "var(--muted-2)", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 14 }}>
+        {kicker}
+      </div>
+      <div className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1.1, marginBottom: 10 }}>
+        {headline}
+      </div>
+      <div style={{ fontSize: 13, color: accent ? "rgba(250,248,244,0.7)" : "var(--muted)", lineHeight: 1.55 }}>
+        {body}
+      </div>
+    </div>
   );
 }

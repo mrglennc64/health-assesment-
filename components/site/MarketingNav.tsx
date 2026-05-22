@@ -39,9 +39,9 @@ export function MarketingNav() {
         </Link>
         <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <Link href="/#channels" style={navLink}>Channels</Link>
-          <Link href="/#pricing" style={navLink}>Pricing</Link>
-          <Link href="/#who-its-for" style={navLink}>Who it&apos;s for</Link>
-          <Link href="/suite" style={navLink}>Suite</Link>
+          <Link href="/suite" style={navLink}>MediReady Suite</Link>
+          <Link href="/pricing" style={navLink}>Pricing</Link>
+          <Link href="/safety" style={navLink}>Safety</Link>
           <Link href="/waitlist" style={navLink}>Join</Link>
           <Link href="/dashboard" style={{ textDecoration: "none" }}>
             <Button variant="secondary" size="sm">Sign in</Button>
