@@ -37,17 +37,15 @@ export function MarketingNav() {
         <Link href="/" style={{ textDecoration: "none" }}>
           <Logo />
         </Link>
-        <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <Link href="/#channels" style={navLink}>Channels</Link>
-          <Link href="/suite" style={navLink}>MediReady Suite</Link>
+        <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <Link href="/product" style={navLink}>Product</Link>
           <Link href="/pricing" style={navLink}>Pricing</Link>
-          <Link href="/safety" style={navLink}>Safety</Link>
-          <Link href="/waitlist" style={navLink}>Join</Link>
-          <Link href="/dashboard" style={{ textDecoration: "none" }}>
-            <Button variant="secondary" size="sm">Sign in</Button>
-          </Link>
-          <Link href="/scan" style={{ textDecoration: "none" }}>
-            <Button variant="primary" size="sm" icon={ArrowRight}>Free scan</Button>
+          <Link href="/who-its-for" style={navLink}>Who it&apos;s for</Link>
+          <Link href="/documentation" style={navLink}>Documentation</Link>
+          <Link href="/security" style={navLink}>Security</Link>
+          <Link href="/contact" style={navLink}>Contact</Link>
+          <Link href="/contact" style={{ textDecoration: "none" }}>
+            <Button variant="primary" size="sm" icon={ArrowRight}>Request access</Button>
           </Link>
         </nav>
       </div>

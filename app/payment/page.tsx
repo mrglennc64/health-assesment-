@@ -1,12 +1,22 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PayNow } from "@/components/site/PayNow";
+import { DEFAULT_PRODUCT, isProductKey } from "@/lib/payments/config";
 
-export default function PaymentPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PaymentPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const raw = params.product;
+  const productParam = Array.isArray(raw) ? raw[0] : raw;
+  const product = isProductKey(productParam) ? productParam : DEFAULT_PRODUCT;
+
   return (
     <>
       <MarketingNav />
@@ -24,7 +34,7 @@ export default function PaymentPage() {
           Two ways to pay. Online via Revolut Checkout (fastest, automatic reconciliation), or by USD bank transfer for organisations that prefer it.
         </p>
 
-        <PayNow />
+        <PayNow product={product} />
 
         <div style={{ marginTop: 36, padding: "16px 20px", background: "var(--paper-2)", borderRadius: 10, fontSize: 13, color: "var(--muted)", lineHeight: 1.65, maxWidth: 480 }}>
           Questions about the payment? Email{" "}

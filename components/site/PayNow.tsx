@@ -1,22 +1,28 @@
 "use client";
 
 import {
-  REVOLUT_CHECKOUT_URL,
-  PAYMENT_AMOUNT_DISPLAY,
   BANK_TRANSFER,
+  DEFAULT_PRODUCT,
+  PRODUCTS,
+  type ProductKey,
 } from "@/lib/payments/config";
 
-const bankBlock = `Currency: ${BANK_TRANSFER.currency}
+function bankBlockForAmount(amount: string): string {
+  return `Currency: ${BANK_TRANSFER.currency}
 Beneficiary: ${BANK_TRANSFER.beneficiary}
 IBAN: ${BANK_TRANSFER.iban}
 BIC/SWIFT: ${BANK_TRANSFER.bicSwift}
 Bank: ${BANK_TRANSFER.bank}
 Address: ${BANK_TRANSFER.bankAddress}
 Correspondent BIC: ${BANK_TRANSFER.correspondentBic}
-Amount: ${BANK_TRANSFER.amount}
+Amount: ${amount}
 Reference: [${BANK_TRANSFER.referenceHint}]`;
+}
 
-export function PayNow() {
+export function PayNow({ product = DEFAULT_PRODUCT }: { product?: ProductKey }) {
+  const info = PRODUCTS[product];
+  const bankBlock = bankBlockForAmount(info.amountDisplay);
+
   return (
     <div
       style={{
@@ -27,9 +33,15 @@ export function PayNow() {
         maxWidth: 480,
       }}
     >
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 16px" }}>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 6px" }}>
         Complete your payment
       </h2>
+      <div
+        className="mono"
+        style={{ fontSize: 11, color: "var(--muted-2)", letterSpacing: "0.06em", marginBottom: 16 }}
+      >
+        {info.name.toUpperCase()} · {info.amountDisplay}
+      </div>
 
       {/* Option 1 — Revolut Checkout */}
       <div style={{ marginBottom: 20 }}>
@@ -37,10 +49,10 @@ export function PayNow() {
           Option 1 — Pay online (recommended)
         </h3>
         <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 12px", lineHeight: 1.55 }}>
-          Pay {PAYMENT_AMOUNT_DISPLAY} securely via Revolut Checkout.
+          Pay {info.amountDisplay} securely via Revolut Checkout.
         </p>
         <a
-          href={REVOLUT_CHECKOUT_URL}
+          href={info.revolutUrl}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -56,7 +68,7 @@ export function PayNow() {
             textDecoration: "none",
           }}
         >
-          Pay {PAYMENT_AMOUNT_DISPLAY} via Revolut
+          Pay {info.amountDisplay} via Revolut
         </a>
       </div>
 
