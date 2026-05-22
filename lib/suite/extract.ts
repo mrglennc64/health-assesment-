@@ -1,8 +1,5 @@
 import mammoth from "mammoth";
-// pdf-parse exposes the parser at /lib/pdf-parse.js to avoid the package's
-// known test-fixture side effect at top-level import.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse/lib/pdf-parse.js");
+import { PDFParse } from "pdf-parse";
 
 export type ExtractResult = {
   text: string;
@@ -19,11 +16,12 @@ function trim(s: string): string {
 export async function extractTextFromUpload(file: File): Promise<ExtractResult> {
   const name = (file.name || "").toLowerCase();
   const mime = file.type || "";
-  const buf = Buffer.from(await file.arrayBuffer());
+  const ab = await file.arrayBuffer();
 
   if (mime === "application/pdf" || name.endsWith(".pdf")) {
-    const parsed = await pdfParse(buf);
-    const text = trim((parsed.text ?? "").trim());
+    const parser = new PDFParse({ data: new Uint8Array(ab) });
+    const result = await parser.getText();
+    const text = trim((result.text ?? "").trim());
     return { text, contentType: "pdf", charCount: text.length };
   }
 
@@ -31,7 +29,7 @@ export async function extractTextFromUpload(file: File): Promise<ExtractResult> 
     mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
     name.endsWith(".docx")
   ) {
-    const parsed = await mammoth.extractRawText({ buffer: buf });
+    const parsed = await mammoth.extractRawText({ buffer: Buffer.from(ab) });
     const text = trim((parsed.value ?? "").trim());
     return { text, contentType: "docx", charCount: text.length };
   }
@@ -41,7 +39,7 @@ export async function extractTextFromUpload(file: File): Promise<ExtractResult> 
     name.endsWith(".txt") ||
     name.endsWith(".md")
   ) {
-    const text = trim(buf.toString("utf8").trim());
+    const text = trim(Buffer.from(ab).toString("utf8").trim());
     return { text, contentType: "text", charCount: text.length };
   }
 
