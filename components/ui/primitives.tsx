@@ -53,7 +53,7 @@ export function Logo({
         />
       </svg>
       <div className="serif" style={{ fontSize, fontWeight: 600 }}>
-        Aegis<span style={{ color: "var(--accent)" }}>.</span>
+        MediReady<span style={{ color: "var(--accent)" }}>.</span>
       </div>
     </div>
   );

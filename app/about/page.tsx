@@ -6,36 +6,32 @@ import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
 
+const para: React.CSSProperties = { fontSize: 16, color: "var(--ink-2)", lineHeight: 1.75, margin: "0 0 18px" };
+
 export default function AboutPage() {
   return (
     <>
       <MarketingNav />
-      <section style={{ maxWidth: 880, margin: "0 auto", padding: "96px 32px" }}>
+      <section style={{ maxWidth: 860, margin: "0 auto", padding: "80px 32px" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 18 }}>
-          ABOUT
+          COMPANY
         </div>
-        <h1 className="serif" style={{ fontSize: 48, fontWeight: 500, lineHeight: 1.05, margin: "0 0 32px" }}>
-          Healthcare audit and compliance, on one platform.
+        <h1 className="serif" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1.05, margin: "0 0 32px" }}>
+          Company
         </h1>
 
-        <p style={{ fontSize: 16, color: "var(--ink-2)", lineHeight: 1.75, marginBottom: 18 }}>
-          We build software for the clinics, billing companies, healthcare SaaS providers, and
-          consultants who carry the day-to-day weight of HIPAA, CMS, and payer rules. The tools
-          here exist because compliance work shouldn&apos;t require an army of consultants — it
-          should require careful inputs, structured outputs, and a paper trail an auditor can read.
+        <p style={para}>
+          MediReady builds file-based healthcare audit and compliance tools that surface issues before payers,
+          auditors, or regulators do. No integrations. No IT projects. File in → report out.
         </p>
 
-        <p style={{ fontSize: 16, color: "var(--ink-2)", lineHeight: 1.75, marginBottom: 18 }}>
-          The platform is two products that share a workflow. Aegis Audits surfaces what payers,
-          auditors, and regulators will find first — six bounded channels running in parallel.
-          MedReady Suite generates the documents you need to close those findings — audit plans,
-          standards mappings, gap analyses, risk assessments, policies and SOPs.
+        <p style={para}>
+          Founded by Glenn Carter, MediReady combines healthcare workflow experience, audit-grade data handling,
+          HIPAA-aligned architecture, and deterministic validation logic.
         </p>
 
-        <p style={{ fontSize: 16, color: "var(--ink-2)", lineHeight: 1.75, marginBottom: 32 }}>
-          Built on a single principle: structured outputs are auditable; free-text outputs are not.
-          Every finding cites a clause. Every plan has a schedule. Every policy has the nine
-          sections HIPAA reviewers expect. Every export is reproducible. No magic, no black-box scoring.
+        <p style={{ ...para, marginBottom: 32 }}>
+          Our goal is simple: make healthcare compliance fast, accurate, and accessible.
         </p>
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

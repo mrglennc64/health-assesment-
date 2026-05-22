@@ -1,36 +1,43 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/primitives";
 
-type FooterLink = { label: string; href: string; external?: boolean };
+type FooterLink = { label: string; href: string };
 type FooterCol = { heading: string; links: FooterLink[] };
 
 const COLS: FooterCol[] = [
   {
     heading: "Product",
     links: [
-      { label: "Free audit", href: "/scan" },
+      { label: "Product overview", href: "/product" },
       { label: "Compliance suite", href: "/suite" },
-      { label: "Sample report", href: "/report" },
       { label: "Pricing", href: "/pricing" },
+      { label: "Free audit", href: "/scan" },
+      { label: "Sample report", href: "/report" },
     ],
   },
   {
     heading: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Safety", href: "/safety" },
+      { label: "Who it's for", href: "/who-its-for" },
       { label: "Contact", href: "/contact" },
       { label: "Waitlist", href: "/waitlist" },
     ],
   },
   {
-    heading: "Tools",
+    heading: "Resources",
     links: [
-      { label: "Audit plans", href: "/suite/audit-plan" },
-      { label: "Standards mapping", href: "/suite/standards-mapping" },
-      { label: "Gap analysis", href: "/suite/gap-analysis" },
-      { label: "Risk assessment", href: "/suite/risk-assessment" },
-      { label: "Policy / SOP", href: "/suite/policy" },
+      { label: "Documentation", href: "/docs" },
+      { label: "Status", href: "/status" },
+      { label: "Safety", href: "/safety" },
+      { label: "Security", href: "/security" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms of use", href: "/terms" },
     ],
   },
 ];
@@ -49,8 +56,8 @@ export function MarketingFooter() {
           maxWidth: 1240,
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "2.2fr 1fr 1fr 1fr",
-          gap: 48,
+          gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+          gap: 40,
         }}
       >
         <div>
@@ -76,7 +83,7 @@ export function MarketingFooter() {
               letterSpacing: "0.04em",
             }}
           >
-            © 2026 AEGIS HEALTH AUDIT
+            © 2026 MEDIREADY
           </p>
         </div>
         {COLS.map((col) => (
