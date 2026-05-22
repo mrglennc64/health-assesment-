@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { insertOutput, listOutputs, generateId } from "@/lib/suite/db";
 import { buildSeedRecords } from "@/lib/suite/seed-data";
 
-export async function POST(_req: NextRequest) {
+export async function POST(_req: NextRequest) { // eslint-disable-line @typescript-eslint/no-unused-vars
   // Refuse to seed if any records already exist — keeps demo data from
   // duplicating into a populated database.
   const existing = listOutputs({ limit: 1 });
