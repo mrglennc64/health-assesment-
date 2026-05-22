@@ -63,7 +63,7 @@ export default function HomePage() {
                   Run a free audit
                 </Button>
               </Link>
-              <Link href="/suite" style={{ textDecoration: "none" }}>
+              <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
                 <Button variant="secondary" size="lg" iconLeft={Eye}>
                   Explore the compliance suite
                 </Button>
@@ -245,7 +245,7 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/suite" style={{ textDecoration: "none" }}>
+              <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
                 <Button variant="accent" icon={ArrowRight}>View the full suite</Button>
               </Link>
             </div>
@@ -281,7 +281,7 @@ export default function HomePage() {
           ].map((t) => {
             const Icon = t.icon;
             return (
-              <Link key={t.href} href={t.href} style={{ textDecoration: "none", color: "inherit" }}>
+              <Link key={t.href} href={t.href} prefetch={false} style={{ textDecoration: "none", color: "inherit" }}>
                 <div
                   className="lift"
                   style={{
@@ -311,7 +311,7 @@ export default function HomePage() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: 48 }}>
-          <Link href="/suite" style={{ textDecoration: "none" }}>
+          <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
             <Button variant="primary" icon={ArrowRight}>Open the suite</Button>
           </Link>
         </div>
@@ -509,7 +509,7 @@ export default function HomePage() {
             <Link href="/scan" style={{ textDecoration: "none" }}>
               <Button variant="accent" size="lg" icon={ArrowRight}>Run a free audit</Button>
             </Link>
-            <Link href="/suite" style={{ textDecoration: "none" }}>
+            <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
               <Button variant="inverse" size="lg" iconLeft={Eye}>Explore the suite</Button>
             </Link>
           </div>

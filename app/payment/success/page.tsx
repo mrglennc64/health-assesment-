@@ -48,7 +48,7 @@ export default function PaymentSuccessPage() {
           <Link href="/scan" style={{ textDecoration: "none" }}>
             <Button variant="primary" icon={ArrowRight}>Run an audit</Button>
           </Link>
-          <Link href="/suite" style={{ textDecoration: "none" }}>
+          <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
             <Button variant="secondary">Open the suite</Button>
           </Link>
         </div>

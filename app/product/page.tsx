@@ -61,7 +61,7 @@ export default function ProductPage() {
             <li style={li}>Policy &amp; SOP Generator</li>
           </ul>
           <div style={{ marginTop: 18 }}>
-            <Link href="/suite" style={{ textDecoration: "none" }}>
+            <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
               <Button variant="secondary" icon={ArrowRight}>Open the suite</Button>
             </Link>
           </div>

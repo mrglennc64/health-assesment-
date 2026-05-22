@@ -4,6 +4,11 @@ import { Logo } from "@/components/ui/primitives";
 type FooterLink = { label: string; href: string };
 type FooterCol = { heading: string; links: FooterLink[] };
 
+const PROTECTED_PREFIXES = ["/audit", "/suite", "/monitoring", "/history", "/reports", "/admin", "/internal"];
+function isProtected(href: string): boolean {
+  return PROTECTED_PREFIXES.some((p) => href === p || href.startsWith(`${p}/`));
+}
+
 const COLS: FooterCol[] = [
   {
     heading: "Product",
@@ -106,6 +111,7 @@ export function MarketingFooter() {
               <div key={link.label} style={{ marginBottom: 9 }}>
                 <Link
                   href={link.href}
+                  prefetch={isProtected(link.href) ? false : undefined}
                   style={{ fontSize: 13, color: "var(--ink-2)", textDecoration: "none" }}
                 >
                   {link.label}
