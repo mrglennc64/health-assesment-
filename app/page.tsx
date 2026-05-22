@@ -186,7 +186,7 @@ export default function HomePage() {
                 PRODUCT ONE
               </div>
               <h3 className="serif" style={{ fontSize: 32, fontWeight: 500, margin: "0 0 12px" }}>
-                Aegis Audits
+                MediReady Audits
               </h3>
               <p style={{ fontSize: 14.5, color: "var(--muted)", lineHeight: 1.6, marginBottom: 24 }}>
                 Six parallel audit channels that surface what payers, auditors, and regulators will find first.

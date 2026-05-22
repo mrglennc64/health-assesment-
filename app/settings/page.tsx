@@ -165,7 +165,7 @@ export default function SettingsPage() {
         <SettingsCard
           icon={Bell}
           title="Notifications"
-          subtitle="When and how you hear from Aegis."
+          subtitle="When and how you hear from MediReady."
         >
           <Toggle
             label="Email summaries"
@@ -195,7 +195,7 @@ export default function SettingsPage() {
         >
           <Row label="Logo" value={<span style={{ fontSize: 13, color: "var(--muted)" }}>No logo uploaded</span>} action={<Button variant="secondary" size="sm">Upload</Button>} />
           <Row label="Accent color" value={<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><span style={{ width: 16, height: 16, borderRadius: 4, background: "var(--accent)" }} /><span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>#B8442E</span></span>} action={<Button variant="secondary" size="sm">Change</Button>} />
-          <Row label="Footer text" value="Aegis Health Audit · Stockholm" action={<Button variant="secondary" size="sm">Edit</Button>} />
+          <Row label="Footer text" value="MediReady · Stockholm" action={<Button variant="secondary" size="sm">Edit</Button>} />
         </SettingsCard>
 
         {/* Danger */}

@@ -107,7 +107,7 @@ export default function ScanPage() {
         <p style={{ fontSize: 17, color: "var(--muted)", lineHeight: 1.6, marginBottom: 44, maxWidth: 640 }}>
           {step === "results"
             ? "Top critical issues across the six channels. Full report — all findings, required actions, PDF export — unlocks for $49."
-            : "Paste a clinical note, claim workflow, or URL. Aegis runs all six channels in parallel — typically 15–40 seconds."}
+            : "Paste a clinical note, claim workflow, or URL. MediReady runs all six channels in parallel — typically 15–40 seconds."}
         </p>
 
         {error && (

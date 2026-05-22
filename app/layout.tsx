@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aegis · Healthcare Audit Engine",
+  title: "MediReady · Healthcare Audit + Compliance",
   description:
     "Six-channel automated audits for healthcare documentation, HIPAA, claims, communication, content, and browser behavior.",
 };

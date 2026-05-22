@@ -23,9 +23,9 @@ export default function ProductPage() {
           Product
         </h1>
 
-        {/* Aegis Audits */}
+        {/* MediReady Audits */}
         <div style={{ marginBottom: 56 }}>
-          <h2 className="serif" style={sectionH2}>Aegis Audits</h2>
+          <h2 className="serif" style={sectionH2}>MediReady Audits</h2>
           <p style={para}>
             Six-channel healthcare audits that surface what payers, auditors, and regulators will find first.
           </p>
