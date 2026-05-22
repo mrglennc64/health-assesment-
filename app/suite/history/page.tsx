@@ -3,6 +3,7 @@ import { ArrowLeft, Clock, FileCheck, BookOpen, Upload, ShieldAlert, FileText } 
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
+import { HistorySeedButton } from "@/components/site/HistorySeedButton";
 import { listOutputs } from "@/lib/suite/db";
 import type { ToolId } from "@/lib/suite/types";
 
@@ -68,11 +69,14 @@ export default async function SuiteHistoryPage() {
               No history yet.
             </h2>
             <p style={{ fontSize: 13.5, color: "var(--muted)", marginBottom: 18 }}>
-              Run any of the three suite tools to populate your history.
+              Run any of the suite tools to populate your history — or load demo records to explore the suite without burning API credits.
             </p>
-            <Link href="/suite" style={{ textDecoration: "none" }}>
-              <Button variant="primary" size="sm">Open the suite</Button>
-            </Link>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", alignItems: "flex-start" }}>
+              <Link href="/suite" style={{ textDecoration: "none" }}>
+                <Button variant="primary" size="sm">Open the suite</Button>
+              </Link>
+              <HistorySeedButton />
+            </div>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
