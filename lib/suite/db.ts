@@ -79,18 +79,23 @@ export function getOutput(id: string): SuiteRecord | null {
   return rowToRecord(row);
 }
 
-export function listOutputs(opts: { tool?: ToolId; limit?: number } = {}): SuiteRecord[] {
+export function listOutputs(opts: { tool?: ToolId; limit?: number; sinceISO?: string } = {}): SuiteRecord[] {
   const db = getDb();
   const limit = opts.limit ?? 100;
-  const rows = (
-    opts.tool
-      ? db.prepare(
-          `SELECT * FROM outputs WHERE tool = ? ORDER BY created_at DESC LIMIT ?`,
-        ).all(opts.tool, limit)
-      : db.prepare(
-          `SELECT * FROM outputs ORDER BY created_at DESC LIMIT ?`,
-        ).all(limit)
-  ) as Record<string, unknown>[];
+  const since = opts.sinceISO;
+  let sql = `SELECT * FROM outputs WHERE 1=1`;
+  const params: (string | number)[] = [];
+  if (opts.tool) {
+    sql += ` AND tool = ?`;
+    params.push(opts.tool);
+  }
+  if (since) {
+    sql += ` AND created_at >= ?`;
+    params.push(since);
+  }
+  sql += ` ORDER BY created_at DESC LIMIT ?`;
+  params.push(limit);
+  const rows = db.prepare(sql).all(...params) as Record<string, unknown>[];
   return rows.map(rowToRecord);
 }
 

@@ -2,6 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { runJsonPrompt } from "@/lib/suite/llm";
 import { insertOutput, generateId } from "@/lib/suite/db";
 import {
+  STANDARDS_INPUT_MAX_CHARS,
+  LIMIT_MESSAGES,
+  getUsernameFromRequest,
+  isAdmin,
+} from "@/lib/quotas";
+import {
   standardsMappingSystemPrompt,
   buildStandardsMappingUserContent,
 } from "@/lib/suite/prompts/standards-mapping";
@@ -19,6 +25,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });
   }
   const query = body.query.trim();
+
+  // Free tier: unlimited mappings, but cap input length. Admins (Glenn) bypass.
+  const userId = getUsernameFromRequest(req);
+  if (!isAdmin(userId) && query.length > STANDARDS_INPUT_MAX_CHARS) {
+    return NextResponse.json(
+      {
+        error: "quota_exceeded",
+        counter: "doc.standards-mapping",
+        message: LIMIT_MESSAGES["doc.standards-mapping"],
+        limit: STANDARDS_INPUT_MAX_CHARS,
+        used: query.length,
+      },
+      { status: 429 },
+    );
+  }
 
   let parsed: StandardsMappingOutput;
   let result;

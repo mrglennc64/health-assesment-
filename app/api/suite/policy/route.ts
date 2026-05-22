@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { runJsonPrompt } from "@/lib/suite/llm";
 import { insertOutput, generateId } from "@/lib/suite/db";
+import { checkAndIncrementQuota } from "@/lib/quotas";
 import { policySystemPrompt, buildPolicyUserContent, type PolicyInput } from "@/lib/suite/prompts/policy";
 import type { PolicyOutput } from "@/lib/suite/types";
 
@@ -31,6 +32,9 @@ export async function POST(req: NextRequest) {
   }
 
   const input = body as PolicyInput;
+
+  const quota = checkAndIncrementQuota(req, "doc.policy");
+  if (!quota.ok) return quota.response;
 
   let parsed: PolicyOutput;
   let result;

@@ -45,9 +45,9 @@ export default function RiskAssessmentPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ organisation, organisationType, scope, ephiInventory, priorIncidents, knownGaps }),
       });
-      const data = (await res.json()) as { ok?: boolean; id?: string; record?: { outputJson: string; model: string | null; provider: string | null }; error?: string };
+      const data = (await res.json()) as { ok?: boolean; id?: string; record?: { outputJson: string; model: string | null; provider: string | null }; error?: string; message?: string };
       if (!res.ok || !data.ok || !data.record) {
-        setError(data.error || `HTTP ${res.status}`);
+        setError(data.message || data.error || `HTTP ${res.status}`);
         return;
       }
       setResult({

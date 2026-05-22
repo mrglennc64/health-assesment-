@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import Link from "next/link";
 import { ArrowLeft, Clock, FileCheck, BookOpen, Upload, ShieldAlert, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
@@ -6,6 +7,8 @@ import { Button } from "@/components/ui/primitives";
 import { HistorySeedButton } from "@/components/site/HistorySeedButton";
 import { listOutputs } from "@/lib/suite/db";
 import type { ToolId } from "@/lib/suite/types";
+import { FREE_TIER_HISTORY_DAYS, isAdmin } from "@/lib/quotas";
+import { getUsernameFromRequest } from "@/lib/quotas/identity";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +46,26 @@ function fmtDate(iso: string): string {
 }
 
 export default async function SuiteHistoryPage() {
-  const records = listOutputs({ limit: 200 });
+  // Build a synthetic Request-shaped object so getUsernameFromRequest works
+  // from a server component (it reads from a headers().Authorization).
+  const hdrs = await headers();
+  const fakeReq = new Request("http://internal", {
+    headers: {
+      authorization: hdrs.get("authorization") ?? hdrs.get("Authorization") ?? "",
+    },
+  });
+  const userId = getUsernameFromRequest(fakeReq);
+  const admin = isAdmin(userId);
+
+  let sinceISO: string | undefined;
+  if (!admin) {
+    // Server component — Date.now() runs at request time, which is the intent.
+    // eslint-disable-next-line react-hooks/purity
+    const cutoff = new Date(Date.now() - FREE_TIER_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+    sinceISO = cutoff.toISOString();
+  }
+
+  const records = listOutputs({ limit: 200, sinceISO });
 
   return (
     <>
@@ -58,9 +80,28 @@ export default async function SuiteHistoryPage() {
         <h1 className="serif" style={{ fontSize: 42, fontWeight: 500, lineHeight: 1.02, margin: "0 0 14px" }}>
           Every generation, saved.
         </h1>
-        <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.6, marginBottom: 32, maxWidth: 640 }}>
+        <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.6, marginBottom: 24, maxWidth: 640 }}>
           Audit plans, mappings, and gap analyses you&apos;ve created. Click an entry to re-download or review.
         </p>
+
+        {!admin && (
+          <div
+            style={{
+              background: "var(--paper-2)",
+              border: "1px solid var(--line)",
+              borderRadius: 10,
+              padding: "12px 16px",
+              fontSize: 13,
+              color: "var(--muted)",
+              lineHeight: 1.55,
+              marginBottom: 24,
+            }}
+          >
+            <strong style={{ color: "var(--ink)" }}>Free tier — last {FREE_TIER_HISTORY_DAYS} days.</strong>{" "}
+            Older runs are hidden. <Link href="/contact" style={{ color: "var(--accent)" }}>Contact us</Link>{" "}
+            to enable full history.
+          </div>
+        )}
 
         {records.length === 0 ? (
           <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 40, textAlign: "center" }}>

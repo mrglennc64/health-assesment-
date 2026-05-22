@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { runJsonPrompt } from "@/lib/suite/llm";
 import { insertOutput, generateId } from "@/lib/suite/db";
+import { checkAndIncrementQuota } from "@/lib/quotas";
 import {
   auditPlanSystemPrompt,
   buildAuditPlanUserContent,
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
   }
 
   const input = body as AuditPlanInput;
+
+  const quota = checkAndIncrementQuota(req, "doc.audit-plan");
+  if (!quota.ok) return quota.response;
 
   let parsed: AuditPlanOutput;
   let result;

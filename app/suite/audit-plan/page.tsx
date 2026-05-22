@@ -53,9 +53,9 @@ export default function AuditPlanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ organisation, organisationType, scope, period, systems, auditor }),
       });
-      const data = (await res.json()) as { ok?: boolean; id?: string; record?: Result["record"]; error?: string };
+      const data = (await res.json()) as { ok?: boolean; id?: string; record?: Result["record"]; error?: string; message?: string };
       if (!res.ok || !data.ok || !data.record) {
-        setError(data.error || `HTTP ${res.status}`);
+        setError(data.message || data.error || `HTTP ${res.status}`);
         return;
       }
       setResult({ id: data.id!, record: data.record });

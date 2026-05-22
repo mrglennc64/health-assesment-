@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { runJsonPrompt } from "@/lib/suite/llm";
 import { insertOutput, generateId } from "@/lib/suite/db";
 import { extractTextFromUpload } from "@/lib/suite/extract";
+import { checkAndIncrementQuota } from "@/lib/quotas";
 import {
   gapAnalysisSystemPrompt,
   buildGapAnalysisUserContent,
@@ -56,6 +57,9 @@ export async function POST(req: NextRequest) {
   }
 
   const input: GapAnalysisInput = { documentType, framework, context };
+
+  const quota = checkAndIncrementQuota(req, "doc.gap-analysis");
+  if (!quota.ok) return quota.response;
 
   let parsed: GapAnalysisOutput;
   let result;

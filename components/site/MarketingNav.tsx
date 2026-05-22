@@ -41,9 +41,7 @@ export function MarketingNav() {
           <Link href="/product" style={navLink}>Product</Link>
           <Link href="/pricing" style={navLink}>Pricing</Link>
           <Link href="/who-its-for" style={navLink}>Who it&apos;s for</Link>
-          <Link href="/documentation" style={navLink}>Documentation</Link>
-          <Link href="/security" style={navLink}>Security</Link>
-          <Link href="/contact" style={navLink}>Contact</Link>
+          <Link href="/suite" style={navLink}>MediReady Suite</Link>
           <Link href="/contact" style={{ textDecoration: "none" }}>
             <Button variant="primary" size="sm" icon={ArrowRight}>Request access</Button>
           </Link>
