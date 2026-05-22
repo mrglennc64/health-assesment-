@@ -1,4 +1,11 @@
-import type { SuiteRecord, AuditPlanOutput, StandardsMappingOutput, GapAnalysisOutput } from "./types";
+import type {
+  SuiteRecord,
+  AuditPlanOutput,
+  StandardsMappingOutput,
+  GapAnalysisOutput,
+  RiskAssessmentOutput,
+  PolicyOutput,
+} from "./types";
 import { renderDocx, type DocxSpec, type DocxBlock } from "./docx";
 
 function findingBlocks(label: string, findings: { severity: string; title: string; detail: string; clauses: { framework: string; citation: string; note?: string }[]; requiredAction: string; suggestedRemediation?: string }[]): DocxBlock[] {
@@ -119,11 +126,101 @@ function renderGapAnalysis(record: SuiteRecord): DocxSpec {
   };
 }
 
+function renderRiskAssessment(record: SuiteRecord): DocxSpec {
+  const o = JSON.parse(record.outputJson) as RiskAssessmentOutput;
+  const blocks: DocxBlock[] = [
+    { type: "h2", text: "Summary" },
+    {
+      type: "kv",
+      rows: [
+        { key: "Critical", value: String(o.summary?.criticalCount ?? 0) },
+        { key: "High", value: String(o.summary?.highCount ?? 0) },
+        { key: "Medium", value: String(o.summary?.mediumCount ?? 0) },
+        { key: "Low", value: String(o.summary?.lowCount ?? 0) },
+      ],
+    },
+    { type: "h2", text: "Methodology" },
+    { type: "p", text: o.methodology },
+  ];
+  if (o.assumptions?.length) {
+    blocks.push({ type: "h2", text: "Assumptions" }, { type: "list", items: o.assumptions });
+  }
+  blocks.push({ type: "h2", text: "Risk Register" });
+  for (const r of o.rows ?? []) {
+    blocks.push({ type: "h3", text: `${r.asset} — ${r.inherentRisk.toUpperCase()} inherent / ${r.residualRisk.toUpperCase()} residual` });
+    blocks.push({
+      type: "kv",
+      rows: [
+        { key: "Threat", value: r.threat },
+        { key: "Vulnerability", value: r.vulnerability },
+        { key: "Likelihood", value: r.likelihood.toUpperCase() },
+        { key: "Impact", value: r.impact.toUpperCase() },
+        { key: "Existing controls", value: r.existingControls },
+      ],
+    });
+    blocks.push({ type: "bold", text: "Recommended controls" });
+    blocks.push({ type: "list", items: r.recommendedControls ?? [] });
+    if (r.clauses?.length) {
+      blocks.push({ type: "bold", text: "Clauses" });
+      blocks.push({
+        type: "kv",
+        rows: r.clauses.map((c) => ({ key: c.framework, value: `${c.citation}${c.note ? ` — ${c.note}` : ""}` })),
+      });
+    }
+  }
+  if (o.summary?.topRecommendations?.length) {
+    blocks.push({ type: "h2", text: "Top recommendations" }, { type: "list", items: o.summary.topRecommendations });
+  }
+  return {
+    title: `Risk Assessment — ${o.organisation}`,
+    subtitle: o.scope,
+    generatedAt: record.createdAt,
+    blocks,
+  };
+}
+
+function renderPolicy(record: SuiteRecord): DocxSpec {
+  const o = JSON.parse(record.outputJson) as PolicyOutput;
+  const blocks: DocxBlock[] = [
+    { type: "h2", text: "Document Control" },
+    {
+      type: "kv",
+      rows: [
+        { key: "Policy ID", value: o.policyId },
+        { key: "Version", value: o.version },
+        { key: "Effective", value: o.effectiveDate },
+        { key: "Review cycle", value: o.reviewCycle },
+        { key: "Owner", value: o.owner },
+      ],
+    },
+  ];
+  for (const s of o.sections ?? []) {
+    blocks.push({ type: "h2", text: s.heading });
+    if (s.body) blocks.push({ type: "p", text: s.body });
+    if (s.bullets?.length) blocks.push({ type: "list", items: s.bullets });
+  }
+  if (o.references?.length) {
+    blocks.push({ type: "h2", text: "References" });
+    blocks.push({
+      type: "kv",
+      rows: o.references.map((c) => ({ key: c.framework, value: `${c.citation}${c.note ? ` — ${c.note}` : ""}` })),
+    });
+  }
+  return {
+    title: o.policyTitle,
+    subtitle: `${o.policyId} · v${o.version} · effective ${o.effectiveDate}`,
+    generatedAt: record.createdAt,
+    blocks,
+  };
+}
+
 export async function recordToDocx(record: SuiteRecord): Promise<Buffer> {
   let spec: DocxSpec;
   if (record.tool === "audit-plan") spec = renderAuditPlan(record);
   else if (record.tool === "standards-mapping") spec = renderStandardsMapping(record);
   else if (record.tool === "gap-analysis") spec = renderGapAnalysis(record);
+  else if (record.tool === "risk-assessment") spec = renderRiskAssessment(record);
+  else if (record.tool === "policy") spec = renderPolicy(record);
   else throw new Error(`Unknown tool: ${(record as SuiteRecord).tool}`);
   return renderDocx(spec);
 }

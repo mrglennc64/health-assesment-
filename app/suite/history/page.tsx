@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Clock, FileCheck, BookOpen, Upload } from "lucide-react";
+import { ArrowLeft, Clock, FileCheck, BookOpen, Upload, ShieldAlert, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
@@ -12,18 +12,24 @@ const TOOL_LABEL: Record<ToolId, string> = {
   "audit-plan": "Audit Plan",
   "standards-mapping": "Standards Mapping",
   "gap-analysis": "Gap Analysis",
+  "risk-assessment": "Risk Assessment",
+  "policy": "Policy / SOP",
 };
 
 const TOOL_ICON: Record<ToolId, typeof FileCheck> = {
   "audit-plan": FileCheck,
   "standards-mapping": BookOpen,
   "gap-analysis": Upload,
+  "risk-assessment": ShieldAlert,
+  "policy": FileText,
 };
 
 const TOOL_COLOR: Record<ToolId, string> = {
   "audit-plan": "#b94545",
   "standards-mapping": "#5a7a9f",
   "gap-analysis": "#d49640",
+  "risk-assessment": "#a85a8a",
+  "policy": "#5a9f6a",
 };
 
 function fmtDate(iso: string): string {
