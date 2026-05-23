@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import type { StandardsMappingOutput } from "@/lib/suite/types";
 
@@ -23,6 +24,7 @@ type Result = {
 
 export default function StandardsMappingPage() {
   const [query, setQuery] = useState("");
+  const [phiAcknowledged, setPhiAcknowledged] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
@@ -102,7 +104,8 @@ export default function StandardsMappingPage() {
               ))}
             </div>
             <div style={{ marginTop: 20 }}>
-              <Button variant="primary" icon={ArrowRight} onClick={run} disabled={loading || !query.trim()}>
+              <PhiInputWarning acknowledged={phiAcknowledged} onAcknowledgedChange={setPhiAcknowledged} />
+              <Button variant="primary" icon={ArrowRight} onClick={run} disabled={loading || !query.trim() || !phiAcknowledged}>
                 {loading ? "Mapping…" : "Map to clauses"}
               </Button>
             </div>

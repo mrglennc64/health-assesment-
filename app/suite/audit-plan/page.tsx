@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import type { AuditPlanOutput } from "@/lib/suite/types";
@@ -37,6 +38,7 @@ export default function AuditPlanPage() {
   const [period, setPeriod] = useState("");
   const [systems, setSystems] = useState("");
   const [auditor, setAuditor] = useState("");
+  const [phiAcknowledged, setPhiAcknowledged] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [parsed, setParsed] = useState<AuditPlanOutput | null>(null);
@@ -67,7 +69,7 @@ export default function AuditPlanPage() {
     }
   };
 
-  const canSubmit = organisation.trim() && period.trim() && systems.trim() && !loading;
+  const canSubmit = organisation.trim() && period.trim() && systems.trim() && phiAcknowledged && !loading;
 
   return (
     <>
@@ -101,6 +103,8 @@ export default function AuditPlanPage() {
             setSystems={setSystems}
             auditor={auditor}
             setAuditor={setAuditor}
+            phiAcknowledged={phiAcknowledged}
+            setPhiAcknowledged={setPhiAcknowledged}
             canSubmit={!!canSubmit}
             loading={loading}
             onGenerate={generate}
@@ -129,6 +133,7 @@ function FormCard(props: {
   period: string; setPeriod: (s: string) => void;
   systems: string; setSystems: (s: string) => void;
   auditor: string; setAuditor: (s: string) => void;
+  phiAcknowledged: boolean; setPhiAcknowledged: (v: boolean) => void;
   canSubmit: boolean; loading: boolean; onGenerate: () => void;
 }) {
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" };
@@ -175,6 +180,7 @@ function FormCard(props: {
         <label style={labelStyle}>Lead auditor (optional)</label>
         <input style={inputStyle} value={props.auditor} onChange={(e) => props.setAuditor(e.target.value)} placeholder="J. Carter, CHC" />
       </div>
+      <PhiInputWarning acknowledged={props.phiAcknowledged} onAcknowledgedChange={props.setPhiAcknowledged} />
       <Button variant="primary" icon={ArrowRight} onClick={props.onGenerate} disabled={!props.canSubmit}>
         {props.loading ? "Generating…" : "Generate audit plan"}
       </Button>

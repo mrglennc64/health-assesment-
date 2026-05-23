@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import type { PolicyOutput } from "@/lib/suite/types";
 
@@ -50,6 +51,7 @@ export default function PolicyPage() {
   const [framework, setFramework] = useState(FRAMEWORKS[0]);
   const [effectiveDate, setEffectiveDate] = useState(isoToday());
   const [requirements, setRequirements] = useState("");
+  const [phiAcknowledged, setPhiAcknowledged] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
@@ -81,7 +83,7 @@ export default function PolicyPage() {
     }
   };
 
-  const canSubmit = !loading && policyTitle.trim() && organisation.trim() && requirements.trim();
+  const canSubmit = !loading && policyTitle.trim() && organisation.trim() && requirements.trim() && phiAcknowledged;
 
   return (
     <>
@@ -100,7 +102,7 @@ export default function PolicyPage() {
           Complete policy or SOP with purpose, scope, roles, procedure, training, sanctions, records, review cycle, and clause references. Output is a structured Word + PDF you can edit and sign.
         </p>
 
-        {!result && <FormCard {...{ policyTitle, setPolicyTitle, policyType, setPolicyType, organisation, setOrganisation, organisationType, setOrganisationType, owner, setOwner, framework, setFramework, effectiveDate, setEffectiveDate, requirements, setRequirements, canSubmit: !!canSubmit, loading, onRun: run }} />}
+        {!result && <FormCard {...{ policyTitle, setPolicyTitle, policyType, setPolicyType, organisation, setOrganisation, organisationType, setOrganisationType, owner, setOwner, framework, setFramework, effectiveDate, setEffectiveDate, requirements, setRequirements, phiAcknowledged, setPhiAcknowledged, canSubmit: !!canSubmit, loading, onRun: run }} />}
 
         {error && (
           <div style={{ background: "var(--accent-soft)", color: "var(--accent)", padding: "14px 18px", borderRadius: 8, marginTop: 24, fontSize: 13.5 }}>{error}</div>
@@ -122,6 +124,7 @@ function FormCard(props: {
   framework: string; setFramework: (s: string) => void;
   effectiveDate: string; setEffectiveDate: (s: string) => void;
   requirements: string; setRequirements: (s: string) => void;
+  phiAcknowledged: boolean; setPhiAcknowledged: (v: boolean) => void;
   canSubmit: boolean; loading: boolean; onRun: () => void;
 }) {
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" };
@@ -178,6 +181,7 @@ function FormCard(props: {
           placeholder="e.g., Covers all workforce members with access to ePHI. Must specify when annual training is delivered, what topics it covers (PHI, breach reporting, password hygiene), and how completion is documented. Sanction tiers for repeated violations."
         />
       </div>
+      <PhiInputWarning acknowledged={props.phiAcknowledged} onAcknowledgedChange={props.setPhiAcknowledged} />
       <Button variant="primary" icon={ArrowRight} onClick={props.onRun} disabled={!props.canSubmit}>
         {props.loading ? "Drafting policy…" : "Generate policy"}
       </Button>

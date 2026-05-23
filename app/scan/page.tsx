@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Play, Lock } from "lucide-react";
+import { ArrowRight, Play, Lock, Upload } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button, ScoreRing, SevBadge, ModelPill } from "@/components/ui/primitives";
 import {
   CHANNELS,
@@ -136,8 +137,41 @@ function ScanInputForm({
   setText: (v: string) => void;
   onRun: () => void;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedName, setUploadedName] = useState<string | null>(null);
+
+  const handleFile = async (file: File | null) => {
+    if (!file) return;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/extract", { method: "POST", body: fd });
+      const data = (await res.json()) as { ok?: boolean; text?: string; error?: string };
+      if (!res.ok || !data.ok || typeof data.text !== "string") {
+        setUploadError(data.error || `Upload failed (HTTP ${res.status})`);
+        return;
+      }
+      if (!data.text.trim()) {
+        setUploadError("No readable text found in this file.");
+        return;
+      }
+      setText(data.text);
+      setUploadedName(file.name);
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 32 }}>
+      <PhiInputWarning />
       <label style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)", marginBottom: 14, display: "block" }}>
         Input — clinical note, workflow description, or URL
       </label>
@@ -160,8 +194,36 @@ function ScanInputForm({
         }}
       />
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown"
+        onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+        style={{ display: "none" }}
+      />
+
       <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-        <span style={{ fontSize: 12, color: "var(--muted-2)", marginRight: 4 }}>Try:</span>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          style={{
+            fontSize: 12,
+            padding: "5px 12px",
+            border: "1px solid var(--line-2)",
+            borderRadius: 99,
+            background: "transparent",
+            color: "var(--ink-2)",
+            cursor: uploading ? "wait" : "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            opacity: uploading ? 0.6 : 1,
+          }}
+        >
+          <Upload size={12} />
+          {uploading ? "Reading file…" : "Upload file (PDF, DOCX, TXT, MD)"}
+        </button>
+        <span style={{ fontSize: 12, color: "var(--muted-2)", marginLeft: 6, marginRight: 4 }}>or try:</span>
         {SAMPLE_INPUTS.map((ex) => (
           <button
             key={ex}
@@ -180,6 +242,18 @@ function ScanInputForm({
           </button>
         ))}
       </div>
+
+      {(uploadError || uploadedName) && (
+        <div
+          style={{
+            marginTop: 12,
+            fontSize: 12,
+            color: uploadError ? "var(--accent)" : "var(--muted)",
+          }}
+        >
+          {uploadError ? uploadError : `Loaded ${uploadedName} — review the text above, then run the scan.`}
+        </div>
+      )}
 
       <div style={{ marginTop: 28, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", display: "flex", alignItems: "center", gap: 6, letterSpacing: "0.04em" }}>

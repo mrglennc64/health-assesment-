@@ -5,6 +5,7 @@ import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
 import { HistorySeedButton } from "@/components/site/HistorySeedButton";
+import { DeleteHistoryButton } from "@/components/site/DeleteHistoryButton";
 import { listOutputs } from "@/lib/suite/db";
 import type { ToolId } from "@/lib/suite/types";
 import { FREE_TIER_HISTORY_DAYS, isAdmin } from "@/lib/quotas";
@@ -125,16 +126,19 @@ export default async function SuiteHistoryPage() {
               const Icon = TOOL_ICON[r.tool];
               const color = TOOL_COLOR[r.tool];
               return (
-                <Link
+                <div
                   key={r.id}
-                  href={`/suite/history/${r.id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}
+                  className="lift"
+                  style={{
+                    background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12,
+                    padding: "16px 20px", display: "flex", alignItems: "center", gap: 16,
+                  }}
                 >
-                  <div
-                    className="lift"
+                  <Link
+                    href={`/suite/history/${r.id}`}
                     style={{
-                      background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12,
-                      padding: "16px 20px", display: "flex", alignItems: "center", gap: 16,
+                      textDecoration: "none", color: "inherit",
+                      flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 16,
                     }}
                   >
                     <div
@@ -155,8 +159,9 @@ export default async function SuiteHistoryPage() {
                         {r.model ? ` · ${r.model}` : ""}
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                  <DeleteHistoryButton id={r.id} title={r.title} />
+                </div>
               );
             })}
           </div>

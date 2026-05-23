@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Download, Upload, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import type { GapAnalysisOutput } from "@/lib/suite/types";
@@ -43,6 +44,7 @@ export default function GapAnalysisPage() {
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [tab, setTab] = useState<"upload" | "paste">("upload");
+  const [phiAcknowledged, setPhiAcknowledged] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
@@ -77,7 +79,7 @@ export default function GapAnalysisPage() {
     }
   };
 
-  const canSubmit = !loading && (
+  const canSubmit = !loading && phiAcknowledged && (
     (tab === "upload" && file) ||
     (tab === "paste" && pastedText.trim().length >= 80)
   );
@@ -151,6 +153,7 @@ export default function GapAnalysisPage() {
             )}
 
             <div style={{ marginTop: 20 }}>
+              <PhiInputWarning acknowledged={phiAcknowledged} onAcknowledgedChange={setPhiAcknowledged} />
               <Button variant="primary" icon={ArrowRight} onClick={run} disabled={!canSubmit}>
                 {loading ? "Analysing…" : "Run gap analysis"}
               </Button>

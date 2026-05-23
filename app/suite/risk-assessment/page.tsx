@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
+import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import { SUITE_SEVERITY_COLOR, SUITE_SEVERITY_BG } from "@/lib/suite/severity";
 import type { RiskAssessmentOutput, SuiteSeverity } from "@/lib/suite/types";
@@ -31,6 +32,7 @@ export default function RiskAssessmentPage() {
   const [ephiInventory, setEphiInventory] = useState("");
   const [priorIncidents, setPriorIncidents] = useState("");
   const [knownGaps, setKnownGaps] = useState("");
+  const [phiAcknowledged, setPhiAcknowledged] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
@@ -62,7 +64,7 @@ export default function RiskAssessmentPage() {
     }
   };
 
-  const canSubmit = !loading && organisation.trim() && scope.trim() && ephiInventory.trim();
+  const canSubmit = !loading && organisation.trim() && scope.trim() && ephiInventory.trim() && phiAcknowledged;
 
   return (
     <>
@@ -82,7 +84,7 @@ export default function RiskAssessmentPage() {
           likelihood × impact, inherent vs residual risk, recommended controls, and clause citations.
         </p>
 
-        {!result && <FormCard {...{ organisation, setOrganisation, organisationType, setOrganisationType, scope, setScope, ephiInventory, setEphiInventory, priorIncidents, setPriorIncidents, knownGaps, setKnownGaps, canSubmit: !!canSubmit, loading, onRun: run }} />}
+        {!result && <FormCard {...{ organisation, setOrganisation, organisationType, setOrganisationType, scope, setScope, ephiInventory, setEphiInventory, priorIncidents, setPriorIncidents, knownGaps, setKnownGaps, phiAcknowledged, setPhiAcknowledged, canSubmit: !!canSubmit, loading, onRun: run }} />}
 
         {error && (
           <div style={{ background: "var(--accent-soft)", color: "var(--accent)", padding: "14px 18px", borderRadius: 8, marginTop: 24, fontSize: 13.5 }}>
@@ -104,6 +106,7 @@ function FormCard(props: {
   ephiInventory: string; setEphiInventory: (s: string) => void;
   priorIncidents: string; setPriorIncidents: (s: string) => void;
   knownGaps: string; setKnownGaps: (s: string) => void;
+  phiAcknowledged: boolean; setPhiAcknowledged: (v: boolean) => void;
   canSubmit: boolean; loading: boolean; onRun: () => void;
 }) {
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" };
@@ -144,6 +147,7 @@ function FormCard(props: {
           <textarea style={textareaStyle} value={props.knownGaps} onChange={(e) => props.setKnownGaps(e.target.value)} placeholder="No MFA on EHR admin accounts. No formal incident response plan." />
         </div>
       </div>
+      <PhiInputWarning acknowledged={props.phiAcknowledged} onAcknowledgedChange={props.setPhiAcknowledged} />
       <Button variant="primary" icon={ArrowRight} onClick={props.onRun} disabled={!props.canSubmit}>
         {props.loading ? "Running risk analysis…" : "Run risk analysis"}
       </Button>
