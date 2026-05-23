@@ -12,7 +12,10 @@ import {
   engineSeverityToDisplay,
   ENGINE_TO_DISPLAY,
   type DisplaySeverity,
+  type ChannelDef,
 } from "@/components/site/data";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 type EngineFinding = {
   severity: "issue" | "warn" | "ok";
@@ -49,25 +52,20 @@ type EngineRun = {
   jobs: Record<string, EngineJob>;
 };
 
-const SAMPLE_INPUTS = [
-  "Patient evaluated for Type 2 diabetes on 2026-06-01. ICD-10 E11.9 recorded. CPT 99214 correct. Modifier 25 applied. NPI present, POS 11 entered.",
-  "Website uses HTTPS with HSTS, CSP, and secure cookies. No PHI in URLs. Consent banner loads before analytics.",
-  "Claim submitted with payer ID, taxonomy, NPI, and EDI 837 generated. Clearinghouse response 200. No denial notification workflow configured.",
-];
-
 export default function ScanPage() {
+  const { t } = useLang();
+  const s = t.scanPage;
   const [step, setStep] = useState<"input" | "running" | "results">("input");
   const [text, setText] = useState("");
   const [run, setRun] = useState<EngineRun | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
-  // tick elapsed clock while running (reset happens in runScan, not here)
   useEffect(() => {
     if (step !== "running") return;
     const start = Date.now();
-    const t = setInterval(() => setElapsed(Math.round((Date.now() - start) / 1000)), 500);
-    return () => clearInterval(t);
+    const tick = setInterval(() => setElapsed(Math.round((Date.now() - start) / 1000)), 500);
+    return () => clearInterval(tick);
   }, [step]);
 
   const runScan = async () => {
@@ -83,7 +81,7 @@ export default function ScanPage() {
       });
       const data = (await res.json()) as { run?: EngineRun; error?: string };
       if (!res.ok || !data.run) {
-        setError(data.error || "Failed to run audit.");
+        setError(data.error || s.runErrorDefault);
         setStep("input");
         return;
       }
@@ -100,15 +98,13 @@ export default function ScanPage() {
       <MarketingNav />
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "72px 32px" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 14 }}>
-          {step === "results" ? "FREE SCAN · RESULTS" : "FREE SCAN"}
+          {step === "results" ? s.kickerResults : s.kicker}
         </div>
         <h1 className="serif" style={{ fontSize: 56, fontWeight: 500, lineHeight: 1.02, margin: "0 0 18px" }}>
-          {step === "results" ? "Critical findings." : "Start a free audit."}
+          {step === "results" ? s.titleResults : s.title}
         </h1>
         <p style={{ fontSize: 17, color: "var(--muted)", lineHeight: 1.6, marginBottom: 44, maxWidth: 640 }}>
-          {step === "results"
-            ? "Top critical issues across the six channels. Full report — all findings, required actions, PDF export — unlocks for $49."
-            : "Paste a clinical note, claim workflow, or URL. MediReady runs all six channels in parallel — typically 15–40 seconds."}
+          {step === "results" ? s.bodyResults : s.body}
         </p>
 
         {error && (
@@ -118,10 +114,10 @@ export default function ScanPage() {
         )}
 
         {step === "input" && (
-          <ScanInputForm text={text} setText={setText} onRun={runScan} />
+          <ScanInputForm s={s} text={text} setText={setText} onRun={runScan} />
         )}
-        {step === "running" && <ScanRunning elapsed={elapsed} />}
-        {step === "results" && run && <ScanResults run={run} />}
+        {step === "running" && <ScanRunning s={s} t={t} elapsed={elapsed} />}
+        {step === "results" && run && <ScanResults s={s} t={t} run={run} />}
       </div>
       <MarketingFooter />
     </>
@@ -129,10 +125,12 @@ export default function ScanPage() {
 }
 
 function ScanInputForm({
+  s,
   text,
   setText,
   onRun,
 }: {
+  s: Dict["scanPage"];
   text: string;
   setText: (v: string) => void;
   onRun: () => void;
@@ -152,11 +150,11 @@ function ScanInputForm({
       const res = await fetch("/api/extract", { method: "POST", body: fd });
       const data = (await res.json()) as { ok?: boolean; text?: string; error?: string };
       if (!res.ok || !data.ok || typeof data.text !== "string") {
-        setUploadError(data.error || `Upload failed (HTTP ${res.status})`);
+        setUploadError(data.error || s.uploadErrorPrefix(res.status));
         return;
       }
       if (!data.text.trim()) {
-        setUploadError("No readable text found in this file.");
+        setUploadError(s.uploadNoText);
         return;
       }
       setText(data.text);
@@ -173,12 +171,12 @@ function ScanInputForm({
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 32 }}>
       <PhiInputWarning />
       <label style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)", marginBottom: 14, display: "block" }}>
-        Input — clinical note, workflow description, or URL
+        {s.inputLabel}
       </label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Paste a clinical note, claim workflow description, or healthcare URL..."
+        placeholder={s.inputPlaceholder}
         style={{
           width: "100%",
           minHeight: 200,
@@ -221,10 +219,10 @@ function ScanInputForm({
           }}
         >
           <Upload size={12} />
-          {uploading ? "Reading file…" : "Upload file (PDF, DOCX, TXT, MD)"}
+          {uploading ? s.uploadBusy : s.uploadIdle}
         </button>
-        <span style={{ fontSize: 12, color: "var(--muted-2)", marginLeft: 6, marginRight: 4 }}>or try:</span>
-        {SAMPLE_INPUTS.map((ex) => (
+        <span style={{ fontSize: 12, color: "var(--muted-2)", marginLeft: 6, marginRight: 4 }}>{s.uploadOrTry}</span>
+        {s.sampleInputs.map((ex) => (
           <button
             key={ex}
             onClick={() => setText(ex)}
@@ -251,34 +249,34 @@ function ScanInputForm({
             color: uploadError ? "var(--accent)" : "var(--muted)",
           }}
         >
-          {uploadError ? uploadError : `Loaded ${uploadedName} — review the text above, then run the scan.`}
+          {uploadError ? uploadError : s.uploadLoaded(uploadedName!)}
         </div>
       )}
 
       <div style={{ marginTop: 28, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", display: "flex", alignItems: "center", gap: 6, letterSpacing: "0.04em" }}>
           <Lock size={12} />
-          INPUT IS NOT STORED OR USED FOR TRAINING
+          {s.noStoreBadge}
         </div>
         <Button variant="primary" icon={Play} onClick={onRun} disabled={!text.trim()}>
-          Run scan
+          {s.runCta}
         </Button>
       </div>
     </div>
   );
 }
 
-function ScanRunning({ elapsed }: { elapsed: number }) {
+function ScanRunning({ s, t, elapsed }: { s: Dict["scanPage"]; t: Dict; elapsed: number }) {
   return (
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 40 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
         <div>
           <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginBottom: 6, letterSpacing: "0.06em" }}>
-            STATUS
+            {s.runningStatus}
           </div>
-          <div className="serif" style={{ fontSize: 30, fontWeight: 500 }}>Running six audit channels…</div>
+          <div className="serif" style={{ fontSize: 30, fontWeight: 500 }}>{s.runningTitle}</div>
           <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 6 }}>
-            Fanning out in parallel. Typical run: 15–40 seconds.
+            {s.runningBody}
           </div>
         </div>
         <div style={{ position: "relative", width: 60, height: 60 }}>
@@ -297,7 +295,7 @@ function ScanRunning({ elapsed }: { elapsed: number }) {
 
       <div style={{ marginBottom: 28 }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", letterSpacing: "0.04em" }}>
-          ELAPSED · {elapsed}s
+          {s.elapsedPrefix} · {elapsed}s
         </div>
       </div>
 
@@ -322,7 +320,7 @@ function ScanRunning({ elapsed }: { elapsed: number }) {
                 <div className="mono" style={{ fontSize: 10, color: "var(--muted-2)", letterSpacing: "0.06em" }}>
                   CH. {ch.kicker}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>{ch.short}</div>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>{t.audits.channelShort[ch.id]}</div>
               </div>
               <div className="pulse-soft" style={{ width: 8, height: 8, borderRadius: 99, background: "var(--accent)" }} />
             </div>
@@ -333,8 +331,8 @@ function ScanRunning({ elapsed }: { elapsed: number }) {
   );
 }
 
-function ScanResults({ run }: { run: EngineRun }) {
-  const findings = collectFindings(run);
+function ScanResults({ s, t, run }: { s: Dict["scanPage"]; t: Dict; run: EngineRun }) {
+  const findings = collectFindings(run, t);
   const critical = findings.filter((f) => f.severity === "critical");
   const watch = findings.filter((f) => f.severity === "watch");
   const info = findings.filter((f) => f.severity === "info");
@@ -348,25 +346,25 @@ function ScanResults({ run }: { run: EngineRun }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
           <div>
             <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginBottom: 6, letterSpacing: "0.06em" }}>
-              OVERALL · RUN {run.id}
+              {s.overallKicker(run.id)}
             </div>
             <div className="serif" style={{ fontSize: 56, fontWeight: 500, lineHeight: 1 }}>
               {overall}
               <span style={{ fontSize: 24, color: "var(--muted-2)" }}>/100</span>
             </div>
           </div>
-          <ScoreRing score={overall} size={88} stroke={7} label="OVERALL" />
+          <ScoreRing score={overall} size={88} stroke={7} label={s.overallKicker(run.id).split("·")[0].trim()} />
         </div>
 
         <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
           <span className="mono" style={{ fontSize: 11, padding: "5px 10px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600 }}>
-            {critical.length} CRITICAL
+            {critical.length} {s.severityCritical}
           </span>
           <span className="mono" style={{ fontSize: 11, padding: "5px 10px", background: "var(--warn-soft)", color: "var(--warn)", borderRadius: 4, fontWeight: 600 }}>
-            {watch.length} WATCH
+            {watch.length} {s.severityWatch}
           </span>
           <span className="mono" style={{ fontSize: 11, padding: "5px 10px", background: "var(--info-soft)", color: "var(--info)", borderRadius: 4, fontWeight: 600 }}>
-            {info.length} INFO
+            {info.length} {s.severityInfo}
           </span>
         </div>
 
@@ -375,7 +373,7 @@ function ScanResults({ run }: { run: EngineRun }) {
             visible.map((f, i) => <FindingRow key={i} finding={f} />)
           ) : (
             <div style={{ fontSize: 14, color: "var(--muted)", padding: "12px 0" }}>
-              No critical findings detected in this run. Unlock the full report to see all watch and info-level items.
+              {s.noCriticalBody}
             </div>
           )}
         </div>
@@ -393,17 +391,17 @@ function ScanResults({ run }: { run: EngineRun }) {
       >
         <Lock size={24} color="var(--accent)" strokeWidth={1.75} style={{ marginBottom: 12 }} />
         <h3 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: "0 0 8px" }}>
-          {findings.length - visible.length} more findings · PDF export
+          {s.unlockTitle(findings.length - visible.length)}
         </h3>
         <p style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, marginBottom: 24, maxWidth: 480, marginInline: "auto" }}>
-          Unlock the full audit to see every finding, required action, and download the PDF for auditors.
+          {s.unlockBody}
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/waitlist" style={{ textDecoration: "none" }}>
-            <Button variant="accent" icon={ArrowRight}>Unlock full report</Button>
+            <Button variant="accent" icon={ArrowRight}>{s.unlockCta}</Button>
           </Link>
           <Link href="/waitlist" style={{ textDecoration: "none" }}>
-            <Button variant="secondary">Subscribe instead</Button>
+            <Button variant="secondary">{s.subscribeCta}</Button>
           </Link>
         </div>
       </div>
@@ -422,14 +420,13 @@ type FlatFinding = {
   fallbackFrom?: string;
 };
 
-function collectFindings(run: EngineRun): FlatFinding[] {
+function collectFindings(run: EngineRun, t: Dict): FlatFinding[] {
   const out: FlatFinding[] = [];
   for (const [engineCh, job] of Object.entries(run.jobs)) {
     if (job.status !== "done" || !job.result) continue;
-    const displayId = ENGINE_TO_DISPLAY[engineCh] ?? "documentation";
-    const channelDef = CHANNELS.find((c) => c.id === displayId);
-    const label = channelDef?.label ?? engineCh;
-    const short = channelDef?.short ?? engineCh;
+    const displayId = (ENGINE_TO_DISPLAY[engineCh] ?? "documentation") as ChannelDef["id"];
+    const label = t.channels[displayId].label;
+    const short = t.audits.channelShort[displayId];
     for (const f of job.result.findings) {
       out.push({
         severity: engineSeverityToDisplay(f.severity),

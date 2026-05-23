@@ -9,6 +9,8 @@ import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import type { GapAnalysisOutput } from "@/lib/suite/types";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 const DOCUMENT_TYPES = [
   "HIPAA SOP",
@@ -38,6 +40,10 @@ type Result = {
 };
 
 export default function GapAnalysisPage() {
+  const { t } = useLang();
+  const tool = t.suite.tools.gapAnalysis;
+  const c = t.suite.common;
+
   const [documentType, setDocumentType] = useState(DOCUMENT_TYPES[0]);
   const [framework, setFramework] = useState(FRAMEWORKS[0]);
   const [context, setContext] = useState("");
@@ -89,45 +95,45 @@ export default function GapAnalysisPage() {
       <MarketingNav />
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "56px 32px 32px" }}>
         <Link href="/suite" style={{ textDecoration: "none", fontSize: 13, color: "var(--muted)", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-          <ArrowLeft size={14} /> Suite
+          <ArrowLeft size={14} /> {c.backToSuite}
         </Link>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 12 }}>
-          DOCUMENT GAP ANALYSIS
+          {tool.pageKicker}
         </div>
         <h1 className="serif" style={{ fontSize: 42, fontWeight: 500, lineHeight: 1.02, margin: "0 0 14px" }}>
-          Upload a doc. See what&apos;s missing.
+          {tool.pageTitle}
         </h1>
         <p style={{ fontSize: 16, color: "var(--muted)", lineHeight: 1.6, marginBottom: 32, maxWidth: 640 }}>
-          Accepts PDF, DOCX, TXT, or pasted text (up to 5 MB). AI flags missing sections, weak language, and missing clause references against your chosen framework.
+          {tool.pageBody}
         </p>
 
         {!result && (
           <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 28 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>Document type</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>{c.documentType}</label>
                 <select
                   value={documentType}
                   onChange={(e) => setDocumentType(e.target.value)}
                   style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--line-2)", fontSize: 13.5, background: "var(--paper)", color: "var(--ink)", outline: "none" }}
                 >
-                  {DOCUMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                  {DOCUMENT_TYPES.map((v) => <option key={v} value={v}>{c.documentTypeLabels[v] ?? v}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>Framework</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>{c.framework}</label>
                 <select
                   value={framework}
                   onChange={(e) => setFramework(e.target.value)}
                   style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--line-2)", fontSize: 13.5, background: "var(--paper)", color: "var(--ink)", outline: "none" }}
                 >
-                  {FRAMEWORKS.map((f) => <option key={f} value={f}>{f}</option>)}
+                  {FRAMEWORKS.map((v) => <option key={v} value={v}>{c.frameworkLabels[v] ?? v}</option>)}
                 </select>
               </div>
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>Context (optional)</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" }}>{c.contextOptional}</label>
               <input
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
@@ -137,17 +143,17 @@ export default function GapAnalysisPage() {
             </div>
 
             <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-              <TabButton active={tab === "upload"} onClick={() => setTab("upload")}>Upload file</TabButton>
-              <TabButton active={tab === "paste"} onClick={() => setTab("paste")}>Paste text</TabButton>
+              <TabButton active={tab === "upload"} onClick={() => setTab("upload")}>{c.uploadFile}</TabButton>
+              <TabButton active={tab === "paste"} onClick={() => setTab("paste")}>{c.pasteText}</TabButton>
             </div>
 
             {tab === "upload" ? (
-              <UploadInput file={file} onFile={setFile} />
+              <UploadInput file={file} onFile={setFile} c={c} />
             ) : (
               <textarea
                 value={pastedText}
                 onChange={(e) => setPastedText(e.target.value)}
-                placeholder="Paste the document text here…"
+                placeholder={c.pasteHere}
                 style={{ width: "100%", minHeight: 200, padding: "12px 14px", borderRadius: 8, border: "1px solid var(--line-2)", fontSize: 13.5, fontFamily: "inherit", background: "var(--paper)", color: "var(--ink)", outline: "none", lineHeight: 1.55 }}
               />
             )}
@@ -155,7 +161,7 @@ export default function GapAnalysisPage() {
             <div style={{ marginTop: 20 }}>
               <PhiInputWarning acknowledged={phiAcknowledged} onAcknowledgedChange={setPhiAcknowledged} />
               <Button variant="primary" icon={ArrowRight} onClick={run} disabled={!canSubmit}>
-                {loading ? "Analysing…" : "Run gap analysis"}
+                {loading ? tool.loadingCta : tool.cta}
               </Button>
             </div>
           </div>
@@ -168,7 +174,7 @@ export default function GapAnalysisPage() {
         )}
 
         {result && (
-          <ResultView result={result} onReset={() => setResult(null)} />
+          <ResultView c={c} result={result} onReset={() => setResult(null)} />
         )}
       </div>
       <MarketingFooter />
@@ -193,7 +199,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-function UploadInput({ file, onFile }: { file: File | null; onFile: (f: File | null) => void }) {
+function UploadInput({ file, onFile, c }: { file: File | null; onFile: (f: File | null) => void; c: Dict["suite"]["common"] }) {
   return (
     <label
       style={{
@@ -213,12 +219,12 @@ function UploadInput({ file, onFile }: { file: File | null; onFile: (f: File | n
         {file ? (
           <>
             <div style={{ fontSize: 14, fontWeight: 600 }}>{file.name}</div>
-            <div style={{ fontSize: 12, color: "var(--muted)" }}>{(file.size / 1024).toFixed(1)} KB · click to replace</div>
+            <div style={{ fontSize: 12, color: "var(--muted)" }}>{(file.size / 1024).toFixed(1)} KB · {c.replaceFile}</div>
           </>
         ) : (
           <>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Click to select a file</div>
-            <div style={{ fontSize: 12, color: "var(--muted)" }}>PDF, DOCX, TXT, MD · up to 5 MB</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{c.clickToSelect}</div>
+            <div style={{ fontSize: 12, color: "var(--muted)" }}>{c.fileFormats}</div>
           </>
         )}
       </div>
@@ -226,36 +232,36 @@ function UploadInput({ file, onFile }: { file: File | null; onFile: (f: File | n
   );
 }
 
-function ResultView({ result, onReset }: { result: Result; onReset: () => void }) {
+function ResultView({ c, result, onReset }: { c: Dict["suite"]["common"]; result: Result; onReset: () => void }) {
   const sectionH: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--muted-2)", margin: "32px 0 12px" };
   return (
     <div>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
         <a href={`/api/suite/pdf/${result.id}`} style={{ textDecoration: "none" }} download>
-          <Button variant="primary" size="sm" icon={Download}>Download PDF</Button>
+          <Button variant="primary" size="sm" icon={Download}>{c.downloadPdf}</Button>
         </a>
         <a href={`/api/suite/docx/${result.id}`} style={{ textDecoration: "none" }} download>
-          <Button variant="secondary" size="sm" icon={FileText}>Download Word</Button>
+          <Button variant="secondary" size="sm" icon={FileText}>{c.downloadWord}</Button>
         </a>
-        <Button variant="secondary" size="sm" onClick={onReset}>Analyse another</Button>
+        <Button variant="secondary" size="sm" onClick={onReset}>{c.analyseAnother}</Button>
         <Link href="/suite/history" style={{ textDecoration: "none" }}>
-          <Button variant="secondary" size="sm">View history</Button>
+          <Button variant="secondary" size="sm">{c.viewHistory}</Button>
         </Link>
       </div>
 
       {result.record.model && (
         <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginBottom: 16, letterSpacing: "0.04em" }}>
-          GENERATED BY {result.record.provider?.toUpperCase()} · {result.record.model}
-          {result.record.sourceFileName ? ` · source: ${result.record.sourceFileName}` : ""}
+          {c.generatedBy} {result.record.provider?.toUpperCase()} · {result.record.model}
+          {result.record.sourceFileName ? ` · ${c.source}: ${result.record.sourceFileName}` : ""}
         </div>
       )}
 
-      <h2 style={sectionH}>Document summary</h2>
+      <h2 style={sectionH}>{c.sections.documentSummary}</h2>
       <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)" }}>{result.output.documentSummary}</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <div>
-          <h2 style={sectionH}>Sections present</h2>
+          <h2 style={sectionH}>{c.sections.sectionsPresent}</h2>
           <ul style={{ paddingLeft: 20 }}>
             {result.output.presentSections?.map((s, i) => (
               <li key={i} style={{ fontSize: 13.5, color: "var(--ink-2)", lineHeight: 1.6, marginBottom: 4 }}>{s}</li>
@@ -263,7 +269,7 @@ function ResultView({ result, onReset }: { result: Result; onReset: () => void }
           </ul>
         </div>
         <div>
-          <h2 style={sectionH}>Missing or weak</h2>
+          <h2 style={sectionH}>{c.sections.missingOrWeak}</h2>
           <ul style={{ paddingLeft: 20 }}>
             {result.output.missingSections?.map((s, i) => (
               <li key={i} style={{ fontSize: 13.5, color: "var(--accent)", lineHeight: 1.6, marginBottom: 4 }}>{s}</li>
@@ -272,7 +278,7 @@ function ResultView({ result, onReset }: { result: Result; onReset: () => void }
         </div>
       </div>
 
-      <h2 style={sectionH}>Findings</h2>
+      <h2 style={sectionH}>{c.sections.findings}</h2>
       <SuiteFindingsList findings={result.output.findings ?? []} />
     </div>
   );

@@ -5,41 +5,34 @@ import { ArrowRight } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { Button } from "@/components/ui/primitives";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 const para: React.CSSProperties = { fontSize: 16, color: "var(--ink-2)", lineHeight: 1.75, margin: "0 0 18px" };
 
 export default function AboutPage() {
+  const { t } = useLang();
+  const a = t.about;
   return (
     <>
       <MarketingNav />
       <section style={{ maxWidth: 860, margin: "0 auto", padding: "80px 32px" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 18 }}>
-          COMPANY
+          {a.kicker}
         </div>
         <h1 className="serif" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1.05, margin: "0 0 32px" }}>
-          Company
+          {a.title}
         </h1>
 
-        <p style={para}>
-          MediReady builds file-based healthcare audit and compliance tools that surface issues before payers,
-          auditors, or regulators do. No integrations. No IT projects. File in → report out.
-        </p>
-
-        <p style={para}>
-          Founded by Glenn Carter, MediReady combines healthcare workflow experience, audit-grade data handling,
-          HIPAA-aligned architecture, and deterministic validation logic.
-        </p>
-
-        <p style={{ ...para, marginBottom: 32 }}>
-          Our goal is simple: make healthcare compliance fast, accurate, and accessible.
-        </p>
+        <p style={para}>{a.para1}</p>
+        <p style={para}>{a.para2}</p>
+        <p style={{ ...para, marginBottom: 32 }}>{a.para3}</p>
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <Link href="/scan" style={{ textDecoration: "none" }}>
-            <Button variant="primary" icon={ArrowRight}>Run a free audit</Button>
+            <Button variant="primary" icon={ArrowRight}>{a.ctaAudit}</Button>
           </Link>
           <Link href="/suite" prefetch={false} style={{ textDecoration: "none" }}>
-            <Button variant="secondary">Explore the suite</Button>
+            <Button variant="secondary">{a.ctaSuite}</Button>
           </Link>
         </div>
       </section>

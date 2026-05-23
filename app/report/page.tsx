@@ -12,6 +12,8 @@ import {
   ENGINE_TO_DISPLAY,
 } from "@/components/site/data";
 import { CALENDLY_URL } from "@/lib/config";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 type EngineFinding = {
   severity: "issue" | "warn" | "ok";
@@ -54,6 +56,8 @@ Claim submitted without payer-required NPI field. No appointment reminder set.
 Patient education content cites 2018 guidelines (now superseded).`;
 
 export default function ReportPage() {
+  const { t } = useLang();
+  const r = t.reportPage;
   const [text, setText] = useState("");
   const [run, setRun] = useState<EngineRun | null>(null);
   const [loading, setLoading] = useState(false);
@@ -73,7 +77,7 @@ export default function ReportPage() {
       });
       const data = (await res.json()) as { run?: EngineRun; error?: string };
       if (!res.ok || !data.run) {
-        setError(data.error || "Failed to run audit.");
+        setError(data.error || r.runErrorDefault);
         return;
       }
       setRun(data.run);
@@ -93,7 +97,7 @@ export default function ReportPage() {
         body: JSON.stringify({ run }),
       });
       if (!res.ok) {
-        setError("PDF generation failed.");
+        setError(r.pdfErrorDefault);
         return;
       }
       const blob = await res.blob();
@@ -118,15 +122,13 @@ export default function ReportPage() {
       <MarketingNav />
       <div style={{ maxWidth: 1080, margin: "0 auto", padding: "56px 32px 24px" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 12 }}>
-          {run ? `REPORT · RUN ${run.id}` : "HEALTH REPORT"}
+          {run ? r.kickerRun(run.id) : r.kicker}
         </div>
         <h1 className="serif" style={{ fontSize: 48, fontWeight: 500, lineHeight: 1.02, margin: "0 0 16px" }}>
-          {run ? "Audit complete." : "Run a full audit."}
+          {run ? r.titleDone : r.title}
         </h1>
         <p style={{ fontSize: 16, color: "var(--muted)", lineHeight: 1.6, maxWidth: 640, marginBottom: 32 }}>
-          {run
-            ? `Six channels analyzed. Expand a channel to see findings and required actions.`
-            : "Paste a clinical note, claim workflow, or URL. The engine fans out to six channels and returns the full report."}
+          {run ? r.bodyDone : r.body}
         </p>
 
         {error && (
@@ -138,12 +140,12 @@ export default function ReportPage() {
         {!run && (
           <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 28, marginBottom: 24 }}>
             <label style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)", marginBottom: 12, display: "block" }}>
-              Input — clinical note, workflow description, or URL
+              {r.inputLabel}
             </label>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Paste a clinical note, claim workflow description, or healthcare URL..."
+              placeholder={r.inputPlaceholder}
               style={{
                 width: "100%",
                 minHeight: 180,
@@ -173,7 +175,7 @@ export default function ReportPage() {
                   opacity: loading ? 0.5 : 1,
                 }}
               >
-                Use sample input
+                {r.useSampleInput}
               </button>
               <Button
                 variant="primary"
@@ -181,13 +183,12 @@ export default function ReportPage() {
                 onClick={startRun}
                 disabled={loading || !text.trim()}
               >
-                {loading ? "Analyzing six channels…" : "Run full audit"}
+                {loading ? r.runningCta : r.runCta}
               </Button>
             </div>
             {loading && (
               <div style={{ marginTop: 18, padding: "12px 16px", background: "var(--paper-2)", borderRadius: 8, fontSize: 13, color: "var(--muted)" }}>
-                Running clinical, HIPAA, claims, communication, content, and synthetic checks in
-                parallel… typically 15–40 seconds.
+                {r.runningBody}
               </div>
             )}
           </div>
@@ -199,7 +200,7 @@ export default function ReportPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
                 <div>
                   <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", marginBottom: 6, letterSpacing: "0.06em" }}>
-                    OVERALL
+                    {r.overallLabel}
                   </div>
                   <div className="serif" style={{ fontSize: 56, fontWeight: 500, lineHeight: 1 }}>
                     {overall}
@@ -207,13 +208,13 @@ export default function ReportPage() {
                   </div>
                   <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
                     <span className="mono" style={{ fontSize: 10.5, padding: "4px 9px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600 }}>
-                      {counts.critical} CRITICAL
+                      {counts.critical} {r.severityCritical}
                     </span>
                     <span className="mono" style={{ fontSize: 10.5, padding: "4px 9px", background: "var(--warn-soft)", color: "var(--warn)", borderRadius: 4, fontWeight: 600 }}>
-                      {counts.watch} WATCH
+                      {counts.watch} {r.severityWatch}
                     </span>
                     <span className="mono" style={{ fontSize: 10.5, padding: "4px 9px", background: "var(--info-soft)", color: "var(--info)", borderRadius: 4, fontWeight: 600 }}>
-                      {counts.info} INFO
+                      {counts.info} {r.severityInfo}
                     </span>
                   </div>
                 </div>
@@ -221,21 +222,21 @@ export default function ReportPage() {
                   <ScoreRing score={overall} size={84} stroke={6} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     <Button variant="primary" size="sm" icon={Download} onClick={downloadPdf}>
-                      Download PDF
+                      {r.downloadPdf}
                     </Button>
                     <Button variant="secondary" size="sm" onClick={() => setRun(null)}>
-                      Run again
+                      {r.runAgain}
                     </Button>
                     <Button
                       variant="secondary"
                       size="sm"
                       onClick={() => window.open(CALENDLY_URL, "_blank", "noopener,noreferrer")}
                     >
-                      Book a 15-min demo
+                      {r.bookDemo}
                     </Button>
                     <Link href="/waitlist" style={{ textDecoration: "none" }}>
                       <Button variant="secondary" size="sm">
-                        Join the waitlist
+                        {r.joinWaitlist}
                       </Button>
                     </Link>
                   </div>
@@ -253,7 +254,8 @@ export default function ReportPage() {
                 return (
                   <ChannelBlock
                     key={ch.id}
-                    channelLabel={ch.label}
+                    r={r}
+                    channelLabel={t.channels[ch.id].label}
                     channelKicker={ch.kicker}
                     icon={ch.icon}
                     job={job}
@@ -272,6 +274,7 @@ export default function ReportPage() {
 }
 
 function ChannelBlock({
+  r,
   channelLabel,
   channelKicker,
   icon: Icon,
@@ -279,6 +282,7 @@ function ChannelBlock({
   open,
   onToggle,
 }: {
+  r: Dict["reportPage"];
   channelLabel: string;
   channelKicker: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; color?: string }>;
@@ -326,7 +330,7 @@ function ChannelBlock({
           {details?.model && <ModelPill model={details.model} fallback={details.fallbackFromProvider} />}
           {isFailed ? (
             <span className="mono" style={{ fontSize: 11, padding: "5px 10px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600 }}>
-              FAILED
+              {r.failedBadge}
             </span>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -343,7 +347,7 @@ function ChannelBlock({
       {open && job.result && (
         <div style={{ borderTop: "1px solid var(--line)", padding: "20px 24px", background: "var(--paper)" }}>
           {job.result.findings.length === 0 ? (
-            <div style={{ fontSize: 13.5, color: "var(--muted)" }}>No findings for this channel.</div>
+            <div style={{ fontSize: 13.5, color: "var(--muted)" }}>{r.noFindings}</div>
           ) : (
             <div>
               {job.result.findings.map((f, i) => {
@@ -373,7 +377,7 @@ function ChannelBlock({
           {(job.result.requiredActions ?? []).length > 0 && (
             <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
               <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 10 }}>
-                REQUIRED ACTIONS
+                {r.requiredActionsLabel}
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
                 {job.result.requiredActions!.map((a, i) => (

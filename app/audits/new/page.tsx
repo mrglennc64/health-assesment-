@@ -1,69 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/primitives";
-import { CHANNELS } from "@/components/site/data";
+import { CHANNELS, type ChannelDef } from "@/components/site/data";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 type AuditType = "claims" | "full" | "exceptions";
 
-const AUDIT_TYPES: {
+type AuditTypeMeta = {
   id: AuditType;
   label: string;
   desc: string;
   price: string;
-  channels: string[];
-}[] = [
-  {
-    id: "claims",
-    label: "Claims Audit",
-    desc: "Single channel · fast. Taxonomy, NPI, payer ID, clearinghouse, EDI 837.",
-    price: "$49",
-    channels: ["claims"],
-  },
-  {
-    id: "full",
-    label: "Full Compliance Audit",
-    desc: "All six channels. HIPAA + documentation + claims + content + communication + synthetic.",
-    price: "$149",
-    channels: CHANNELS.map((c) => c.id),
-  },
-  {
-    id: "exceptions",
-    label: "Exceptions & Denial Audit",
-    desc: "Deep dive into denials, missing fields, payer-specific rules.",
-    price: "$199",
-    channels: CHANNELS.map((c) => c.id),
-  },
-];
+  channels: ChannelDef["id"][];
+};
+
+function buildAuditTypes(types: Dict["audits"]["types"]): AuditTypeMeta[] {
+  const allChannels = CHANNELS.map((c) => c.id);
+  return [
+    { id: "claims", ...types.claims, channels: ["claims"] },
+    { id: "full", ...types.full, channels: allChannels },
+    { id: "exceptions", ...types.exceptions, channels: allChannels },
+  ];
+}
 
 export default function NewAuditPage() {
   const router = useRouter();
+  const { t } = useLang();
+  const n = t.audits.new;
+  const auditTypes = useMemo(() => buildAuditTypes(t.audits.types), [t.audits.types]);
+  const channelShort = t.audits.channelShort;
+
   const [target, setTarget] = useState("");
   const [auditType, setAuditType] = useState<AuditType>("full");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const selected = auditTypes.find((x) => x.id === auditType)!;
+
   const submit = () => {
     setSubmitting(true);
-    // For now, route to /report which holds the input field + real engine call.
-    // When auth/persistence lands, this should POST a draft audit record first.
     router.push(`/report${target ? `?target=${encodeURIComponent(target)}` : ""}`);
   };
 
   return (
     <AppShell>
       <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 8 }}>
-        NEW AUDIT
+        {n.kicker}
       </div>
       <h1 className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1.05, margin: "0 0 6px" }}>
-        Start a fresh audit.
+        {n.title}
       </h1>
       <p style={{ fontSize: 14.5, color: "var(--muted)", margin: "0 0 32px", maxWidth: 580 }}>
-        Pick the audit type, name your target, and start the run. Each audit fans out across the
-        selected channels in parallel.
+        {n.body}
       </p>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }}>
@@ -75,13 +68,13 @@ export default function NewAuditPage() {
               className="mono"
               style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 10, display: "block" }}
             >
-              TARGET
+              {n.targetLabel}
             </label>
             <input
               type="text"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              placeholder="patient-portal.example.com · billing-workflow-v2 · COPD encounter notes"
+              placeholder={n.targetPlaceholder}
               style={{
                 width: "100%",
                 padding: "12px 14px",
@@ -95,7 +88,7 @@ export default function NewAuditPage() {
               }}
             />
             <div style={{ fontSize: 12, color: "var(--muted-2)", marginTop: 8 }}>
-              Free-form label that identifies what you&apos;re auditing. URL, system name, encounter ID — anything.
+              {n.targetHelp}
             </div>
           </div>
 
@@ -105,21 +98,21 @@ export default function NewAuditPage() {
               className="mono"
               style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 14, display: "block" }}
             >
-              AUDIT TYPE
+              {n.typeLabel}
             </label>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {AUDIT_TYPES.map((t) => {
-                const selected = auditType === t.id;
+              {auditTypes.map((tp) => {
+                const isSelected = auditType === tp.id;
                 return (
                   <button
-                    key={t.id}
-                    onClick={() => setAuditType(t.id)}
+                    key={tp.id}
+                    onClick={() => setAuditType(tp.id)}
                     style={{
                       textAlign: "left",
                       padding: "16px 18px",
                       borderRadius: 10,
-                      border: selected ? "1px solid var(--ink)" : "1px solid var(--line-2)",
-                      background: selected ? "var(--paper-2)" : "transparent",
+                      border: isSelected ? "1px solid var(--ink)" : "1px solid var(--line-2)",
+                      background: isSelected ? "var(--paper-2)" : "transparent",
                       cursor: "pointer",
                       display: "flex",
                       gap: 14,
@@ -132,18 +125,18 @@ export default function NewAuditPage() {
                         width: 16,
                         height: 16,
                         borderRadius: 99,
-                        border: selected ? "5px solid var(--ink)" : "1px solid var(--line-2)",
-                        background: selected ? "var(--paper)" : "transparent",
+                        border: isSelected ? "5px solid var(--ink)" : "1px solid var(--line-2)",
+                        background: isSelected ? "var(--paper)" : "transparent",
                         flexShrink: 0,
                         marginTop: 4,
                       }}
                     />
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-                        <span style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }}>{t.label}</span>
-                        <span className="serif" style={{ fontSize: 16, fontWeight: 500 }}>{t.price}</span>
+                        <span style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }}>{tp.label}</span>
+                        <span className="serif" style={{ fontSize: 16, fontWeight: 500 }}>{tp.price}</span>
                       </div>
-                      <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{t.desc}</div>
+                      <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{tp.desc}</div>
                     </div>
                   </button>
                 );
@@ -157,12 +150,12 @@ export default function NewAuditPage() {
               className="mono"
               style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 10, display: "block" }}
             >
-              NOTES · OPTIONAL
+              {n.notesLabel}
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Anything that helps reviewers understand context: department, payer mix, system version, sample size."
+              placeholder={n.notesPlaceholder}
               style={{
                 width: "100%",
                 minHeight: 100,
@@ -193,48 +186,44 @@ export default function NewAuditPage() {
             }}
           >
             <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 14 }}>
-              SUMMARY
+              {n.summaryLabel}
             </div>
             <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: "0 0 4px" }}>
-              {AUDIT_TYPES.find((t) => t.id === auditType)!.label}
+              {selected.label}
             </h3>
             <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.55, margin: "0 0 16px" }}>
-              {AUDIT_TYPES.find((t) => t.id === auditType)!.desc}
+              {selected.desc}
             </p>
 
             <div style={{ borderTop: "1px solid var(--line)", paddingTop: 14, marginBottom: 14 }}>
               <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 10 }}>
-                CHANNELS
+                {n.channelsLabel}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {AUDIT_TYPES.find((t) => t.id === auditType)!.channels.map((cid) => {
-                  const ch = CHANNELS.find((c) => c.id === cid);
-                  if (!ch) return null;
-                  return (
-                    <span
-                      key={cid}
-                      className="mono"
-                      style={{
-                        fontSize: 10.5,
-                        padding: "4px 9px",
-                        background: "var(--paper-2)",
-                        color: "var(--ink-2)",
-                        borderRadius: 999,
-                        fontWeight: 600,
-                        letterSpacing: "0.04em",
-                      }}
-                    >
-                      {ch.short.toUpperCase()}
-                    </span>
-                  );
-                })}
+                {selected.channels.map((cid) => (
+                  <span
+                    key={cid}
+                    className="mono"
+                    style={{
+                      fontSize: 10.5,
+                      padding: "4px 9px",
+                      background: "var(--paper-2)",
+                      color: "var(--ink-2)",
+                      borderRadius: 999,
+                      fontWeight: 600,
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {channelShort[cid].toUpperCase()}
+                  </span>
+                ))}
               </div>
             </div>
 
             <div style={{ borderTop: "1px solid var(--line)", paddingTop: 14, display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>Total</span>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>{n.total}</span>
               <span className="serif" style={{ fontSize: 28, fontWeight: 500 }}>
-                {AUDIT_TYPES.find((t) => t.id === auditType)!.price}
+                {selected.price}
               </span>
             </div>
 
@@ -245,7 +234,7 @@ export default function NewAuditPage() {
               disabled={submitting}
               style={{ width: "100%", justifyContent: "center" }}
             >
-              {submitting ? "Starting…" : "Start audit"}
+              {submitting ? n.starting : n.start}
             </Button>
 
             <div
@@ -260,10 +249,7 @@ export default function NewAuditPage() {
               }}
             >
               <Sparkles size={12} strokeWidth={1.75} color="var(--accent)" style={{ marginTop: 2, flexShrink: 0 }} />
-              <span>
-                You&apos;ll be redirected to the report screen where you paste the actual content (clinical
-                notes, workflow, URL) and the engine kicks off in parallel.
-              </span>
+              <span>{n.hint}</span>
             </div>
           </div>
         </aside>

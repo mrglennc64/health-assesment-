@@ -14,34 +14,42 @@ import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { SuiteToolCard } from "@/components/site/SuiteToolCard";
 import { Button } from "@/components/ui/primitives";
+import { useLang } from "@/lib/i18n/LanguageContext";
+
+const TOOL_META = [
+  { href: "/suite/audit-plan", icon: FileCheck, color: "#b94545", key: "auditPlan" as const, title: "Audit Plan Generator" },
+  { href: "/suite/standards-mapping", icon: BookOpen, color: "#5a7a9f", key: "standardsMapping" as const, title: "Standards Mapping" },
+  { href: "/suite/gap-analysis", icon: Upload, color: "#d49640", key: "gapAnalysis" as const, title: "Document Gap Analysis" },
+  { href: "/suite/risk-assessment", icon: ShieldAlert, color: "#a85a8a", key: "riskAssessment" as const, title: "HIPAA Risk Assessment" },
+  { href: "/suite/policy", icon: FileText, color: "#5a9f6a", key: "policy" as const, title: "Policy / SOP Generator" },
+];
 
 export default function SuiteIndexPage() {
+  const { t } = useLang();
+  const s = t.suite;
   return (
     <>
       <MarketingNav />
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "72px 32px 32px" }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 14 }}>
-          MEDIREADY SUITE
+          {s.index.kicker}
         </div>
         <h1 className="serif" style={{ fontSize: "clamp(40px, 5.4vw, 60px)", fontWeight: 500, lineHeight: 1.02, margin: "0 0 18px", maxWidth: 820 }}>
-          Compliance documents,
-          <br />
-          <em style={{ color: "var(--accent)", fontStyle: "italic" }}>generated in minutes</em>.
+          {s.index.title}
         </h1>
         <p style={{ fontSize: 17, color: "var(--muted)", lineHeight: 1.6, maxWidth: 720, marginBottom: 28 }}>
-          Tools for healthcare audit plans, standards mapping, and document gap analysis. Outputs save
-          to your local history and download as Word documents.
+          {s.index.body}
         </p>
 
         <div style={{ display: "flex", gap: 12, marginBottom: 48, flexWrap: "wrap" }}>
           <Link href="/suite/history" style={{ textDecoration: "none" }}>
             <Button variant="secondary" size="sm" iconLeft={Clock}>
-              History
+              {s.index.history}
             </Button>
           </Link>
           <Link href="/scan" style={{ textDecoration: "none" }}>
             <Button variant="secondary" size="sm" icon={ArrowRight}>
-              Back to free audit
+              {s.index.backToScan}
             </Button>
           </Link>
         </div>
@@ -53,81 +61,29 @@ export default function SuiteIndexPage() {
             gap: 20,
           }}
         >
-          <SuiteToolCard
-            href="/suite/audit-plan"
-            icon={FileCheck}
-            iconColor="#b94545"
-            tier="FREE"
-            title="Audit Plan Generator"
-            description="Generate a complete internal audit plan — scope, objectives, methodology, schedule, checklist, and risk areas. Exports to Word."
-            bullets={[
-              "HIPAA + healthcare-aligned scope",
-              "Critical / High / Medium / Low risk classification",
-              "Auto-generated methodology + schedule",
-              "Word + JSON export",
-            ]}
-          />
-          <SuiteToolCard
-            href="/suite/standards-mapping"
-            icon={BookOpen}
-            iconColor="#5a7a9f"
-            tier="FREE"
-            title="Standards Mapping"
-            description="Paste a finding, gap, or requirement and get the exact HIPAA, CMS, OCR, NIST, ISO clauses that apply."
-            bullets={[
-              "HIPAA Security & Privacy Rules",
-              "NIST 800-66 / 800-53 / 800-30",
-              "ISO 27001, ISO 13485 (where relevant)",
-              "OCR & CMS guidance references",
-            ]}
-          />
-          <SuiteToolCard
-            href="/suite/gap-analysis"
-            icon={Upload}
-            iconColor="#d49640"
-            tier="FREE"
-            title="Document Gap Analysis"
-            description="Upload an existing SOP, policy, or compliance document. AI flags missing sections, weak language, and clause gaps."
-            bullets={[
-              "PDF, DOCX, or plain text upload",
-              "Section completeness check",
-              "Severity-rated findings",
-              "Remediation suggestions",
-            ]}
-          />
-          <SuiteToolCard
-            href="/suite/risk-assessment"
-            icon={ShieldAlert}
-            iconColor="#a85a8a"
-            tier="FREE"
-            title="HIPAA Risk Assessment"
-            description="The annual risk analysis required under 45 CFR §164.308(a)(1)(ii)(A). NIST 800-30 methodology with full risk register."
-            bullets={[
-              "Likelihood × impact scoring",
-              "Inherent vs residual risk",
-              "Recommended controls per row",
-              "OCR-ready format",
-            ]}
-          />
-          <SuiteToolCard
-            href="/suite/policy"
-            icon={FileText}
-            iconColor="#5a9f6a"
-            tier="FREE"
-            title="Policy / SOP Generator"
-            description="Draft a complete HIPAA-aware policy or SOP with all required sections — purpose, scope, roles, procedure, training, sanctions, review."
-            bullets={[
-              "9-section structure",
-              "Operational, signable language",
-              "Clause references included",
-              "Word + PDF export",
-            ]}
-          />
+          {TOOL_META.map((meta) => {
+            const copy = s.tools[meta.key];
+            return (
+              <SuiteToolCard
+                key={meta.href}
+                href={meta.href}
+                icon={meta.icon}
+                iconColor={meta.color}
+                tier="FREE"
+                tierLabel={s.index.tierFree}
+                title={meta.title}
+                description={copy.cardDesc}
+                bullets={copy.cardBullets}
+              />
+            );
+          })}
         </div>
 
         <div style={{ marginTop: 56, padding: "20px 28px", background: "var(--paper-2)", borderRadius: 12, border: "1px solid var(--line)" }}>
           <div style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6 }}>
-            <strong style={{ color: "var(--ink)" }}>About this suite —</strong> outputs are saved locally on the server in a SQLite database. They are not shared, indexed, or used for training. Your inputs stay in your <Link href="/suite/history" style={{ color: "var(--accent)" }}>history</Link>.
+            <strong style={{ color: "var(--ink)" }}>{s.index.aboutLabel}</strong>
+            {s.index.aboutBody}
+            <Link href="/suite/history" style={{ color: "var(--accent)" }}>{s.index.history.toLowerCase()}</Link>.
           </div>
         </div>
       </div>

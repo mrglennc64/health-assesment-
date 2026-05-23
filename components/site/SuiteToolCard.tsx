@@ -10,6 +10,7 @@ export function SuiteToolCard({
   icon: Icon,
   iconColor,
   tier,
+  tierLabel,
   title,
   description,
   bullets,
@@ -18,6 +19,7 @@ export function SuiteToolCard({
   icon: LucideIcon;
   iconColor: string;
   tier: Tier;
+  tierLabel?: string;
   title: string;
   description: string;
   bullets: string[];
@@ -59,7 +61,7 @@ export function SuiteToolCard({
             color: tier === "FREE" ? "var(--good, #3c8a5a)" : "var(--accent)",
           }}
         >
-          {tier}
+          {tierLabel ?? tier}
         </span>
         <div
           style={{

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,9 +36,10 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
     >
       <body style={{ fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif" }}>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

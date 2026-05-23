@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/primitives";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 type ProviderState = {
   key: string;
@@ -31,6 +32,8 @@ const TEAM = [
 ];
 
 export default function SettingsPage() {
+  const { t } = useLang();
+  const s = t.settingsPage;
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [notifyWeekly, setNotifyWeekly] = useState(true);
   const [notifyCritical, setNotifyCritical] = useState(true);
@@ -38,22 +41,22 @@ export default function SettingsPage() {
   return (
     <AppShell>
       <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 8 }}>
-        SETTINGS
+        {s.kicker}
       </div>
       <h1 className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1.05, margin: "0 0 6px" }}>
-        Account & preferences.
+        {s.title}
       </h1>
       <p style={{ fontSize: 14.5, color: "var(--muted)", margin: "0 0 32px", maxWidth: 580 }}>
-        Manage your account, model providers, team, notifications, and PDF branding.
+        {s.body}
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 880 }}>
         {/* Account */}
-        <SettingsCard icon={User} title="Account" subtitle="Your basic profile.">
-          <Row label="Name" value="Glenn Carter" />
-          <Row label="Email" value="glenn@example.com" />
+        <SettingsCard icon={User} title={s.account.title} subtitle={s.account.subtitle}>
+          <Row label={s.account.nameLabel} value="Glenn Carter" />
+          <Row label={s.account.emailLabel} value="glenn@example.com" />
           <Row
-            label="Plan"
+            label={s.account.planLabel}
             value={
               <span className="mono" style={{ fontSize: 11, padding: "4px 9px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600, letterSpacing: "0.06em" }}>
                 RCM · PRO
@@ -65,8 +68,8 @@ export default function SettingsPage() {
         {/* Providers */}
         <SettingsCard
           icon={Key}
-          title="Model providers"
-          subtitle="Read-only. Keys are set as environment variables on the server."
+          title={s.providers.title}
+          subtitle={s.providers.subtitle}
         >
           {PROVIDERS.map((p, i) => (
             <div
@@ -104,21 +107,17 @@ export default function SettingsPage() {
                 }}
               >
                 {p.configured && <Check size={11} strokeWidth={2.5} />}
-                {p.configured ? "CONFIGURED" : "MISSING"}
+                {p.configured ? s.providers.configured : s.providers.missing}
               </span>
             </div>
           ))}
           <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5, marginTop: 12, padding: "12px 14px", background: "var(--paper-2)", borderRadius: 8 }}>
-            Provider priority is Mistral → OpenRouter → Gemini → stub. To rotate a key, update
-            <span className="mono" style={{ background: "var(--card)", padding: "1px 6px", borderRadius: 4, marginInline: 6 }}>
-              /srv/health-assesment-/.env.local
-            </span>
-            on the server and restart the service.
+            {s.providers.rotateNote}
           </div>
         </SettingsCard>
 
         {/* Team */}
-        <SettingsCard icon={Users} title="Team" subtitle="Members who can view audits and run new ones.">
+        <SettingsCard icon={Users} title={s.team.title} subtitle={s.team.subtitle}>
           {TEAM.map((m, i) => (
             <div
               key={m.email}
@@ -157,31 +156,31 @@ export default function SettingsPage() {
             </div>
           ))}
           <Button variant="secondary" size="sm" style={{ marginTop: 14 }}>
-            Invite member
+            {s.team.invite}
           </Button>
         </SettingsCard>
 
         {/* Notifications */}
         <SettingsCard
           icon={Bell}
-          title="Notifications"
-          subtitle="When and how you hear from MediReady."
+          title={s.notifications.title}
+          subtitle={s.notifications.subtitle}
         >
           <Toggle
-            label="Email summaries"
-            sub="Audit completes, weekly digest, account events."
+            label={s.notifications.email.label}
+            sub={s.notifications.email.sub}
             on={notifyEmail}
             onChange={setNotifyEmail}
           />
           <Toggle
-            label="Weekly trend digest"
-            sub="Friday afternoon summary of score changes and resolved actions."
+            label={s.notifications.weekly.label}
+            sub={s.notifications.weekly.sub}
             on={notifyWeekly}
             onChange={setNotifyWeekly}
           />
           <Toggle
-            label="Critical findings"
-            sub="Real-time email when any audit returns a critical finding."
+            label={s.notifications.critical.label}
+            sub={s.notifications.critical.sub}
             on={notifyCritical}
             onChange={setNotifyCritical}
           />
@@ -190,29 +189,29 @@ export default function SettingsPage() {
         {/* PDF branding */}
         <SettingsCard
           icon={Palette}
-          title="PDF branding"
-          subtitle="What appears on downloaded reports."
+          title={s.pdf.title}
+          subtitle={s.pdf.subtitle}
         >
-          <Row label="Logo" value={<span style={{ fontSize: 13, color: "var(--muted)" }}>No logo uploaded</span>} action={<Button variant="secondary" size="sm">Upload</Button>} />
-          <Row label="Accent color" value={<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><span style={{ width: 16, height: 16, borderRadius: 4, background: "var(--accent)" }} /><span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>#B8442E</span></span>} action={<Button variant="secondary" size="sm">Change</Button>} />
-          <Row label="Footer text" value="MediReady · Stockholm" action={<Button variant="secondary" size="sm">Edit</Button>} />
+          <Row label={s.pdf.logoLabel} value={<span style={{ fontSize: 13, color: "var(--muted)" }}>{s.pdf.noLogo}</span>} action={<Button variant="secondary" size="sm">{s.pdf.upload}</Button>} />
+          <Row label={s.pdf.accentLabel} value={<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><span style={{ width: 16, height: 16, borderRadius: 4, background: "var(--accent)" }} /><span className="mono" style={{ fontSize: 12, color: "var(--muted)" }}>#B8442E</span></span>} action={<Button variant="secondary" size="sm">{s.pdf.change}</Button>} />
+          <Row label={s.pdf.footerLabel} value={s.pdf.footerValue} action={<Button variant="secondary" size="sm">{s.pdf.edit}</Button>} />
         </SettingsCard>
 
         {/* Danger */}
         <SettingsCard
           icon={Trash2}
-          title="Danger zone"
-          subtitle="Permanent actions. Read twice before clicking."
+          title={s.danger.title}
+          subtitle={s.danger.subtitle}
           danger
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14 }}>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 500 }}>Delete account</div>
+              <div style={{ fontSize: 14, fontWeight: 500 }}>{s.danger.deleteLabel}</div>
               <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 2 }}>
-                Removes your account, all team members, and every audit. This cannot be undone.
+                {s.danger.deleteBody}
               </div>
             </div>
-            <Button variant="accent" size="sm">Delete account</Button>
+            <Button variant="accent" size="sm">{s.danger.deleteCta}</Button>
           </div>
         </SettingsCard>
       </div>

@@ -6,6 +6,7 @@ import { Plus, Search, ArrowUpRight, Filter } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { Button, ScoreRing } from "@/components/ui/primitives";
 import { MOCK_RUNS } from "@/components/site/mockApp";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 type ScoreFilter = "all" | "critical" | "watch" | "pass";
 
@@ -17,12 +18,19 @@ const filterMatchesScore = (filter: ScoreFilter, score: number) => {
 };
 
 export default function AuditsPage() {
+  const { t } = useLang();
+  const a = t.audits.list;
+  const mockRuns = t.dashboard.mockRuns;
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<ScoreFilter>("all");
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return MOCK_RUNS.filter((r) => {
+    return MOCK_RUNS.map((r, i) => ({
+      ...r,
+      target: mockRuns[i]?.target ?? r.target,
+      date: mockRuns[i]?.date ?? r.date,
+    })).filter((r) => {
       if (!filterMatchesScore(filter, r.score)) return false;
       if (!needle) return true;
       return (
@@ -30,24 +38,24 @@ export default function AuditsPage() {
         r.id.toLowerCase().includes(needle)
       );
     });
-  }, [q, filter]);
+  }, [q, filter, mockRuns]);
 
   return (
     <AppShell
       topbarRight={
         <Link href="/audits/new" style={{ textDecoration: "none" }}>
-          <Button variant="primary" size="sm" icon={Plus}>New audit</Button>
+          <Button variant="primary" size="sm" icon={Plus}>{a.newAudit}</Button>
         </Link>
       }
     >
       <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 8 }}>
-        AUDITS
+        {a.kicker}
       </div>
       <h1 className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1.05, margin: "0 0 6px" }}>
-        Run history.
+        {a.title}
       </h1>
       <p style={{ fontSize: 14.5, color: "var(--muted)", margin: "0 0 28px" }}>
-        Every audit you&apos;ve run. Filter by score band, search by target or run ID.
+        {a.body}
       </p>
 
       {/* Toolbar */}
@@ -75,7 +83,7 @@ export default function AuditsPage() {
             type="text"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search target or run id"
+            placeholder={a.searchPlaceholder}
             style={{
               width: "100%",
               padding: "9px 14px 9px 34px",
@@ -110,7 +118,7 @@ export default function AuditsPage() {
                 textTransform: "uppercase",
               }}
             >
-              {f}
+              {a.filters[f]}
             </button>
           ))}
         </div>
@@ -118,7 +126,7 @@ export default function AuditsPage() {
 
       {/* Result count */}
       <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 10 }}>
-        {filtered.length} OF {MOCK_RUNS.length} RUNS
+        {filtered.length} {a.countSuffix} {MOCK_RUNS.length} {a.runsLabel}
       </div>
 
       {/* Table */}
@@ -138,16 +146,16 @@ export default function AuditsPage() {
             fontWeight: 600,
           }}
         >
-          <span>SCORE</span>
-          <span>TARGET</span>
-          <span>RUN ID</span>
-          <span>DATE</span>
-          <span>CHANNELS</span>
+          <span>{a.cols.score}</span>
+          <span>{a.cols.target}</span>
+          <span>{a.cols.runId}</span>
+          <span>{a.cols.date}</span>
+          <span>{a.cols.channels}</span>
           <span />
         </div>
         {filtered.length === 0 ? (
           <div style={{ padding: "40px 20px", textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
-            No audits match this filter.
+            {a.empty}
           </div>
         ) : (
           filtered.map((r, i, arr) => (

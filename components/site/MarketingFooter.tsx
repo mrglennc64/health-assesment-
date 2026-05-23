@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "@/components/ui/primitives";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 type FooterLink = { label: string; href: string };
 type FooterCol = { heading: string; links: FooterLink[] };
@@ -9,46 +13,51 @@ function isProtected(href: string): boolean {
   return PROTECTED_PREFIXES.some((p) => href === p || href.startsWith(`${p}/`));
 }
 
-const COLS: FooterCol[] = [
-  {
-    heading: "Product",
-    links: [
-      { label: "Product overview", href: "/product" },
-      { label: "Compliance suite", href: "/suite" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Free audit", href: "/scan" },
-      { label: "Sample report", href: "/report" },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      { label: "Company", href: "/company" },
-      { label: "Who it's for", href: "/who-its-for" },
-      { label: "Contact", href: "/contact" },
-      { label: "Waitlist", href: "/waitlist" },
-    ],
-  },
-  {
-    heading: "Resources",
-    links: [
-      { label: "Documentation", href: "/documentation" },
-      { label: "Status", href: "/status" },
-      { label: "Safety", href: "/safety" },
-      { label: "Security", href: "/security" },
-      { label: "Monitoring", href: "/monitoring" },
-    ],
-  },
-  {
-    heading: "Legal",
-    links: [
-      { label: "Privacy", href: "/privacy" },
-      { label: "Terms of use", href: "/terms" },
-    ],
-  },
-];
+function buildCols(f: Dict["footer"]): FooterCol[] {
+  return [
+    {
+      heading: f.cols.product.heading,
+      links: [
+        { label: f.cols.product.productOverview, href: "/product" },
+        { label: f.cols.product.complianceSuite, href: "/suite" },
+        { label: f.cols.product.pricing, href: "/pricing" },
+        { label: f.cols.product.freeAudit, href: "/scan" },
+        { label: f.cols.product.sampleReport, href: "/report" },
+      ],
+    },
+    {
+      heading: f.cols.company.heading,
+      links: [
+        { label: f.cols.company.company, href: "/company" },
+        { label: f.cols.company.whoItsFor, href: "/who-its-for" },
+        { label: f.cols.company.contact, href: "/contact" },
+        { label: f.cols.company.waitlist, href: "/waitlist" },
+      ],
+    },
+    {
+      heading: f.cols.resources.heading,
+      links: [
+        { label: f.cols.resources.documentation, href: "/documentation" },
+        { label: f.cols.resources.status, href: "/status" },
+        { label: f.cols.resources.safety, href: "/safety" },
+        { label: f.cols.resources.security, href: "/security" },
+        { label: f.cols.resources.monitoring, href: "/monitoring" },
+      ],
+    },
+    {
+      heading: f.cols.legal.heading,
+      links: [
+        { label: f.cols.legal.privacy, href: "/privacy" },
+        { label: f.cols.legal.terms, href: "/terms" },
+      ],
+    },
+  ];
+}
 
 export function MarketingFooter() {
+  const { t } = useLang();
+  const f = t.footer;
+  const cols = buildCols(f);
   return (
     <footer
       style={{
@@ -77,8 +86,7 @@ export function MarketingFooter() {
               lineHeight: 1.6,
             }}
           >
-            One platform for healthcare audits and compliance documentation. Six-channel audit
-            engine plus a suite of HIPAA-aligned document generators. File in. Report out.
+            {f.tagline}
           </p>
           <p
             className="mono"
@@ -89,10 +97,10 @@ export function MarketingFooter() {
               letterSpacing: "0.04em",
             }}
           >
-            © 2026 MEDIREADY
+            {f.copyright}
           </p>
         </div>
-        {COLS.map((col) => (
+        {cols.map((col) => (
           <div key={col.heading}>
             <h4
               className="mono"

@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 export function PhiInputWarning({
   acknowledged,
@@ -9,6 +10,8 @@ export function PhiInputWarning({
   acknowledged?: boolean;
   onAcknowledgedChange?: (v: boolean) => void;
 }) {
+  const { t } = useLang();
+  const p = t.suite.phi;
   const showCheckbox = typeof onAcknowledgedChange === "function";
   return (
     <div
@@ -32,11 +35,8 @@ export function PhiInputWarning({
           style={{ marginTop: 2, flexShrink: 0 }}
         />
         <div>
-          <strong style={{ color: "var(--ink)" }}>Do not paste real patient data.</strong>{" "}
-          Aegis is designed for de-identified content, sample text, policies, and synthetic
-          examples. Do not submit protected health information (PHI) &mdash; names, dates of
-          birth, MRNs, addresses, or any of the 18 HIPAA identifiers tied to a real person.
-          Inputs are processed by third-party AI providers.
+          <strong style={{ color: "var(--ink)" }}>{p.heading}</strong>{" "}
+          {p.body}
         </div>
       </div>
       {showCheckbox && (
@@ -57,7 +57,7 @@ export function PhiInputWarning({
             onChange={(e) => onAcknowledgedChange!(e.target.checked)}
             style={{ cursor: "pointer" }}
           />
-          <span>I confirm this input contains no protected health information.</span>
+          <span>{p.confirm}</span>
         </label>
       )}
     </div>

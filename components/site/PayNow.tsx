@@ -6,6 +6,7 @@ import {
   PRODUCTS,
   type ProductKey,
 } from "@/lib/payments/config";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 function bankBlockForAmount(amount: string): string {
   return `Currency: ${BANK_TRANSFER.currency}
@@ -20,6 +21,8 @@ Reference: [${BANK_TRANSFER.referenceHint}]`;
 }
 
 export function PayNow({ product = DEFAULT_PRODUCT }: { product?: ProductKey }) {
+  const { t } = useLang();
+  const p = t.payNow;
   const info = PRODUCTS[product];
   const bankBlock = bankBlockForAmount(info.amountDisplay);
 
@@ -34,7 +37,7 @@ export function PayNow({ product = DEFAULT_PRODUCT }: { product?: ProductKey }) 
       }}
     >
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 6px" }}>
-        Complete your payment
+        {p.title}
       </h2>
       <div
         className="mono"
@@ -46,10 +49,10 @@ export function PayNow({ product = DEFAULT_PRODUCT }: { product?: ProductKey }) 
       {/* Option 1 — Revolut Checkout */}
       <div style={{ marginBottom: 20 }}>
         <h3 style={{ fontSize: 14, fontWeight: 600, margin: "0 0 6px" }}>
-          Option 1 — Pay online (recommended)
+          {p.option1Heading}
         </h3>
         <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 12px", lineHeight: 1.55 }}>
-          Pay {info.amountDisplay} securely via Revolut Checkout.
+          {p.option1Body(info.amountDisplay)}
         </p>
         <a
           href={info.revolutUrl}
@@ -68,17 +71,17 @@ export function PayNow({ product = DEFAULT_PRODUCT }: { product?: ProductKey }) 
             textDecoration: "none",
           }}
         >
-          Pay {info.amountDisplay} via Revolut
+          {p.option1Cta(info.amountDisplay)}
         </a>
       </div>
 
       {/* Option 2 — Bank Transfer */}
       <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
         <h3 style={{ fontSize: 14, fontWeight: 600, margin: "0 0 6px" }}>
-          Option 2 — Bank transfer (USD)
+          {p.option2Heading}
         </h3>
         <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 12px", lineHeight: 1.55 }}>
-          Use these details if you prefer a manual bank transfer.
+          {p.option2Body}
         </p>
         <pre
           style={{

@@ -3,8 +3,11 @@
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { WaitlistForm } from "@/components/site/WaitlistForm";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 export default function WaitlistPage() {
+  const { t } = useLang();
+  const w = t.waitlistPage;
   return (
     <>
       <MarketingNav />
@@ -19,7 +22,7 @@ export default function WaitlistPage() {
             marginBottom: 14,
           }}
         >
-          WAITLIST
+          {w.kicker}
         </div>
         <h1
           className="serif"
@@ -30,7 +33,7 @@ export default function WaitlistPage() {
             margin: "0 0 18px",
           }}
         >
-          Be first when monitoring launches.
+          {w.title}
         </h1>
         <p
           style={{
@@ -40,8 +43,7 @@ export default function WaitlistPage() {
             marginBottom: 44,
           }}
         >
-          Continuous monitoring, weekly runs, and trend tracking for the six audit channels.
-          Drop your email — we&apos;ll let you know when it&apos;s live.
+          {w.body}
         </p>
         <WaitlistForm />
       </div>

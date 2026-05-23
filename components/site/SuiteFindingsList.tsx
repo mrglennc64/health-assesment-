@@ -2,14 +2,17 @@
 
 import type { SuiteFinding } from "@/lib/suite/types";
 import { SUITE_SEVERITY_COLOR, SUITE_SEVERITY_BG } from "@/lib/suite/severity";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 export function SuiteFindingsList({ findings }: { findings: SuiteFinding[] }) {
+  const { t } = useLang();
+  const f = t.suite.findings;
   if (findings.length === 0) {
-    return <p style={{ fontSize: 13.5, color: "var(--muted)" }}>No findings.</p>;
+    return <p style={{ fontSize: 13.5, color: "var(--muted)" }}>{f.none}</p>;
   }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {findings.map((f, i) => (
+      {findings.map((finding, i) => (
         <div
           key={i}
           style={{
@@ -27,24 +30,24 @@ export function SuiteFindingsList({ findings }: { findings: SuiteFinding[] }) {
                 padding: "4px 9px",
                 borderRadius: 4,
                 fontWeight: 600,
-                background: SUITE_SEVERITY_BG[f.severity],
-                color: SUITE_SEVERITY_COLOR[f.severity],
+                background: SUITE_SEVERITY_BG[finding.severity],
+                color: SUITE_SEVERITY_COLOR[finding.severity],
                 letterSpacing: "0.04em",
               }}
             >
-              {f.severity.toUpperCase()}
+              {finding.severity.toUpperCase()}
             </span>
-            <span style={{ fontSize: 15, fontWeight: 600 }}>{f.title}</span>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>{finding.title}</span>
           </div>
-          <p style={{ fontSize: 13.5, color: "var(--ink-2)", lineHeight: 1.6, margin: "0 0 12px" }}>{f.detail}</p>
+          <p style={{ fontSize: 13.5, color: "var(--ink-2)", lineHeight: 1.6, margin: "0 0 12px" }}>{finding.detail}</p>
 
-          {f.clauses?.length > 0 && (
+          {finding.clauses?.length > 0 && (
             <div style={{ marginBottom: 10 }}>
               <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.06em", marginBottom: 6 }}>
-                CLAUSES
+                {f.clauses}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {f.clauses.map((c, j) => (
+                {finding.clauses.map((c, j) => (
                   <div key={j} style={{ fontSize: 12.5, color: "var(--ink-2)" }}>
                     <strong>{c.framework}</strong> {c.citation}
                     {c.note ? ` — ${c.note}` : ""}
@@ -54,13 +57,13 @@ export function SuiteFindingsList({ findings }: { findings: SuiteFinding[] }) {
             </div>
           )}
 
-          <div style={{ fontSize: 13, color: "var(--ink)", marginBottom: f.suggestedRemediation ? 6 : 0 }}>
-            <strong>Action: </strong>
-            {f.requiredAction}
+          <div style={{ fontSize: 13, color: "var(--ink)", marginBottom: finding.suggestedRemediation ? 6 : 0 }}>
+            <strong>{f.action} </strong>
+            {finding.requiredAction}
           </div>
-          {f.suggestedRemediation && (
+          {finding.suggestedRemediation && (
             <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-              <em>Remediation: {f.suggestedRemediation}</em>
+              <em>{f.remediation} {finding.suggestedRemediation}</em>
             </div>
           )}
         </div>

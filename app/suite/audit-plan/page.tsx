@@ -9,6 +9,8 @@ import { PhiInputWarning } from "@/components/site/PhiInputWarning";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import type { AuditPlanOutput } from "@/lib/suite/types";
+import { useLang } from "@/lib/i18n/LanguageContext";
+import type { Dict } from "@/lib/i18n/dict";
 
 type Result = {
   id: string;
@@ -32,6 +34,10 @@ const ORG_TYPES = [
 const SCOPES = ["HIPAA only", "Claims only", "HIPAA + Claims", "Full operations audit", "Custom"];
 
 export default function AuditPlanPage() {
+  const { t } = useLang();
+  const tool = t.suite.tools.auditPlan;
+  const c = t.suite.common;
+
   const [organisation, setOrganisation] = useState("");
   const [organisationType, setOrganisationType] = useState(ORG_TYPES[0]);
   const [scope, setScope] = useState(SCOPES[2]);
@@ -76,21 +82,21 @@ export default function AuditPlanPage() {
       <MarketingNav />
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "56px 32px 32px" }}>
         <Link href="/suite" style={{ textDecoration: "none", fontSize: 13, color: "var(--muted)", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-          <ArrowLeft size={14} /> Suite
+          <ArrowLeft size={14} /> {c.backToSuite}
         </Link>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 12 }}>
-          AUDIT PLAN GENERATOR
+          {tool.pageKicker}
         </div>
         <h1 className="serif" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1.02, margin: "0 0 14px" }}>
-          Generate a full internal audit plan.
+          {tool.pageTitle}
         </h1>
         <p style={{ fontSize: 16, color: "var(--muted)", lineHeight: 1.6, maxWidth: 640, marginBottom: 36 }}>
-          Scope, methodology, schedule, checklist, and severity-rated risk areas — written for healthcare operators
-          under HIPAA. Saves to your <Link href="/suite/history" style={{ color: "var(--accent)" }}>history</Link>; download as Word.
+          {tool.pageBody}
         </p>
 
         {!result && (
           <FormCard
+            c={c}
             organisation={organisation}
             setOrganisation={setOrganisation}
             organisationType={organisationType}
@@ -108,6 +114,8 @@ export default function AuditPlanPage() {
             canSubmit={!!canSubmit}
             loading={loading}
             onGenerate={generate}
+            cta={tool.cta}
+            loadingCta={tool.loadingCta}
           />
         )}
 
@@ -118,7 +126,7 @@ export default function AuditPlanPage() {
         )}
 
         {result && parsed && (
-          <ResultView id={result.id} record={result.record} output={parsed} onReset={() => { setResult(null); setParsed(null); }} />
+          <ResultView c={c} id={result.id} record={result.record} output={parsed} onReset={() => { setResult(null); setParsed(null); }} />
         )}
       </div>
       <MarketingFooter />
@@ -127,6 +135,7 @@ export default function AuditPlanPage() {
 }
 
 function FormCard(props: {
+  c: Dict["suite"]["common"];
   organisation: string; setOrganisation: (s: string) => void;
   organisationType: string; setOrganisationType: (s: string) => void;
   scope: string; setScope: (s: string) => void;
@@ -135,40 +144,42 @@ function FormCard(props: {
   auditor: string; setAuditor: (s: string) => void;
   phiAcknowledged: boolean; setPhiAcknowledged: (v: boolean) => void;
   canSubmit: boolean; loading: boolean; onGenerate: () => void;
+  cta: string; loadingCta: string;
 }) {
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6, display: "block" };
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--line-2)", fontSize: 13.5, fontFamily: "inherit", background: "var(--paper)", color: "var(--ink)", outline: "none",
   };
+  const c = props.c;
 
   return (
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 28 }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         <div>
-          <label style={labelStyle}>Organisation</label>
+          <label style={labelStyle}>{c.organisation}</label>
           <input style={inputStyle} value={props.organisation} onChange={(e) => props.setOrganisation(e.target.value)} placeholder="Acme Cardiology Group" />
         </div>
         <div>
-          <label style={labelStyle}>Type</label>
+          <label style={labelStyle}>{c.type}</label>
           <select style={inputStyle} value={props.organisationType} onChange={(e) => props.setOrganisationType(e.target.value)}>
-            {ORG_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {ORG_TYPES.map((v) => <option key={v} value={v}>{c.orgTypeLabels[v] ?? v}</option>)}
           </select>
         </div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         <div>
-          <label style={labelStyle}>Scope</label>
+          <label style={labelStyle}>{c.scope}</label>
           <select style={inputStyle} value={props.scope} onChange={(e) => props.setScope(e.target.value)}>
-            {SCOPES.map((s) => <option key={s} value={s}>{s}</option>)}
+            {SCOPES.map((v) => <option key={v} value={v}>{c.scopeLabels[v] ?? v}</option>)}
           </select>
         </div>
         <div>
-          <label style={labelStyle}>Period covered</label>
+          <label style={labelStyle}>{c.periodCovered}</label>
           <input style={inputStyle} value={props.period} onChange={(e) => props.setPeriod(e.target.value)} placeholder="Q2 2026" />
         </div>
       </div>
       <div style={{ marginBottom: 16 }}>
-        <label style={labelStyle}>Systems and processes in scope</label>
+        <label style={labelStyle}>{c.systemsInScope}</label>
         <textarea
           style={{ ...inputStyle, minHeight: 110, lineHeight: 1.55 }}
           value={props.systems}
@@ -177,54 +188,54 @@ function FormCard(props: {
         />
       </div>
       <div style={{ marginBottom: 24 }}>
-        <label style={labelStyle}>Lead auditor (optional)</label>
+        <label style={labelStyle}>{c.leadAuditor}</label>
         <input style={inputStyle} value={props.auditor} onChange={(e) => props.setAuditor(e.target.value)} placeholder="J. Carter, CHC" />
       </div>
       <PhiInputWarning acknowledged={props.phiAcknowledged} onAcknowledgedChange={props.setPhiAcknowledged} />
       <Button variant="primary" icon={ArrowRight} onClick={props.onGenerate} disabled={!props.canSubmit}>
-        {props.loading ? "Generating…" : "Generate audit plan"}
+        {props.loading ? props.loadingCta : props.cta}
       </Button>
     </div>
   );
 }
 
-function ResultView({ id, record, output, onReset }: { id: string; record: { model: string | null; provider: string | null }; output: AuditPlanOutput; onReset: () => void }) {
+function ResultView({ c, id, record, output, onReset }: { c: Dict["suite"]["common"]; id: string; record: { model: string | null; provider: string | null }; output: AuditPlanOutput; onReset: () => void }) {
   const sectionH: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--muted-2)", margin: "32px 0 12px" };
   return (
     <div>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
         <a href={`/api/suite/pdf/${id}`} style={{ textDecoration: "none" }} download>
-          <Button variant="primary" size="sm" icon={Download}>Download PDF</Button>
+          <Button variant="primary" size="sm" icon={Download}>{c.downloadPdf}</Button>
         </a>
         <a href={`/api/suite/docx/${id}`} style={{ textDecoration: "none" }} download>
-          <Button variant="secondary" size="sm" icon={FileText}>Download Word</Button>
+          <Button variant="secondary" size="sm" icon={FileText}>{c.downloadWord}</Button>
         </a>
-        <Button variant="secondary" size="sm" onClick={onReset}>Generate another</Button>
+        <Button variant="secondary" size="sm" onClick={onReset}>{c.generateAnother}</Button>
         <Link href="/suite/history" style={{ textDecoration: "none" }}>
-          <Button variant="secondary" size="sm">View history</Button>
+          <Button variant="secondary" size="sm">{c.viewHistory}</Button>
         </Link>
       </div>
 
       {record.model && (
         <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginBottom: 24, letterSpacing: "0.04em" }}>
-          GENERATED BY {record.provider?.toUpperCase()} · {record.model}
+          {c.generatedBy} {record.provider?.toUpperCase()} · {record.model}
         </div>
       )}
 
-      <h2 style={sectionH}>Scope</h2>
+      <h2 style={sectionH}>{c.sections.scope}</h2>
       <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)" }}>{output.scope}</p>
 
-      <h2 style={sectionH}>Objectives</h2>
+      <h2 style={sectionH}>{c.sections.objectives}</h2>
       <ul style={{ paddingLeft: 20 }}>
         {output.objectives?.map((o, i) => (
           <li key={i} style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)", marginBottom: 4 }}>{o}</li>
         ))}
       </ul>
 
-      <h2 style={sectionH}>Methodology</h2>
+      <h2 style={sectionH}>{c.sections.methodology}</h2>
       <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)" }}>{output.methodology}</p>
 
-      <h2 style={sectionH}>Schedule</h2>
+      <h2 style={sectionH}>{c.sections.schedule}</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {output.schedule?.map((s, i) => (
           <div key={i} style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 10, padding: "12px 16px" }}>
@@ -234,19 +245,19 @@ function ResultView({ id, record, output, onReset }: { id: string; record: { mod
         ))}
       </div>
 
-      <h2 style={sectionH}>Checklist</h2>
-      {output.checklist?.map((c, i) => (
+      <h2 style={sectionH}>{c.sections.checklist}</h2>
+      {output.checklist?.map((ck, i) => (
         <div key={i} style={{ marginBottom: 18 }}>
-          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{c.area}</div>
+          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{ck.area}</div>
           <ul style={{ paddingLeft: 20 }}>
-            {c.items?.map((it, j) => (
+            {ck.items?.map((it, j) => (
               <li key={j} style={{ fontSize: 13.5, color: "var(--ink-2)", lineHeight: 1.55, marginBottom: 2 }}>{it}</li>
             ))}
           </ul>
         </div>
       ))}
 
-      <h2 style={sectionH}>Risk Areas</h2>
+      <h2 style={sectionH}>{c.sections.riskAreas}</h2>
       <SuiteFindingsList findings={output.riskAreas ?? []} />
     </div>
   );

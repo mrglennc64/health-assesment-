@@ -17,37 +17,42 @@ import {
   PENDING_ACTIONS,
 } from "@/components/site/mockApp";
 import { classifyScore } from "@/lib/scoring";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 const MAX_HISTORY = Math.max(...SCORE_HISTORY);
 
 export default function DashboardPage() {
+  const { t } = useLang();
+  const d = t.dashboard;
+  const channelShort = t.audits.channelShort;
+
   return (
     <AppShell
       topbarRight={
         <Link href="/audits/new" style={{ textDecoration: "none" }}>
-          <Button variant="primary" size="sm" icon={Plus}>New audit</Button>
+          <Button variant="primary" size="sm" icon={Plus}>{d.newAudit}</Button>
         </Link>
       }
     >
       {/* Greeting */}
       <div style={{ marginBottom: 28 }}>
         <div className="mono" style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.14em", marginBottom: 8 }}>
-          OVERVIEW
+          {d.kicker}
         </div>
         <h1 className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1.05, margin: 0 }}>
-          Good morning, Glenn.
+          {d.greeting("Glenn")}
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--muted)", marginTop: 6 }}>
-          {KPIS.totalThisWeek} audits this week · {KPIS.openCritical} open critical findings across all targets.
+          {d.summary(KPIS.totalThisWeek, KPIS.openCritical)}
         </p>
       </div>
 
       {/* KPI strip */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 28 }}>
-        <KPI label="Avg score · 7d" value={KPIS.avgScore7d} suffix="/100" delta="+5" deltaUp />
-        <KPI label="Avg score · 30d" value={KPIS.avgScore30d} suffix="/100" delta="+2" deltaUp />
-        <KPI label="Open critical" value={KPIS.openCritical} accent />
-        <KPI label="Resolved · 7d" value={KPIS.resolvedThisWeek} delta="+4" deltaUp />
+        <KPI label={d.kpi.avgScore7d} value={KPIS.avgScore7d} suffix="/100" delta="+5" deltaUp />
+        <KPI label={d.kpi.avgScore30d} value={KPIS.avgScore30d} suffix="/100" delta="+2" deltaUp />
+        <KPI label={d.kpi.openCritical} value={KPIS.openCritical} accent />
+        <KPI label={d.kpi.resolved7d} value={KPIS.resolvedThisWeek} delta="+4" deltaUp />
       </div>
 
       {/* Trend + Channel grid */}
@@ -57,12 +62,12 @@ export default function DashboardPage() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
             <div>
               <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 4 }}>
-                OVERALL SCORE · 8 WEEKS
+                {d.trend.label}
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
                 <span className="serif" style={{ fontSize: 36, fontWeight: 500 }}>{SCORE_HISTORY[SCORE_HISTORY.length - 1]}</span>
                 <span className="mono" style={{ fontSize: 11, color: "var(--good)", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                  <TrendingUp size={12} /> +21 since week 1
+                  <TrendingUp size={12} /> {d.trend.sinceWeek1(SCORE_HISTORY[SCORE_HISTORY.length - 1] - SCORE_HISTORY[0])}
                 </span>
               </div>
             </div>
@@ -91,21 +96,16 @@ export default function DashboardPage() {
             })}
           </div>
           <div className="mono" style={{ display: "flex", justifyContent: "space-between", marginTop: 10, fontSize: 9.5, color: "var(--muted-2)", letterSpacing: "0.06em" }}>
-            <span>WK 1</span>
-            <span>WK 2</span>
-            <span>WK 3</span>
-            <span>WK 4</span>
-            <span>WK 5</span>
-            <span>WK 6</span>
-            <span>WK 7</span>
-            <span>NOW</span>
+            {d.trend.weeks.map((w) => (
+              <span key={w}>{w}</span>
+            ))}
           </div>
         </div>
 
         {/* Channel grid */}
         <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 24 }}>
           <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)", letterSpacing: "0.08em", marginBottom: 16 }}>
-            CHANNEL HEALTH
+            {d.channelHealth}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {CHANNELS.map((ch) => {
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                   <Icon size={16} strokeWidth={1.75} color="var(--muted)" style={{ flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                     <span style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {ch.short}
+                      {channelShort[ch.id]}
                     </span>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ width: 6, height: 6, borderRadius: 99, background: dotColor }} />
@@ -133,73 +133,79 @@ export default function DashboardPage() {
       </div>
 
       {/* Pending actions */}
-      <Section title="Pending actions" subtitle={`${PENDING_ACTIONS.length} open across your targets`}>
+      <Section title={d.pendingActions.title} subtitle={d.pendingActions.subtitle(PENDING_ACTIONS.length)}>
         <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, overflow: "hidden" }}>
-          {PENDING_ACTIONS.map((a, i) => (
-            <div
-              key={i}
-              style={{
-                padding: "16px 20px",
-                borderBottom: i < PENDING_ACTIONS.length - 1 ? "1px solid var(--line)" : "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-              }}
-            >
-              <SevBadge severity={a.severity} />
-              <span className="mono" style={{ fontSize: 11, color: "var(--muted-2)", width: 80, flexShrink: 0, letterSpacing: "0.04em" }}>
-                {a.channel}
-              </span>
-              <span style={{ flex: 1, fontSize: 13.5, color: "var(--ink-2)" }}>{a.message}</span>
-              <span className="mono" style={{ fontSize: 11, color: "var(--muted)", letterSpacing: "0.04em" }}>
-                {a.count}× ACROSS RUNS
-              </span>
-              <ArrowUpRight size={14} color="var(--muted-2)" />
-            </div>
-          ))}
+          {PENDING_ACTIONS.map((a, i) => {
+            const txt = d.mockActions[i] ?? { channel: a.channel, message: "" };
+            return (
+              <div
+                key={i}
+                style={{
+                  padding: "16px 20px",
+                  borderBottom: i < PENDING_ACTIONS.length - 1 ? "1px solid var(--line)" : "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                }}
+              >
+                <SevBadge severity={a.severity} />
+                <span className="mono" style={{ fontSize: 11, color: "var(--muted-2)", width: 80, flexShrink: 0, letterSpacing: "0.04em" }}>
+                  {txt.channel}
+                </span>
+                <span style={{ flex: 1, fontSize: 13.5, color: "var(--ink-2)" }}>{txt.message}</span>
+                <span className="mono" style={{ fontSize: 11, color: "var(--muted)", letterSpacing: "0.04em" }}>
+                  {a.count}× {d.pendingActions.timesAcrossRuns}
+                </span>
+                <ArrowUpRight size={14} color="var(--muted-2)" />
+              </div>
+            );
+          })}
         </div>
       </Section>
 
       {/* Recent audits */}
       <Section
-        title="Recent audits"
-        subtitle={`${MOCK_RUNS.length} runs in the last 4 weeks`}
+        title={d.recentAudits.title}
+        subtitle={d.recentAudits.subtitle(MOCK_RUNS.length)}
         right={
           <Link href="/audits" style={{ textDecoration: "none" }}>
-            <Button variant="secondary" size="sm" icon={ArrowRight}>See all</Button>
+            <Button variant="secondary" size="sm" icon={ArrowRight}>{d.recentAudits.seeAll}</Button>
           </Link>
         }
       >
         <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, overflow: "hidden" }}>
-          {MOCK_RUNS.slice(0, 5).map((r, i, arr) => (
-            <Link
-              key={r.id}
-              href="/report"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                display: "flex",
-                alignItems: "center",
-                padding: "16px 20px",
-                borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none",
-                gap: 16,
-              }}
-            >
-              <ScoreRing score={r.score} size={44} stroke={4} mini />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {r.target}
+          {MOCK_RUNS.slice(0, 5).map((r, i, arr) => {
+            const txt = d.mockRuns[i] ?? { target: r.target, date: r.date };
+            return (
+              <Link
+                key={r.id}
+                href="/report"
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "16px 20px",
+                  borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none",
+                  gap: 16,
+                }}
+              >
+                <ScoreRing score={r.score} size={44} stroke={4} mini />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {txt.target}
+                  </div>
+                  <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginTop: 2, letterSpacing: "0.04em" }}>
+                    {r.id.toUpperCase()} · {txt.date.toUpperCase()}
+                  </div>
                 </div>
-                <div className="mono" style={{ fontSize: 11, color: "var(--muted-2)", marginTop: 2, letterSpacing: "0.04em" }}>
-                  {r.id.toUpperCase()} · {r.date.toUpperCase()}
-                </div>
-              </div>
-              <span className="mono" style={{ fontSize: 11, color: "var(--muted)", letterSpacing: "0.04em", flexShrink: 0 }}>
-                {r.channels}/{r.channelsTotal} CHANNELS
-              </span>
-              <ArrowUpRight size={14} color="var(--muted-2)" />
-            </Link>
-          ))}
+                <span className="mono" style={{ fontSize: 11, color: "var(--muted)", letterSpacing: "0.04em", flexShrink: 0 }}>
+                  {r.channels}/{r.channelsTotal} {d.recentAudits.channelsSuffix}
+                </span>
+                <ArrowUpRight size={14} color="var(--muted-2)" />
+              </Link>
+            );
+          })}
         </div>
       </Section>
     </AppShell>

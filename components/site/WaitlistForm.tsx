@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/primitives";
+import { useLang } from "@/lib/i18n/LanguageContext";
 
 type State = "idle" | "submitting" | "success" | "error";
 
 export function WaitlistForm() {
+  const { t } = useLang();
+  const w = t.waitlistForm;
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -25,7 +28,7 @@ export function WaitlistForm() {
         setState("success");
       } else {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
-        setErrorMsg(data.error || "Something went wrong.");
+        setErrorMsg(data.error || w.errorDefault);
         setState("error");
       }
     } catch (err) {
@@ -54,16 +57,16 @@ export function WaitlistForm() {
             marginBottom: 12,
           }}
         >
-          ON THE LIST
+          {w.successKicker}
         </div>
         <h2
           className="serif"
           style={{ fontSize: 28, fontWeight: 500, margin: "0 0 8px" }}
         >
-          You&apos;re on the list.
+          {w.successTitle}
         </h2>
         <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6, margin: 0 }}>
-          We&apos;ll be in touch when the dashboard and monitoring features launch.
+          {w.successBody}
         </p>
       </div>
     );
@@ -89,7 +92,7 @@ export function WaitlistForm() {
           display: "block",
         }}
       >
-        Email
+        {w.emailLabel}
       </label>
       <input
         id="waitlist-email"
@@ -97,7 +100,7 @@ export function WaitlistForm() {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@example.com"
+        placeholder={w.emailPlaceholder}
         disabled={state === "submitting"}
         style={{
           width: "100%",
@@ -118,7 +121,7 @@ export function WaitlistForm() {
         type="submit"
         disabled={state === "submitting" || !email.trim()}
       >
-        {state === "submitting" ? "Joining…" : "Join the waitlist"}
+        {state === "submitting" ? w.submitBusy : w.submitIdle}
       </Button>
       {state === "error" && (
         <p
@@ -128,7 +131,7 @@ export function WaitlistForm() {
             color: "var(--accent)",
           }}
         >
-          {errorMsg || "Try again."}
+          {errorMsg || w.tryAgain}
         </p>
       )}
     </form>
