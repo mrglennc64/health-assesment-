@@ -3,6 +3,16 @@ import Link from "next/link";
 
 export type Lang = "en" | "sv";
 
+type DpaBlock =
+  | { kind: "p"; text: string }
+  | { kind: "ul"; items: string[] }
+  | { kind: "ol"; items: string[] }
+  | { kind: "dl"; items: { term: string; def: string }[] }
+  | { kind: "h3"; text: string }
+  | { kind: "h4"; text: string }
+  | { kind: "table"; headers: string[]; rows: string[][] }
+  | { kind: "note"; text: string };
+
 type SuiteToolCopy = {
   cardDesc: string;
   cardBullets: string[];
@@ -217,6 +227,25 @@ type MarketingPage = {
     title: string;
     intro: string;
     sections: { heading: string; body: string }[];
+  };
+  dpaPage: {
+    kicker: string;
+    title: string;
+    subtitle: string;
+    parties: { lead: string; controller: string; and: string; processor: string };
+    effectiveLabel: string;
+    effectiveValue: string;
+    sections: {
+      heading: string;
+      blocks: DpaBlock[];
+    }[];
+    annexHeading: string;
+    annexParts: {
+      heading: string;
+      intro?: string;
+      blocks: DpaBlock[];
+    }[];
+    endOfAgreement: string;
   };
   classificationPage: {
     kicker: string;
@@ -487,7 +516,7 @@ type MarketingPage = {
       product: { heading: string; productOverview: string; complianceSuite: string; pricing: string; freeAudit: string; sampleReport: string };
       company: { heading: string; company: string; whoItsFor: string; contact: string; waitlist: string };
       resources: { heading: string; documentation: string; status: string; safety: string; security: string; monitoring: string };
-      legal: { heading: string; privacy: string; terms: string; regulatory: string; classification: string };
+      legal: { heading: string; privacy: string; terms: string; regulatory: string; classification: string; dpa: string };
     };
   };
   dashboard: {
@@ -1158,6 +1187,481 @@ export const dict: Record<Lang, Dict> = {
         },
       ],
     },
+    dpaPage: {
+      kicker: "DATA PROCESSING AGREEMENT",
+      title: "Data Processing Agreement (DPA)",
+      subtitle: "Between Company and MediReady (Processor)",
+      parties: { lead: "Between:", controller: "Company (as defined in the Principal Agreement)", and: "and", processor: "MediReady (Processor)" },
+      effectiveLabel: "Effective Date",
+      effectiveValue: "[DATE]",
+      sections: [
+        {
+          heading: "1. Definitions",
+          blocks: [
+            { kind: "p", text: "1.1 Unless otherwise defined herein, capitalized terms and expressions used in this Agreement shall have the following meaning:" },
+            {
+              kind: "dl",
+              items: [
+                { term: "1.1.1 “Agreement”", def: "this Data Processing Agreement and all Annexes." },
+                { term: "1.1.2 “Company Personal Data”", def: "any Personal Data Processed by Processor on behalf of Company pursuant to or in connection with the Principal Agreement." },
+                { term: "1.1.3 “Contracted Processor”", def: "a Subprocessor." },
+                { term: "1.1.4 “Data Protection Laws”", def: "EU Data Protection Laws and, to the extent applicable, the data protection or privacy laws of any other country, including Sweden's supplementary national provisions." },
+                { term: "1.1.5 “EEA”", def: "the European Economic Area." },
+                { term: "1.1.6 “EU Data Protection Laws”", def: "EU Directive 95/46/EC, as transposed into domestic legislation of each Member State and as amended, replaced or superseded from time to time, including by the GDPR and laws implementing or supplementing the GDPR." },
+                { term: "1.1.7 “GDPR”", def: "EU General Data Protection Regulation 2016/679." },
+                { term: "1.1.8 “Services”", def: "the compliance documentation and audit analysis platform provided by MediReady." },
+                { term: "1.1.9 “Subprocessor”", def: "any person appointed by or on behalf of Processor to process Personal Data on behalf of Company." },
+              ],
+            },
+            { kind: "p", text: "1.2 The terms “Commission”, “Controller”, “Data Subject”, “Member State”, “Personal Data”, “Personal Data Breach”, “Processing” and “Supervisory Authority” shall have the same meaning as in the GDPR, and their cognate terms shall be construed accordingly." },
+          ],
+        },
+        {
+          heading: "2. Processing of Company Personal Data",
+          blocks: [
+            { kind: "p", text: "2.1 Processor shall:" },
+            {
+              kind: "ul",
+              items: [
+                "2.1.1 comply with all applicable Data Protection Laws in the Processing of Company Personal Data; and",
+                "2.1.2 not Process Company Personal Data other than on the Company's documented instructions.",
+              ],
+            },
+            { kind: "p", text: "2.2 The Company instructs Processor to Process Company Personal Data for the sole purpose of providing the Services as defined in the Principal Agreement." },
+          ],
+        },
+        {
+          heading: "3. Processor Personnel",
+          blocks: [
+            { kind: "p", text: "Processor shall take reasonable steps to ensure the reliability of any employee, agent or contractor who may have access to the Company Personal Data, ensuring in each case that access is strictly limited to those individuals who need to know or access the relevant Company Personal Data, as strictly necessary for the purposes of the Principal Agreement. All such individuals are subject to confidentiality undertakings or professional or statutory obligations of confidentiality." },
+          ],
+        },
+        {
+          heading: "4. Security",
+          blocks: [
+            { kind: "p", text: "4.1 Processor shall implement the following technical and organizational measures to secure Company Personal Data, taking into account the administrative nature of the Processing and the absence of sensitive patient data:" },
+            { kind: "h3", text: "4.1.1 Technical Measures" },
+            {
+              kind: "ul",
+              items: [
+                "All data transmission occurs over TLS 1.2 or higher encryption",
+                "HSTS (HTTP Strict Transport Security) enforced on all endpoints",
+                "No mixed content (HTTP/HTTPS) allowed",
+                "No cookies, trackers, or background data collection",
+                "No storage of Company Personal Data on Processor systems after audit completion",
+              ],
+            },
+            { kind: "h3", text: "4.1.2 Organizational Measures" },
+            {
+              kind: "ul",
+              items: [
+                "Stateless processing architecture: inputs are processed in memory only",
+                "Inputs are deleted immediately upon audit completion, no retention",
+                "Access to processing systems restricted to Processor personnel with documented need-to-know",
+                "All personnel subject to confidentiality obligations (see §3)",
+                "Audit logging of all processing activities for compliance verification",
+                "No use of Company Personal Data for model training, improvement, or any purpose outside the documented audit instructions",
+              ],
+            },
+            { kind: "h3", text: "4.1.3 Subprocessor Security" },
+            {
+              kind: "ul",
+              items: [
+                "Inference engine operates under signed Business Associate Agreement (BAA) with no training use of input data",
+                "All Subprocessors maintain equivalent security controls as described in this section",
+              ],
+            },
+            { kind: "p", text: "4.2 Processor acknowledges that the stateless, non-retention design significantly reduces data protection risk and is a central feature of this Security architecture." },
+          ],
+        },
+        {
+          heading: "5. Subprocessing",
+          blocks: [
+            { kind: "p", text: "5.1 Processor shall not appoint or disclose any Company Personal Data to any Subprocessor unless required or authorized by the Company in writing." },
+            { kind: "h3", text: "5.2 Authorized Subprocessors" },
+            { kind: "p", text: "The following subprocessors are pre-authorized to process Company Personal Data on behalf of Processor in connection with the Services:" },
+            {
+              kind: "table",
+              headers: ["Subprocessor", "Function", "Location", "BAA/DPA", "Data Retention"],
+              rows: [
+                ["Mistral AI (mistral.ai)", "LLM inference for audit analysis", "EU", "Signed BAA, no training use", "None (stateless)"],
+              ],
+            },
+            { kind: "h3", text: "5.3 No Other Subprocessors" },
+            { kind: "p", text: "Processor uses no other subprocessors. There are no hosting providers, CDNs, analytics services, or any other third-party systems that receive Company Personal Data. All processing occurs within Processor's controlled environment." },
+            { kind: "h3", text: "5.4 Notification of New Subprocessors" },
+            { kind: "p", text: "Processor may add new subprocessors only with prior written consent from Company. Processor shall notify Company at least 30 days before any new subprocessor begins processing Company Personal Data, providing:" },
+            {
+              kind: "ul",
+              items: [
+                "Name and location of the subprocessor",
+                "Description of processing activities",
+                "Data protection safeguards (BAA, DPA, or equivalent)",
+                "Data retention period",
+              ],
+            },
+            { kind: "h3", text: "5.5 Objection Rights" },
+            { kind: "p", text: "If Company objects to the appointment of a new subprocessor on reasonable data protection grounds, Company may:" },
+            {
+              kind: "ul",
+              items: [
+                "Terminate the affected Services without penalty",
+                "Request an alternative subprocessor",
+              ],
+            },
+            { kind: "h3", text: "5.6 Subprocessor Liability" },
+            { kind: "p", text: "Processor remains fully liable to Company for the performance of any Subprocessor's obligations under this Agreement." },
+          ],
+        },
+        {
+          heading: "6. Data Subject Rights",
+          blocks: [
+            { kind: "p", text: "6.1 Taking into account the nature of the Processing, Processor shall assist the Company by implementing appropriate technical and organisational measures, insofar as this is possible, for the fulfilment of the Company's obligations to respond to requests to exercise Data Subject rights under the Data Protection Laws." },
+            { kind: "p", text: "6.2 Processor shall:" },
+            {
+              kind: "ul",
+              items: [
+                "6.2.1 promptly notify Company if it receives a request from a Data Subject under any Data Protection Law in respect of Company Personal Data; and",
+                "6.2.2 ensure that it does not respond to that request except on the documented instructions of Company or as required by Applicable Laws.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "7. Personal Data Breach",
+          blocks: [
+            { kind: "h3", text: "7.1 Breach Notification Timeline" },
+            { kind: "p", text: "Processor shall notify Company of any suspected or confirmed Personal Data Breach affecting Company Personal Data within 24 hours of discovery, and in no case later than by end of business on the next calendar day. Notification shall be provided to Company's designated security contact via email." },
+            { kind: "h3", text: "7.2 Breach Notification Content" },
+            { kind: "p", text: "Notification shall include:" },
+            {
+              kind: "ul",
+              items: [
+                "Nature and scope of the breach",
+                "Categories of Company Personal Data affected",
+                "Likely consequences for the data subject(s)",
+                "Measures taken or proposed to address the breach and mitigate harm",
+                "Processor's point of contact for further information",
+                "Estimated timeline for full investigation report",
+              ],
+            },
+            { kind: "p", text: "This information shall be sufficient to enable Company to:" },
+            {
+              kind: "ul",
+              items: [
+                "Assess risk and determine whether notification to data subjects is required",
+                "Notify the Swedish Data Protection Authority (IMY) within the GDPR Article 33 timeline (72 hours from discovery)",
+                "Satisfy any regulatory or legal reporting obligations",
+              ],
+            },
+            { kind: "h3", text: "7.3 Cooperation and Remediation" },
+            { kind: "p", text: "Processor shall:" },
+            {
+              kind: "ul",
+              items: [
+                "Immediately suspend processing until the breach is contained",
+                "Conduct a forensic investigation and provide a detailed written report within 5 business days",
+                "Implement corrective actions to prevent recurrence",
+                "Cooperate fully with Company's incident response, including provision of logs, forensic data, and witness statements",
+                "Reimburse Company for reasonable costs of breach investigation and remediation",
+                "Maintain documentation of the breach, investigation, and remediation for at least 3 years",
+              ],
+            },
+            { kind: "h3", text: "7.4 Breach Prevention" },
+            { kind: "p", text: "In light of the stateless architecture, Company acknowledges that Processor's default position is zero retention of Company Personal Data post-audit, which substantially mitigates breach risk." },
+          ],
+        },
+        {
+          heading: "8. Data Protection Impact Assessment and Prior Consultation",
+          blocks: [
+            { kind: "p", text: "Processor shall provide reasonable assistance to the Company with any data protection impact assessments, and prior consultations with Supervising Authorities or other competent data privacy authorities, which Company reasonably considers to be required by Article 35 or 36 of the GDPR, in each case solely in relation to Processing of Company Personal Data by Processor." },
+          ],
+        },
+        {
+          heading: "9. Deletion or Return of Company Personal Data",
+          blocks: [
+            { kind: "h3", text: "9.1 Deletion on Service Cessation" },
+            { kind: "p", text: "Upon written termination notice from Company or upon cessation of Services, Processor shall execute the following deletion protocol:" },
+            { kind: "h4", text: "9.1.1 Immediate Actions (within 24 hours)" },
+            {
+              kind: "ul",
+              items: [
+                "Cease all processing of Company Personal Data",
+                "Delete all audit run data, inputs, and outputs from active production systems",
+                "Disable all access to Company Personal Data by Processor personnel",
+              ],
+            },
+            { kind: "h4", text: "9.1.2 Backup and Archive Purge (within 10 business days)" },
+            {
+              kind: "ul",
+              items: [
+                "Purge all backups containing Company Personal Data from all systems",
+                "Delete all archived logs and audit trails containing references to Company Personal Data",
+                "Certify completion in writing to Company",
+              ],
+            },
+            { kind: "h4", text: "9.1.3 Subprocessor Coordination (within 10 business days)" },
+            {
+              kind: "ul",
+              items: [
+                "Instruct all Subprocessors (including Mistral AI) to delete Company Personal Data",
+                "Obtain written confirmation of deletion from each Subprocessor",
+                "Provide evidence of deletion to Company",
+              ],
+            },
+            { kind: "h3", text: "9.2 Deletion on Request" },
+            { kind: "p", text: "Company may request deletion of Company Personal Data at any time during the Services. Processor shall comply with the deletion protocol in §9.1 within 5 business days of such request." },
+            { kind: "h3", text: "9.3 Certification of Deletion" },
+            { kind: "p", text: "Within 15 business days of the Cessation Date or upon Company's deletion request, Processor shall provide Company with:" },
+            {
+              kind: "ul",
+              items: [
+                "Written certification that all Company Personal Data has been deleted",
+                "List of all systems from which data was deleted",
+                "Confirmation of Subprocessor deletion",
+                "Any exceptions (e.g., legally required retention documented)",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "9A. AI Processing and Transparency",
+          blocks: [
+            { kind: "h3", text: "9A.1 AI Model Disclosure" },
+            { kind: "p", text: "Processor uses the following Large Language Model (LLM) for inference and audit analysis:" },
+            {
+              kind: "ul",
+              items: [
+                "Model: Mistral Large (latest version at time of audit)",
+                "Provider: Mistral AI (mistral.ai)",
+                "Jurisdiction: EU",
+                "Purpose: Analysis of Company Personal Data for compliance findings and audit recommendations only",
+              ],
+            },
+            { kind: "p", text: "Processor shall notify Company of any material change to the AI model (e.g., model upgrade, provider change) at least 30 days before implementation." },
+            { kind: "h3", text: "9A.2 No Training Use" },
+            { kind: "p", text: "Processor warrants that:" },
+            {
+              kind: "ul",
+              items: [
+                "Company Personal Data is not used to train, fine-tune, or improve the AI model",
+                "Company Personal Data is not used for model evaluation or benchmarking",
+                "Company Personal Data is not aggregated, anonymized, or used for any secondary purpose",
+                "All inferences are performed under a signed Business Associate Agreement (BAA) with Mistral AI that explicitly prohibits training use",
+              ],
+            },
+            { kind: "h3", text: "9A.3 Human Oversight" },
+            { kind: "p", text: "Processor maintains the following human oversight controls:" },
+            {
+              kind: "ul",
+              items: [
+                "All findings flagged as “CRITICAL” are reviewed by a qualified human auditor before delivery to Company",
+                "High-confidence findings (“HIGH”) are reviewed by automated quality checks before delivery",
+                "All audit reports include metadata identifying which findings received human review",
+                "Company may request human review of any specific finding",
+              ],
+            },
+            { kind: "h3", text: "9A.4 Output Accuracy and Limitations" },
+            { kind: "p", text: "Processor acknowledges that AI-generated audit findings may contain errors, false positives, or incomplete analysis. Processor therefore:" },
+            {
+              kind: "ul",
+              items: [
+                "Labels all findings with confidence levels (CRITICAL, HIGH, MEDIUM, LOW, INFO)",
+                "Provides source citations for each finding",
+                "Disclaims any warranty that findings are 100% accurate or complete",
+                "Recommends that Company apply independent professional judgment before acting on findings",
+                "Does not substitute for professional legal or compliance counsel",
+              ],
+            },
+            { kind: "h3", text: "9A.5 Bias and Fairness" },
+            { kind: "p", text: "Processor acknowledges potential for AI model bias and commits to:" },
+            {
+              kind: "ul",
+              items: [
+                "Monitoring for systematic bias in audit findings",
+                "Disclosing known biases or limitations upon request",
+                "Accepting feedback from Company regarding suspected bias and incorporating findings into model performance tracking",
+                "Maintaining an audit log of all bias reports and remediation actions",
+              ],
+            },
+            { kind: "h3", text: "9A.6 Transparency and Documentation" },
+            { kind: "p", text: "Upon request, Processor shall provide Company with:" },
+            {
+              kind: "ul",
+              items: [
+                "Documentation of the Mistral Large model's training data, architecture, and known limitations",
+                "Copy of the signed BAA with Mistral AI confirming no training use",
+                "Audit logs showing which specific Company Personal Data was processed and when",
+                "Explanation of how specific findings were derived",
+              ],
+            },
+            { kind: "h3", text: "9A.7 Alignment with IMY Guidance" },
+            { kind: "p", text: "Processor confirms that its use of AI aligns with the Swedish Data Protection Authority (IMY) guidance on AI and GDPR, including:" },
+            {
+              kind: "ul",
+              items: [
+                "Transparency about AI use in processing personal data",
+                "Human oversight of consequential decisions",
+                "Documented risk assessments and mitigation measures",
+                "Regular audits of AI system performance and fairness",
+              ],
+            },
+            { kind: "p", text: "Processor maintains documentation demonstrating compliance with these principles and provides such documentation to Company or IMY upon request." },
+          ],
+        },
+        {
+          heading: "10. Audit Rights",
+          blocks: [
+            { kind: "p", text: "10.1 Processor shall make available to the Company on request all information necessary to demonstrate compliance with this Agreement, and shall allow for and contribute to audits, including inspections, by the Company or an auditor mandated by the Company." },
+            { kind: "p", text: "10.2 Information and audit rights of the Company only arise to the extent that this Agreement does not otherwise give them information and audit rights meeting the relevant requirements of Data Protection Law." },
+          ],
+        },
+        {
+          heading: "11. Data Transfer",
+          blocks: [
+            { kind: "p", text: "11.1 Processor may not transfer or authorize the transfer of Data to countries outside the EU and/or the European Economic Area (EEA) without the prior written consent of the Company." },
+            { kind: "p", text: "11.2 All processing occurs within the European Economic Area (EEA). Mistral AI performs inference within the EU." },
+            { kind: "p", text: "11.3 If any future data transfer occurs outside the EEA, EU Standard Contractual Clauses (SCCs) shall apply per GDPR Article 46." },
+          ],
+        },
+        {
+          heading: "12. General Terms",
+          blocks: [
+            { kind: "p", text: "12.1 Confidentiality. Each Party must keep this Agreement and information it receives about the other Party and its business in connection with this Agreement (“Confidential Information”) confidential and must not use or disclose that Confidential Information without the prior written consent of the other Party except to the extent that:" },
+            {
+              kind: "ul",
+              items: [
+                "(a) disclosure is required by law",
+                "(b) the relevant information is already in the public domain",
+              ],
+            },
+            { kind: "p", text: "12.2 Notices. All notices and communications given under this Agreement must be in writing and will be delivered personally, sent by post or sent by email to the address or email address set out in the heading of this Agreement." },
+          ],
+        },
+        {
+          heading: "13. Governing Law & Jurisdiction",
+          blocks: [
+            { kind: "p", text: "13.1 This Agreement is governed by the laws of Sweden." },
+            { kind: "p", text: "13.2 Any dispute arising in connection with this Agreement, which the Parties will not be able to resolve amicably, will be submitted to the exclusive jurisdiction of the courts of Sweden, subject to possible appeal to the Swedish Federal Supreme Court in Stockholm." },
+          ],
+        },
+      ],
+      annexHeading: "Annex 1 — Technical Specifications and Subprocessors",
+      annexParts: [
+        {
+          heading: "Part A: Processing Details",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Element", "Specification"],
+              rows: [
+                ["Defined Purpose", "Compliance documentation and administrative workflow audit"],
+                ["Type of Processing", "Automated analysis of administrative documents, policies, procedures, and process workflows"],
+                ["Scope of Data", "Administrative records only; no patient data (PHI), no medical decision-making data"],
+                ["Categories of Data Subjects", "Healthcare administrators, quality managers, compliance officers, operations staff (not patients)"],
+                ["Duration of Processing", "Real-time; inputs processed and deleted immediately upon audit completion (typically <2 minutes)"],
+                ["Data Retention", "None; stateless architecture means no data persisted post-audit"],
+                ["Frequency", "On-demand per Company instructions; no background or continuous processing"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Part B: Security and Data Protection Measures",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Measure", "Details"],
+              rows: [
+                ["Encryption in Transit", "TLS 1.2 or higher on all endpoints; HSTS enforced"],
+                ["Encryption at Rest", "N/A — no data stored at rest; stateless processing only"],
+                ["Data Storage", "Inputs stored in memory during processing only; deleted upon completion"],
+                ["Access Control", "Least-privilege access; personnel confidentiality obligations"],
+                ["Audit Logging", "All processing activities logged for compliance verification"],
+                ["Subprocessor Security", "All subprocessors maintain equivalent or higher security controls"],
+                ["Backup & Disaster Recovery", "No backups of Company Personal Data retained; audit outputs (if stored by Company) are Company's responsibility"],
+                ["Incident Response", "24-hour breach notification; forensic investigation within 5 business days"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Part C: Authorized Subprocessors",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Subprocessor", "Function", "Location", "Data Protection", "No-Training Commitment"],
+              rows: [
+                ["Mistral AI (mistral.ai)", "LLM inference for audit analysis", "EU", "GDPR + AI safeguards (§9A)", "Yes — signed BAA"],
+              ],
+            },
+            { kind: "note", text: "Note: Processor uses no other subprocessors. There are no hosting providers, CDNs, analytics services, or any other third-party systems that receive Company Personal Data." },
+          ],
+        },
+        {
+          heading: "Part D: Data Transfer Restrictions",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Aspect", "Commitment"],
+              rows: [
+                ["Geographic Scope", "All processing occurs within the European Economic Area (EEA)"],
+                ["Subprocessor Location", "Mistral AI performs inference within EU; no non-EEA data transfer"],
+                ["Standard Clauses", "If any future data transfer occurs outside EEA, EU Standard Contractual Clauses (SCCs) shall apply per GDPR Article 46"],
+                ["Company Consent", "Company consent required in writing before any non-EEA transfer (§11)"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Part E: Retention and Deletion Schedule",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Phase", "Timeline", "Action"],
+              rows: [
+                ["Active Processing", "<2 minutes typical", "Inputs held in memory; audit analysis performed"],
+                ["Audit Completion", "Upon run completion", "Inputs deleted from memory; audit report generated"],
+                ["Audit Report", "Per Company request", "Audit report retained in Company's control only (not Processor's)"],
+                ["Service Termination", "Within 24 hours", "All active systems purged"],
+                ["Backup Purge", "Within 10 business days", "All backup copies deleted"],
+                ["Subprocessor Deletion", "Within 10 business days", "Confirmation obtained from Mistral AI"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Part F: Company Responsibilities",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Responsibility", "Details"],
+              rows: [
+                ["Data Subject Notification", "Company is responsible for notifying data subjects of any breach (Processor assists per §7)"],
+                ["Lawful Basis", "Company warrants it has lawful basis under GDPR Articles 6 and/or 9 for providing data to Processor"],
+                ["Prior Consent", "Company warrants it has obtained necessary consent from data subjects or that processing is otherwise lawful"],
+                ["Audit Report Storage", "Company is responsible for securing and managing audit reports after export; Processor's stateless architecture does not retain copies"],
+                ["Policy Compliance", "Company warrants that use of MediReady Services complies with Company's own data protection policies and notices"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Part G: Contact Information for Data Protection Matters",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Role", "Contact", "Availability"],
+              rows: [
+                ["Processor's Data Protection Contact", "[DPO NAME] / [EMAIL ADDRESS]", "[RESPONSE TIMEFRAME, e.g., “Within 2 business days”]"],
+                ["Security Incident Reporting", "[SECURITY EMAIL]", "24/7 for breach notifications"],
+              ],
+            },
+          ],
+        },
+      ],
+      endOfAgreement: "End of Agreement",
+    },
     classificationPage: {
       kicker: "CLASSIFICATION DOCUMENT",
       title: "MediReady — Classification Document",
@@ -1761,6 +2265,7 @@ export const dict: Record<Lang, Dict> = {
           terms: "Terms of use",
           regulatory: "Regulatory positioning",
           classification: "Classification document",
+          dpa: "Data processing agreement",
         },
       },
     },
@@ -2520,6 +3025,481 @@ export const dict: Record<Lang, Dict> = {
         },
       ],
     },
+    dpaPage: {
+      kicker: "PERSONUPPGIFTSBITRÄDESAVTAL",
+      title: "Personuppgiftsbiträdesavtal (DPA)",
+      subtitle: "Mellan Företaget och MediReady (personuppgiftsbiträde)",
+      parties: { lead: "Mellan:", controller: "Företaget (enligt definitionen i huvudavtalet)", and: "och", processor: "MediReady (personuppgiftsbiträde)" },
+      effectiveLabel: "Ikraftträdandedatum",
+      effectiveValue: "[DATUM]",
+      sections: [
+        {
+          heading: "1. Definitioner",
+          blocks: [
+            { kind: "p", text: "1.1 Om inte annat anges nedan ska följande termer ha följande betydelse i detta avtal:" },
+            {
+              kind: "dl",
+              items: [
+                { term: "1.1.1 “Avtalet”", def: "detta personuppgiftsbiträdesavtal jämte samtliga bilagor." },
+                { term: "1.1.2 “Företagets personuppgifter”", def: "samtliga personuppgifter som behandlas av personuppgiftsbiträdet för Företagets räkning enligt eller i samband med huvudavtalet." },
+                { term: "1.1.3 “Anlitat biträde”", def: "ett underbiträde." },
+                { term: "1.1.4 “Dataskyddslagstiftning”", def: "EU:s dataskyddslagstiftning samt, i tillämpliga delar, dataskydds‑ eller integritetslagstiftningen i andra länder, inklusive Sveriges kompletterande nationella bestämmelser." },
+                { term: "1.1.5 “EES”", def: "Europeiska ekonomiska samarbetsområdet." },
+                { term: "1.1.6 “EU:s dataskyddslagstiftning”", def: "EU:s direktiv 95/46/EG, såsom införlivat i varje medlemsstats nationella lagstiftning och med eventuella ändringar, ersättningar eller upphävanden över tid, inklusive genom GDPR och lagstiftning som genomför eller kompletterar GDPR." },
+                { term: "1.1.7 “GDPR”", def: "Europaparlamentets och rådets förordning (EU) 2016/679." },
+                { term: "1.1.8 “Tjänsterna”", def: "den plattform för compliance‑dokumentation och granskningsanalys som tillhandahålls av MediReady." },
+                { term: "1.1.9 “Underbiträde”", def: "varje person som utses av eller på uppdrag av personuppgiftsbiträdet att behandla personuppgifter för Företagets räkning." },
+              ],
+            },
+            { kind: "p", text: "1.2 Begreppen “Kommissionen”, “Personuppgiftsansvarig”, “Registrerad”, “Medlemsstat”, “Personuppgifter”, “Personuppgiftsincident”, “Behandling” och “Tillsynsmyndighet” har samma innebörd som i GDPR och relaterade termer ska tolkas i enlighet med detta." },
+          ],
+        },
+        {
+          heading: "2. Behandling av Företagets personuppgifter",
+          blocks: [
+            { kind: "p", text: "2.1 Personuppgiftsbiträdet ska:" },
+            {
+              kind: "ul",
+              items: [
+                "2.1.1 följa samtlig tillämplig dataskyddslagstiftning vid behandlingen av Företagets personuppgifter, och",
+                "2.1.2 inte behandla Företagets personuppgifter på annat sätt än enligt Företagets dokumenterade instruktioner.",
+              ],
+            },
+            { kind: "p", text: "2.2 Företaget instruerar personuppgiftsbiträdet att behandla Företagets personuppgifter uteslutande för att tillhandahålla Tjänsterna enligt huvudavtalet." },
+          ],
+        },
+        {
+          heading: "3. Personuppgiftsbiträdets personal",
+          blocks: [
+            { kind: "p", text: "Personuppgiftsbiträdet ska vidta rimliga åtgärder för att säkerställa tillförlitligheten hos varje anställd, ombud eller uppdragstagare som kan få tillgång till Företagets personuppgifter, och säkerställa att åtkomst i varje enskilt fall är strikt begränsad till de individer som behöver känna till eller komma åt de aktuella personuppgifterna för att fullgöra huvudavtalets syfte. Samtliga sådana individer omfattas av tystnadsåtaganden eller yrkesmässiga eller lagstadgade tystnadsplikter." },
+          ],
+        },
+        {
+          heading: "4. Säkerhet",
+          blocks: [
+            { kind: "p", text: "4.1 Personuppgiftsbiträdet ska genomföra följande tekniska och organisatoriska åtgärder för att skydda Företagets personuppgifter, med beaktande av behandlingens administrativa karaktär och frånvaron av känsliga patientuppgifter:" },
+            { kind: "h3", text: "4.1.1 Tekniska åtgärder" },
+            {
+              kind: "ul",
+              items: [
+                "All dataöverföring sker över TLS 1.2 eller senare kryptering",
+                "HSTS (HTTP Strict Transport Security) tillämpas på samtliga endpoints",
+                "Blandat innehåll (HTTP/HTTPS) tillåts inte",
+                "Inga cookies, spårare eller bakgrundsdatainsamling",
+                "Företagets personuppgifter lagras inte på personuppgiftsbiträdets system efter slutförd granskning",
+              ],
+            },
+            { kind: "h3", text: "4.1.2 Organisatoriska åtgärder" },
+            {
+              kind: "ul",
+              items: [
+                "Stateless arkitektur: inmatningar bearbetas enbart i minnet",
+                "Inmatningar raderas omedelbart efter slutförd granskning, ingen lagring",
+                "Åtkomst till bearbetningssystem är begränsad till personal hos personuppgiftsbiträdet med dokumenterat behov",
+                "All personal omfattas av tystnadsplikt (se §3)",
+                "Loggning av samtliga behandlingsaktiviteter för efterlevnadsverifiering",
+                "Företagets personuppgifter används inte för modellträning, förbättring eller annat syfte utanför de dokumenterade granskningsinstruktionerna",
+              ],
+            },
+            { kind: "h3", text: "4.1.3 Säkerhet hos underbiträden" },
+            {
+              kind: "ul",
+              items: [
+                "Inferensmotorn drivs under signerat Business Associate Agreement (BAA) utan att inmatningar används för träning",
+                "Samtliga underbiträden upprätthåller motsvarande säkerhetskontroller som beskrivs i detta avsnitt",
+              ],
+            },
+            { kind: "p", text: "4.2 Personuppgiftsbiträdet bekräftar att den stateless arkitekturen utan lagring väsentligt minskar dataskyddsrisken och utgör en central del av denna säkerhetsarkitektur." },
+          ],
+        },
+        {
+          heading: "5. Underbehandling",
+          blocks: [
+            { kind: "p", text: "5.1 Personuppgiftsbiträdet får inte utse eller röja Företagets personuppgifter till något underbiträde annat än om så krävs eller skriftligen godkänts av Företaget." },
+            { kind: "h3", text: "5.2 Godkända underbiträden" },
+            { kind: "p", text: "Följande underbiträden är förhandsgodkända att behandla Företagets personuppgifter för personuppgiftsbiträdets räkning i samband med Tjänsterna:" },
+            {
+              kind: "table",
+              headers: ["Underbiträde", "Funktion", "Plats", "BAA/DPA", "Datalagring"],
+              rows: [
+                ["Mistral AI (mistral.ai)", "LLM‑inferens för granskningsanalys", "EU", "Signerat BAA, ingen träningsanvändning", "Ingen (stateless)"],
+              ],
+            },
+            { kind: "h3", text: "5.3 Inga övriga underbiträden" },
+            { kind: "p", text: "Personuppgiftsbiträdet anlitar inga andra underbiträden. Det finns inga värdtjänstleverantörer, CDN, analystjänster eller andra tredjepartssystem som mottar Företagets personuppgifter. All behandling sker i personuppgiftsbiträdets kontrollerade miljö." },
+            { kind: "h3", text: "5.4 Underrättelse om nya underbiträden" },
+            { kind: "p", text: "Personuppgiftsbiträdet får tillsätta nya underbiträden endast med skriftligt förhandsgodkännande från Företaget. Personuppgiftsbiträdet ska underrätta Företaget minst 30 dagar innan ett nytt underbiträde påbörjar behandling av Företagets personuppgifter och därvid ange:" },
+            {
+              kind: "ul",
+              items: [
+                "Underbiträdets namn och plats",
+                "Beskrivning av behandlingsaktiviteterna",
+                "Dataskyddsåtgärder (BAA, DPA eller motsvarande)",
+                "Datalagringstid",
+              ],
+            },
+            { kind: "h3", text: "5.5 Invändningsrätt" },
+            { kind: "p", text: "Om Företaget invänder mot tillsättningen av ett nytt underbiträde på sakliga dataskyddsskäl får Företaget:" },
+            {
+              kind: "ul",
+              items: [
+                "Säga upp berörda Tjänster utan påföljd",
+                "Begära ett alternativt underbiträde",
+              ],
+            },
+            { kind: "h3", text: "5.6 Ansvar för underbiträden" },
+            { kind: "p", text: "Personuppgiftsbiträdet är fullt ut ansvarigt gentemot Företaget för varje underbiträdes fullgörande av sina skyldigheter enligt detta avtal." },
+          ],
+        },
+        {
+          heading: "6. Den registrerades rättigheter",
+          blocks: [
+            { kind: "p", text: "6.1 Med beaktande av behandlingens karaktär ska personuppgiftsbiträdet bistå Företaget genom lämpliga tekniska och organisatoriska åtgärder, i den utsträckning det är möjligt, för att fullgöra Företagets skyldigheter att besvara begäranden om utövande av den registrerades rättigheter enligt dataskyddslagstiftningen." },
+            { kind: "p", text: "6.2 Personuppgiftsbiträdet ska:" },
+            {
+              kind: "ul",
+              items: [
+                "6.2.1 utan dröjsmål underrätta Företaget om en begäran från en registrerad enligt dataskyddslagstiftningen avseende Företagets personuppgifter mottas, och",
+                "6.2.2 säkerställa att begäran inte besvaras utan Företagets dokumenterade instruktion eller om det krävs enligt tillämplig lag.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "7. Personuppgiftsincident",
+          blocks: [
+            { kind: "h3", text: "7.1 Underrättelsetider vid incident" },
+            { kind: "p", text: "Personuppgiftsbiträdet ska underrätta Företaget om varje misstänkt eller bekräftad personuppgiftsincident som påverkar Företagets personuppgifter inom 24 timmar från upptäckt och i inget fall senare än vid arbetsdagens slut nästa kalenderdag. Underrättelsen sker via e‑post till Företagets utsedda säkerhetskontakt." },
+            { kind: "h3", text: "7.2 Underrättelsens innehåll" },
+            { kind: "p", text: "Underrättelsen ska innehålla:" },
+            {
+              kind: "ul",
+              items: [
+                "Incidentens art och omfattning",
+                "Kategorier av Företagets personuppgifter som påverkats",
+                "Sannolika konsekvenser för den eller de registrerade",
+                "Vidtagna eller föreslagna åtgärder för att hantera incidenten och mildra skadan",
+                "Personuppgiftsbiträdets kontaktpunkt för ytterligare information",
+                "Uppskattad tidsplan för slutlig utredningsrapport",
+              ],
+            },
+            { kind: "p", text: "Informationen ska vara tillräcklig för att Företaget ska kunna:" },
+            {
+              kind: "ul",
+              items: [
+                "Bedöma risken och avgöra om underrättelse till de registrerade krävs",
+                "Underrätta Integritetsskyddsmyndigheten (IMY) inom GDPR:s artikel 33‑frist (72 timmar från upptäckt)",
+                "Uppfylla eventuella regulatoriska eller rättsliga rapporteringskrav",
+              ],
+            },
+            { kind: "h3", text: "7.3 Samarbete och åtgärder" },
+            { kind: "p", text: "Personuppgiftsbiträdet ska:" },
+            {
+              kind: "ul",
+              items: [
+                "Omedelbart avbryta behandlingen tills incidenten är inneslutet",
+                "Genomföra en forensisk utredning och lämna detaljerad skriftlig rapport inom 5 arbetsdagar",
+                "Vidta korrigerande åtgärder för att förhindra upprepning",
+                "Samarbeta fullt ut med Företagets incidenthantering, inklusive tillhandahållande av loggar, forensiska data och vittnesutsagor",
+                "Ersätta Företaget för skäliga kostnader för incidentutredning och åtgärder",
+                "Bevara dokumentation om incidenten, utredningen och åtgärderna i minst 3 år",
+              ],
+            },
+            { kind: "h3", text: "7.4 Incidentprevention" },
+            { kind: "p", text: "Mot bakgrund av den stateless arkitekturen bekräftar Företaget att personuppgiftsbiträdets utgångsläge är noll lagring av Företagets personuppgifter efter slutförd granskning, vilket väsentligt minskar incidentrisken." },
+          ],
+        },
+        {
+          heading: "8. Konsekvensbedömning och förhandssamråd",
+          blocks: [
+            { kind: "p", text: "Personuppgiftsbiträdet ska skäligen bistå Företaget vid konsekvensbedömningar avseende dataskydd och vid förhandssamråd med tillsynsmyndigheter eller andra behöriga dataskyddsmyndigheter som Företaget skäligen anser krävs enligt artikel 35 eller 36 i GDPR, i varje fall endast i förhållande till personuppgiftsbiträdets behandling av Företagets personuppgifter." },
+          ],
+        },
+        {
+          heading: "9. Radering eller återlämning av Företagets personuppgifter",
+          blocks: [
+            { kind: "h3", text: "9.1 Radering vid upphörande av Tjänsterna" },
+            { kind: "p", text: "Vid skriftlig uppsägning från Företaget eller vid upphörande av Tjänsterna ska personuppgiftsbiträdet utföra följande raderingsprotokoll:" },
+            { kind: "h4", text: "9.1.1 Omedelbara åtgärder (inom 24 timmar)" },
+            {
+              kind: "ul",
+              items: [
+                "Upphöra med all behandling av Företagets personuppgifter",
+                "Radera samtliga granskningsdata, inmatningar och utdata från aktiva produktionssystem",
+                "Återkalla all åtkomst till Företagets personuppgifter för personal hos personuppgiftsbiträdet",
+              ],
+            },
+            { kind: "h4", text: "9.1.2 Rensning av säkerhetskopior och arkiv (inom 10 arbetsdagar)" },
+            {
+              kind: "ul",
+              items: [
+                "Rensa samtliga säkerhetskopior som innehåller Företagets personuppgifter från alla system",
+                "Radera samtliga arkiverade loggar och granskningsspår som hänvisar till Företagets personuppgifter",
+                "Skriftligen intyga slutförandet till Företaget",
+              ],
+            },
+            { kind: "h4", text: "9.1.3 Koordinering med underbiträden (inom 10 arbetsdagar)" },
+            {
+              kind: "ul",
+              items: [
+                "Instruera samtliga underbiträden (inklusive Mistral AI) att radera Företagets personuppgifter",
+                "Inhämta skriftlig bekräftelse på radering från varje underbiträde",
+                "Tillhandahålla bevis på radering till Företaget",
+              ],
+            },
+            { kind: "h3", text: "9.2 Radering på begäran" },
+            { kind: "p", text: "Företaget får när som helst under Tjänsternas löptid begära radering av Företagets personuppgifter. Personuppgiftsbiträdet ska iaktta raderingsprotokollet i §9.1 inom 5 arbetsdagar från sådan begäran." },
+            { kind: "h3", text: "9.3 Intygande av radering" },
+            { kind: "p", text: "Inom 15 arbetsdagar från upphörandedatumet eller Företagets begäran om radering ska personuppgiftsbiträdet tillhandahålla Företaget:" },
+            {
+              kind: "ul",
+              items: [
+                "Skriftligt intyg om att samtliga av Företagets personuppgifter har raderats",
+                "Förteckning över samtliga system från vilka data har raderats",
+                "Bekräftelse på underbiträdes radering",
+                "Eventuella undantag (t.ex. dokumenterad lagstadgad bevarandeskyldighet)",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "9A. AI‑behandling och transparens",
+          blocks: [
+            { kind: "h3", text: "9A.1 Redovisning av AI‑modell" },
+            { kind: "p", text: "Personuppgiftsbiträdet använder följande Large Language Model (LLM) för inferens och granskningsanalys:" },
+            {
+              kind: "ul",
+              items: [
+                "Modell: Mistral Large (senaste versionen vid granskningstidpunkten)",
+                "Leverantör: Mistral AI (mistral.ai)",
+                "Jurisdiktion: EU",
+                "Syfte: enbart analys av Företagets personuppgifter för compliance‑fynd och granskningsrekommendationer",
+              ],
+            },
+            { kind: "p", text: "Personuppgiftsbiträdet ska underrätta Företaget om varje väsentlig förändring av AI‑modellen (t.ex. modelluppgradering, leverantörsbyte) minst 30 dagar före implementering." },
+            { kind: "h3", text: "9A.2 Ingen träningsanvändning" },
+            { kind: "p", text: "Personuppgiftsbiträdet garanterar att:" },
+            {
+              kind: "ul",
+              items: [
+                "Företagets personuppgifter inte används för att träna, finjustera eller förbättra AI‑modellen",
+                "Företagets personuppgifter inte används för modellutvärdering eller benchmarking",
+                "Företagets personuppgifter inte aggregeras, avidentifieras eller används för något sekundärt syfte",
+                "Samtlig inferens utförs under signerat Business Associate Agreement (BAA) med Mistral AI som uttryckligen förbjuder träningsanvändning",
+              ],
+            },
+            { kind: "h3", text: "9A.3 Mänsklig övervakning" },
+            { kind: "p", text: "Personuppgiftsbiträdet upprätthåller följande kontroller för mänsklig övervakning:" },
+            {
+              kind: "ul",
+              items: [
+                "Samtliga fynd klassificerade som “KRITISK” granskas av kvalificerad mänsklig revisor före leverans till Företaget",
+                "Fynd med hög konfidens (“HÖG”) granskas via automatiserade kvalitetskontroller före leverans",
+                "Samtliga granskningsrapporter innehåller metadata som anger vilka fynd som genomgått mänsklig granskning",
+                "Företaget får begära mänsklig granskning av varje enskilt fynd",
+              ],
+            },
+            { kind: "h3", text: "9A.4 Utfallets korrekthet och begränsningar" },
+            { kind: "p", text: "Personuppgiftsbiträdet bekräftar att AI‑genererade granskningsfynd kan innehålla felaktigheter, falska positiva eller ofullständig analys. Personuppgiftsbiträdet:" },
+            {
+              kind: "ul",
+              items: [
+                "Märker samtliga fynd med konfidensnivå (KRITISK, HÖG, MEDEL, LÅG, INFO)",
+                "Tillhandahåller källhänvisningar för varje fynd",
+                "Lämnar inga garantier om att fynden är 100 % korrekta eller fullständiga",
+                "Rekommenderar att Företaget tillämpar oberoende professionell bedömning innan åtgärder vidtas baserat på fynden",
+                "Ersätter inte professionell juridisk eller compliance‑rådgivning",
+              ],
+            },
+            { kind: "h3", text: "9A.5 Bias och rättvisa" },
+            { kind: "p", text: "Personuppgiftsbiträdet bekräftar att AI‑modellbias kan förekomma och åtar sig att:" },
+            {
+              kind: "ul",
+              items: [
+                "Bevaka systematisk bias i granskningsfynd",
+                "Redovisa kända bias eller begränsningar på begäran",
+                "Beakta synpunkter från Företaget om misstänkt bias och inarbeta dessa i uppföljningen av modellprestanda",
+                "Föra logg över samtliga bias‑rapporter och åtgärder",
+              ],
+            },
+            { kind: "h3", text: "9A.6 Transparens och dokumentation" },
+            { kind: "p", text: "På begäran ska personuppgiftsbiträdet tillhandahålla Företaget:" },
+            {
+              kind: "ul",
+              items: [
+                "Dokumentation om Mistral Large‑modellens träningsdata, arkitektur och kända begränsningar",
+                "Kopia av signerat BAA med Mistral AI som bekräftar att ingen träningsanvändning sker",
+                "Granskningsloggar som visar vilka specifika personuppgifter som behandlats och när",
+                "Förklaring av hur enskilda fynd härletts",
+              ],
+            },
+            { kind: "h3", text: "9A.7 Anpassning till IMY:s vägledning" },
+            { kind: "p", text: "Personuppgiftsbiträdet bekräftar att dess användning av AI överensstämmer med Integritetsskyddsmyndighetens (IMY) vägledning om AI och GDPR, inklusive:" },
+            {
+              kind: "ul",
+              items: [
+                "Transparens om AI‑användning vid behandling av personuppgifter",
+                "Mänsklig övervakning av väsentliga beslut",
+                "Dokumenterade riskbedömningar och åtgärder",
+                "Regelbundna granskningar av AI‑systemets prestanda och rättvisa",
+              ],
+            },
+            { kind: "p", text: "Personuppgiftsbiträdet upprätthåller dokumentation som visar efterlevnad av dessa principer och tillhandahåller sådan dokumentation till Företaget eller IMY på begäran." },
+          ],
+        },
+        {
+          heading: "10. Granskningsrätt",
+          blocks: [
+            { kind: "p", text: "10.1 Personuppgiftsbiträdet ska på begäran tillhandahålla Företaget all information som krävs för att visa efterlevnad av detta avtal samt möjliggöra och medverka vid granskningar, inklusive inspektioner, som Företaget eller av Företaget uppdragen revisor utför." },
+            { kind: "p", text: "10.2 Företagets informations‑ och granskningsrätt uppkommer endast i den utsträckning detta avtal inte i övrigt ger Företaget motsvarande rättigheter som uppfyller dataskyddslagstiftningens krav." },
+          ],
+        },
+        {
+          heading: "11. Dataöverföring",
+          blocks: [
+            { kind: "p", text: "11.1 Personuppgiftsbiträdet får inte överföra eller tillåta överföring av data till länder utanför EU och/eller Europeiska ekonomiska samarbetsområdet (EES) utan Företagets skriftliga förhandsgodkännande." },
+            { kind: "p", text: "11.2 All behandling sker inom Europeiska ekonomiska samarbetsområdet (EES). Mistral AI utför inferens inom EU." },
+            { kind: "p", text: "11.3 Om framtida dataöverföring sker utanför EES ska EU:s standardavtalsklausuler (SCC) tillämpas enligt artikel 46 i GDPR." },
+          ],
+        },
+        {
+          heading: "12. Allmänna villkor",
+          blocks: [
+            { kind: "p", text: "12.1 Sekretess. Vardera parten ska hålla detta avtal samt information om den andra parten och dess verksamhet som mottas i samband med detta avtal (“Konfidentiell information”) konfidentiell och får inte använda eller röja sådan konfidentiell information utan den andra partens skriftliga förhandsgodkännande, utom i den utsträckning:" },
+            {
+              kind: "ul",
+              items: [
+                "(a) röjandet krävs enligt lag",
+                "(b) den aktuella informationen redan är allmänt tillgänglig",
+              ],
+            },
+            { kind: "p", text: "12.2 Underrättelser. Samtliga underrättelser och meddelanden enligt detta avtal ska ske skriftligen och tillhandahållas personligen, per post eller via e‑post till den adress eller e‑postadress som anges i avtalets ingress." },
+          ],
+        },
+        {
+          heading: "13. Tillämplig lag och jurisdiktion",
+          blocks: [
+            { kind: "p", text: "13.1 Detta avtal regleras av svensk rätt." },
+            { kind: "p", text: "13.2 Eventuella tvister med anledning av detta avtal som parterna inte kan lösa i godo ska avgöras av svensk allmän domstol, med möjlighet till överklagande till Högsta domstolen i Stockholm." },
+          ],
+        },
+      ],
+      annexHeading: "Bilaga 1 — Tekniska specifikationer och underbiträden",
+      annexParts: [
+        {
+          heading: "Del A: Behandlingsdetaljer",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Element", "Specifikation"],
+              rows: [
+                ["Definierat syfte", "Compliance‑dokumentation och administrativ workflow‑revision"],
+                ["Typ av behandling", "Automatiserad analys av administrativa dokument, policyer, rutiner och processflöden"],
+                ["Datas omfattning", "Endast administrativa uppgifter; inga patientuppgifter (PHI), inga uppgifter för medicinskt beslutsfattande"],
+                ["Kategorier av registrerade", "Vårdadministratörer, kvalitetsansvariga, compliance‑ansvariga, driftspersonal (ej patienter)"],
+                ["Behandlingens varaktighet", "I realtid; inmatningar bearbetas och raderas omedelbart efter slutförd granskning (vanligtvis <2 minuter)"],
+                ["Datalagring", "Ingen; stateless arkitektur innebär att inga data lagras efter granskning"],
+                ["Frekvens", "På begäran enligt Företagets instruktioner; ingen bakgrunds‑ eller kontinuerlig behandling"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Del B: Säkerhets‑ och dataskyddsåtgärder",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Åtgärd", "Detaljer"],
+              rows: [
+                ["Kryptering under överföring", "TLS 1.2 eller senare på samtliga endpoints; HSTS tillämpas"],
+                ["Kryptering vid lagring", "Ej tillämpligt — inga data lagras vid vila; enbart stateless behandling"],
+                ["Datalagring", "Inmatningar lagras endast i minnet under behandling; raderas vid slutförande"],
+                ["Åtkomstkontroll", "Minsta privilegium‑åtkomst; tystnadsplikt för personal"],
+                ["Granskningsloggning", "Samtliga behandlingsaktiviteter loggas för efterlevnadsverifiering"],
+                ["Säkerhet hos underbiträden", "Samtliga underbiträden upprätthåller motsvarande eller högre säkerhetskontroller"],
+                ["Säkerhetskopior och katastrofåterställning", "Inga säkerhetskopior av Företagets personuppgifter bevaras; granskningsutdata (om Företaget lagrar dem) är Företagets ansvar"],
+                ["Incidenthantering", "24‑timmars underrättelse vid incident; forensisk utredning inom 5 arbetsdagar"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Del C: Godkända underbiträden",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Underbiträde", "Funktion", "Plats", "Dataskydd", "Åtagande om ingen träningsanvändning"],
+              rows: [
+                ["Mistral AI (mistral.ai)", "LLM‑inferens för granskningsanalys", "EU", "GDPR + AI‑skyddsåtgärder (§9A)", "Ja — signerat BAA"],
+              ],
+            },
+            { kind: "note", text: "Notera: personuppgiftsbiträdet anlitar inga andra underbiträden. Det finns inga värdtjänstleverantörer, CDN, analystjänster eller andra tredjepartssystem som mottar Företagets personuppgifter." },
+          ],
+        },
+        {
+          heading: "Del D: Begränsningar vid dataöverföring",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Aspekt", "Åtagande"],
+              rows: [
+                ["Geografisk omfattning", "All behandling sker inom Europeiska ekonomiska samarbetsområdet (EES)"],
+                ["Underbiträdets plats", "Mistral AI utför inferens inom EU; ingen dataöverföring utanför EES"],
+                ["Standardklausuler", "Om framtida dataöverföring sker utanför EES ska EU:s standardavtalsklausuler (SCC) tillämpas enligt artikel 46 i GDPR"],
+                ["Företagets samtycke", "Företagets skriftliga samtycke krävs före varje överföring utanför EES (§11)"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Del E: Lagrings‑ och raderingsschema",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Fas", "Tidsram", "Åtgärd"],
+              rows: [
+                ["Aktiv behandling", "<2 minuter vanligen", "Inmatningar i minnet; granskningsanalys utförs"],
+                ["Granskning slutförd", "Vid körningens slut", "Inmatningar raderas från minnet; granskningsrapport genereras"],
+                ["Granskningsrapport", "Enligt Företagets begäran", "Granskningsrapporten finns endast under Företagets kontroll (ej hos personuppgiftsbiträdet)"],
+                ["Tjänsterna upphör", "Inom 24 timmar", "Samtliga aktiva system rensas"],
+                ["Rensning av säkerhetskopior", "Inom 10 arbetsdagar", "Samtliga säkerhetskopior raderas"],
+                ["Radering hos underbiträde", "Inom 10 arbetsdagar", "Bekräftelse inhämtas från Mistral AI"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Del F: Företagets ansvar",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Ansvar", "Detaljer"],
+              rows: [
+                ["Underrättelse till registrerade", "Företaget ansvarar för att underrätta registrerade vid varje incident (personuppgiftsbiträdet bistår enligt §7)"],
+                ["Laglig grund", "Företaget garanterar att laglig grund enligt artikel 6 och/eller 9 i GDPR föreligger för att tillhandahålla data till personuppgiftsbiträdet"],
+                ["Förhandssamtycke", "Företaget garanterar att nödvändigt samtycke har inhämtats från registrerade eller att behandlingen i övrigt är laglig"],
+                ["Lagring av granskningsrapporter", "Företaget ansvarar för säker hantering av granskningsrapporter efter export; personuppgiftsbiträdets stateless arkitektur lagrar inga kopior"],
+                ["Policyefterlevnad", "Företaget garanterar att användningen av MediReadys Tjänster överensstämmer med Företagets egna dataskyddspolicyer och information"],
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Del G: Kontaktuppgifter för dataskyddsfrågor",
+          blocks: [
+            {
+              kind: "table",
+              headers: ["Roll", "Kontakt", "Tillgänglighet"],
+              rows: [
+                ["Personuppgiftsbiträdets dataskyddskontakt", "[DPO‑NAMN] / [E‑POSTADRESS]", "[SVARSTID, t.ex. “Inom 2 arbetsdagar”]"],
+                ["Säkerhetsincidentanmälan", "[SÄKERHETS‑E‑POST]", "Dygnet runt för incidentanmälningar"],
+              ],
+            },
+          ],
+        },
+      ],
+      endOfAgreement: "Avtalets slut",
+    },
     classificationPage: {
       kicker: "KLASSIFICERINGSDOKUMENT",
       title: "MediReady — Klassificeringsdokument",
@@ -3123,6 +4103,7 @@ export const dict: Record<Lang, Dict> = {
           terms: "Användarvillkor",
           regulatory: "Regulatorisk positionering",
           classification: "Klassificeringsdokument",
+          dpa: "Personuppgiftsbiträdesavtal",
         },
       },
     },

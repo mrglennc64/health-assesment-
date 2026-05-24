@@ -51,6 +51,7 @@ function buildCols(f: Dict["footer"]): FooterCol[] {
         { label: f.cols.legal.terms, href: "/terms" },
         { label: f.cols.legal.regulatory, href: "/regulatory" },
         { label: f.cols.legal.classification, href: "/classification" },
+        { label: f.cols.legal.dpa, href: "/dpa" },
       ],
     },
   ];
