@@ -6,6 +6,8 @@ import { ArrowRight, Play, Lock, Upload } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PhiInputWarning } from "@/components/site/PhiInputWarning";
+import { PhiDetectionBanner } from "@/components/site/PhiDetectionBanner";
+import { detectPhi } from "@/lib/phi/detector";
 import { Button, ScoreRing, SevBadge, ModelPill } from "@/components/ui/primitives";
 import {
   CHANNELS,
@@ -139,6 +141,8 @@ function ScanInputForm({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedName, setUploadedName] = useState<string | null>(null);
+  const phiMatches = detectPhi(text);
+  const phiBlocked = phiMatches.length > 0;
 
   const handleFile = async (file: File | null) => {
     if (!file) return;
@@ -182,7 +186,7 @@ function ScanInputForm({
           minHeight: 200,
           padding: 16,
           borderRadius: 8,
-          border: "1px solid var(--line-2)",
+          border: phiMatches.length > 0 ? "1px solid var(--accent)" : "1px solid var(--line-2)",
           fontSize: 14,
           fontFamily: "inherit",
           background: "var(--paper)",
@@ -191,6 +195,8 @@ function ScanInputForm({
           lineHeight: 1.6,
         }}
       />
+
+      <PhiDetectionBanner matches={phiMatches} />
 
       <input
         ref={fileInputRef}
@@ -258,7 +264,7 @@ function ScanInputForm({
           <Lock size={12} />
           {s.noStoreBadge}
         </div>
-        <Button variant="primary" icon={Play} onClick={onRun} disabled={!text.trim()}>
+        <Button variant="primary" icon={Play} onClick={onRun} disabled={!text.trim() || phiBlocked}>
           {s.runCta}
         </Button>
       </div>

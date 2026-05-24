@@ -69,6 +69,22 @@ type MarketingPage = {
 
     closingTitle: ReactNode;
     closingBody: string;
+
+    // Hero demo card display strings (overlayed on SAMPLE_RUN_TEASER data).
+    demoCard: {
+      runLabel: string;          // "RUN" / "KÖRNING"
+      target: string;            // e.g. "COPD exacerbation follow-up"
+      timestamp: string;         // e.g. "Wed, 20 May 2026 · 20:58 UTC"
+      overallLabel: string;      // ScoreRing label, e.g. "OVERALL" / "TOTALT"
+      criticalLabel: string;
+      watchLabel: string;
+      infoLabel: string;
+      previewRows: { ch: string; title: string }[]; // 4 rows
+      footerTime: string;        // "~38s · 6/6 CHANNELS"
+    };
+
+    // Pricing preview cards (3 entries).
+    pricingCards: { kicker: string; headline: string; body: string }[];
   };
   about: {
     kicker: string;
@@ -186,7 +202,7 @@ type MarketingPage = {
     noPhiHeading: string;
     noPhiBody: ReactNode;
     inputsHeading: string;
-    inputsList: ReactNode[];
+    inputsList: { heading: string; body: ReactNode }[];
     collectHeading: string;
     collectList: string[];
     notCollectHeading: string;
@@ -201,6 +217,66 @@ type MarketingPage = {
     title: string;
     intro: string;
     sections: { heading: string; body: string }[];
+  };
+  classificationPage: {
+    kicker: string;
+    title: string;
+    verdict: string;
+    metaVersion: string;
+    metaVersionValue: string;
+    metaDate: string;
+    metaDateValue: string;
+    metaPreparedBy: string;
+    metaPreparedByValue: string;
+    sections: {
+      heading: string;
+      paragraphs?: string[];
+      bullets?: string[];
+      subsections?: {
+        heading: string;
+        paragraphs?: string[];
+        bullets?: string[];
+        quote?: string;
+        quoteAttribution?: string;
+      }[];
+    }[];
+  };
+  regulatoryPage: {
+    kicker: string;
+    title: string;
+    subtitle: string;
+    leadHeading: string;
+    leadPara1: string;
+    leadPara2: string;
+    intendedUseHeading: string;
+    intendedUseIntro: string;
+    intendedUseItems: { label: string; sub: string }[];
+    intendedUseOutro: string;
+    classificationHeading: string;
+    mdrHeading: string;
+    mdrBody1: string;
+    mdrQuote: string;
+    mdrQuoteAttribution: string;
+    mdrConclusion: string;
+    nmiHeading: string;
+    nmiIntro: string;
+    nmiCriteria: string[];
+    nmiSupportLead: string;
+    nmiSupportBody: string;
+    nmiConclusion: string;
+    gdprHeading: string;
+    gdprIntro: string;
+    gdprBlocks: { heading: string; body: ReactNode }[];
+    nis2Heading: string;
+    nis2Intro: string;
+    nis2Criteria: string[];
+    nis2Conclusion: string;
+    ehdsHeading: string;
+    ehdsBody: string;
+    actionsHeading: string;
+    actionsItems: { heading: string; body: ReactNode }[];
+    summaryHeading: string;
+    summaryBody: string;
   };
   channels: {
     documentation: { label: string; desc: string };
@@ -374,7 +450,7 @@ type MarketingPage = {
   whoItsForPage: {
     kicker: string;
     title: string;
-    items: string[];
+    items: { label: string; sub: string }[];
   };
   docsPage: {
     kicker: string;
@@ -411,7 +487,7 @@ type MarketingPage = {
       product: { heading: string; productOverview: string; complianceSuite: string; pricing: string; freeAudit: string; sampleReport: string };
       company: { heading: string; company: string; whoItsFor: string; contact: string; waitlist: string };
       resources: { heading: string; documentation: string; status: string; safety: string; security: string; monitoring: string };
-      legal: { heading: string; privacy: string; terms: string };
+      legal: { heading: string; privacy: string; terms: string; regulatory: string; classification: string };
     };
   };
   dashboard: {
@@ -562,6 +638,15 @@ type MarketingPage = {
       heading: string;
       body: string;
       confirm: string;
+      detectedHeading: string;
+      detectedBody: string;
+      labelByType: {
+        se_personnummer: string;
+        us_ssn: string;
+        labeled_id: string;
+        dob_context: string;
+        phone_se: string;
+      };
     };
     findings: {
       none: string;
@@ -762,6 +847,27 @@ export const dict: Record<Lang, Dict> = {
         <>See what your {em("auditors")} would.</>
       ),
       closingBody: "Run a free audit now. Top critical findings shown in the UI, no signup required.",
+      demoCard: {
+        runLabel: "RUN",
+        target: "COPD exacerbation follow-up",
+        timestamp: "Wed, 20 May 2026 · 20:58 UTC",
+        overallLabel: "OVERALL",
+        criticalLabel: "CRITICAL",
+        watchLabel: "WATCH",
+        infoLabel: "INFO",
+        previewRows: [
+          { ch: "HIPAA",   title: "PHI in URL parameters" },
+          { ch: "CLAIMS",  title: "Missing taxonomy code" },
+          { ch: "COMM.",   title: "No denial notification workflow" },
+          { ch: "CONTENT", title: "2025 GOLD guidelines referenced" },
+        ],
+        footerTime: "~38s · 6/6 CHANNELS",
+      },
+      pricingCards: [
+        { kicker: "ONE-OFF AUDITS",    headline: "From $49", body: "Claims · Full · Denial." },
+        { kicker: "COMPLIANCE SUITE",  headline: "From $29", body: "Per document, or $99/mo subscription." },
+        { kicker: "BUNDLE",            headline: "$199/mo",  body: "4 audits + 10 documents per month." },
+      ],
     },
     about: {
       kicker: "COMPANY",
@@ -990,8 +1096,16 @@ export const dict: Record<Lang, Dict> = {
       ),
       inputsHeading: "How your inputs are handled",
       inputsList: [
-        (<><strong>/scan (free audit):</strong> processed in process memory and discarded when the response returns. Nothing is written to disk.</>),
-        (<><strong>/suite/* (compliance documents):</strong> form input and generated output are stored locally in a SQLite database so you can re-download documents. You can permanently delete any entry from the{" "}<Link href="/suite/history" style={{ color: "var(--accent)" }}>history page</Link> at any time.</>),
+        {
+          heading: "/scan (free audit)",
+          body: "Processed in process memory and discarded when the response returns. Nothing is written to disk.",
+        },
+        {
+          heading: "/suite/* (compliance documents)",
+          body: (
+            <>Form input and generated output are stored locally in a SQLite database so you can re-download documents. You can permanently delete any entry from the{" "}<Link href="/suite/history" style={{ color: "var(--accent)" }}>history page</Link> at any time.</>
+          ),
+        },
       ],
       collectHeading: "Data we collect",
       collectList: [
@@ -1043,6 +1157,283 @@ export const dict: Record<Lang, Dict> = {
           body: "MediReady is provided “as is” without warranties. We are not liable for indirect, incidental, or consequential damages.",
         },
       ],
+    },
+    classificationPage: {
+      kicker: "CLASSIFICATION DOCUMENT",
+      title: "MediReady — Classification Document",
+      verdict: "Assessment: not medical device software (MDSW) and not a national medical information system (NMI).",
+      metaVersion: "Version",
+      metaVersionValue: "1.0",
+      metaDate: "Date",
+      metaDateValue: "2026-05-24",
+      metaPreparedBy: "Prepared by",
+      metaPreparedByValue: "MediReady AB",
+      sections: [
+        {
+          heading: "1. Purpose",
+          paragraphs: [
+            "This document establishes MediReady's formal classification in relation to:",
+          ],
+          bullets: [
+            "EU Regulation (EU) 2017/745 (MDR) — medical devices and medical device software (MDSW).",
+            "HSLF-FS 2022:42 — national medical information systems (NMI).",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: [
+            "The document describes MediReady's intended use, functional limitations, and regulatory boundaries as the basis for the assessment that the product is not within the scope of MDR and not within the scope of the NMI framework.",
+          ],
+        },
+        {
+          heading: "2. Product description",
+          paragraphs: [
+            "MediReady is an administrative tool for compliance documentation and workflow audit. The system is used by administrators, quality leads, and operations managers to:",
+          ],
+          bullets: [
+            "generate policies, SOPs, and risk assessments",
+            "perform administrative gap analyses",
+            "map standards (HIPAA, ISO, NIST, etc.)",
+            "perform non-clinical workflow audits",
+            "produce reports for internal governance and compliance",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: [
+            "MediReady does not process medical decisions, does not influence patient care, and does not provide recommendations on diagnosis, treatment, or clinical actions.",
+          ],
+        },
+        {
+          heading: "3. Intended purpose",
+          paragraphs: ["MediReady is intended for:"],
+          bullets: [
+            "administrative documentation",
+            "compliance work",
+            "internal workflow audits",
+            "policy and governance-document management",
+            "non-clinical risk assessments",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: ["MediReady is not intended to:"],
+          bullets: [
+            "be used for diagnosis, treatment, monitoring, or alleviation of disease",
+            "be used for clinical decisions or patient-facing assessments",
+            "process medical records or clinical parameters",
+            "provide recommendations that affect patient care or treatment",
+            "update or read authority registers in healthcare",
+          ],
+        },
+        {
+          heading: "4. Assessment under MDR (EU 2017/745)",
+          subsections: [
+            {
+              heading: "4.1 Relevant criteria",
+              paragraphs: [
+                "Under MDR, software is classified as a medical device if it has a medical purpose, for example to:",
+              ],
+              bullets: [
+                "diagnose",
+                "prevent",
+                "monitor",
+                "treat",
+                "alleviate disease",
+              ],
+            },
+            {
+              heading: "4.2 Assessment",
+              paragraphs: ["MediReady meets none of MDR's medical purposes. The system:"],
+              bullets: [
+                "does not analyse patient data",
+                "does not influence clinical decisions",
+                "does not generate medical recommendations",
+                "is not used by clinical staff in patient-facing work",
+                "processes administrative information only",
+              ],
+              quote: "“Software for administrative purposes is not covered.”",
+              quoteAttribution: "— MDR interpretation per EU guidance",
+            },
+            {
+              heading: "4.3 Conclusion",
+              paragraphs: [
+                "MediReady is not a medical device and is not within the scope of MDR.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "5. Assessment under HSLF-FS 2022:42 (National medical information systems)",
+          subsections: [
+            {
+              heading: "5.1 Relevant criteria",
+              paragraphs: ["NMI covers systems that:"],
+              bullets: [
+                "process medical information of significance for an individual patient's care, or",
+                "provide direct access to or update authority registers, or",
+                "are used to dispense prescriptions at pharmacies.",
+              ],
+            },
+            {
+              heading: "5.2 Exception in the regulation",
+              paragraphs: ["HSLF-FS 2022:42 states that the following is not NMI:"],
+              quote: "“Generic software used in a care environment, except where the software has been adapted in a way that meets the definition of a national medical information system.”",
+            },
+            {
+              heading: "5.3 Assessment",
+              paragraphs: ["MediReady:"],
+              bullets: [
+                "does not process medical information",
+                "does not affect patient care",
+                "has no connection to authority registers",
+                "is not used for prescriptions or dispensing",
+                "is not adapted for clinical decisions",
+                "is not a system of significance for an individual patient's care",
+              ],
+            },
+            {
+              heading: "5.4 Conclusion",
+              paragraphs: [
+                "MediReady does not meet the definition of NMI and is not within the scope of HSLF-FS 2022:42.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "6. Data protection and GDPR",
+          paragraphs: [
+            "Even though MediReady is neither MDSW nor NMI, the system is subject to GDPR.",
+          ],
+          bullets: [
+            "Inputs are processed ephemerally in memory and discarded immediately.",
+            "No PHI is stored.",
+            "No background collection, telemetry, or profiling.",
+            "The healthcare provider is the controller.",
+            "MediReady is the processor.",
+            "A data processing agreement under Article 28 is required.",
+          ],
+        },
+        {
+          heading: "7. Overall conclusion",
+          paragraphs: [
+            "Based on intended use, functionality, and regulatory criteria, MediReady is assessed:",
+          ],
+          bullets: [
+            "not to be medical device software (MDSW) under MDR",
+            "not to be a national medical information system (NMI) under HSLF-FS 2022:42",
+            "to be an administrative compliance and workflow tool",
+            "to be subject to GDPR, but not to MDR or the NMI framework",
+          ],
+        },
+      ],
+    },
+    regulatoryPage: {
+      kicker: "REGULATORY POSITIONING",
+      title: "Compliance Documentation & Workflow Audit Tool",
+      subtitle: "Regulatory positioning statement",
+      leadHeading: "MediReady is an administrative tool for compliance documentation and workflow audit",
+      leadPara1: "MediReady is not a clinical decision-support system, not a medical device, and not a tool for diagnosis, treatment, or patient-facing decisions. The platform is designed for administrators, quality leads, and operations managers who need to structure, document, and audit internal workflows, policies, and compliance posture.",
+      leadPara2: "The system processes administrative information only. It does not process medical decisions, clinical parameters, or patient records.",
+      intendedUseHeading: "Defined and limited intended use",
+      intendedUseIntro: "MediReady is intended for:",
+      intendedUseItems: [
+        { label: "Compliance documentation", sub: "Policies, SOPs, risk assessments, gap analyses, standards mapping." },
+        { label: "Workflow audits", sub: "Administrative processes, internal routines, information flows." },
+        { label: "Internal controls and quality work", sub: "Non-clinical audit activities, administrative risks, organisational weaknesses." },
+        { label: "Administrative reporting", sub: "Non-patient-facing summaries, internal improvement plans." },
+      ],
+      intendedUseOutro: "MediReady does not influence medical decisions, does not process clinical data, and does not provide recommendations on diagnosis, treatment, or care.",
+      classificationHeading: "Regulatory classification — why MediReady is not MDSW or NMI",
+      mdrHeading: "1. Not medical device software (MDR 2017/745)",
+      mdrBody1: "The EU MDR applies only where software has a medical purpose — for example diagnosis, treatment, monitoring, or alleviation of disease. MediReady does not meet these criteria.",
+      mdrQuote: "“Software for administrative purposes is not covered.”",
+      mdrQuoteAttribution: "— from the MDR administrative-purpose exclusion",
+      mdrConclusion: "MediReady is an administrative compliance tool, not a clinical system.",
+      nmiHeading: "2. Not a national medical information system (NMI) under HSLF-FS 2022:42",
+      nmiIntro: "NMI covers systems that:",
+      nmiCriteria: [
+        "process medical information of significance for an individual patient's care, or",
+        "provide direct access to or update authority registers.",
+      ],
+      nmiSupportLead: "Supporting reference:",
+      nmiSupportBody: "NMI does not apply to generic software used in a care environment unless the software has been adapted for a medical purpose.",
+      nmiConclusion: "MediReady does not process medical information, does not process patient data, and does not access registries.",
+      gdprHeading: "GDPR — data protection architecture and accountability",
+      gdprIntro: "MediReady is built to minimise data-protection risk and to align with IMY's published supervisory priorities.",
+      gdprBlocks: [
+        {
+          heading: "Stateless processing",
+          body: (
+            <>
+              Inputs are processed in memory and discarded immediately after the run. No PHI is stored. No background collection, no telemetry, no profiling.
+            </>
+          ),
+        },
+        {
+          heading: "Role allocation",
+          body: (
+            <>
+              The healthcare provider is the controller. MediReady is the processor. A GDPR-compliant Data Processing Agreement (DPA) is required under Article 28.
+            </>
+          ),
+        },
+        {
+          heading: "IMY supervisory logic",
+          body: (
+            <>
+              IMY prioritises AI use, children and young people, sensitive data, and the healthcare sector. MediReady does not process sensitive personal data, which lowers supervisory exposure.
+            </>
+          ),
+        },
+      ],
+      nis2Heading: "NIS2 — applies only at certain company size",
+      nis2Intro: "NIS2 applies where a company:",
+      nis2Criteria: [
+        "has ≥ 50 employees, or",
+        "has annual turnover ≥ EUR 10 million, or",
+        "is classified as an “essential” actor in healthcare.",
+      ],
+      nis2Conclusion: "MediReady is not an EHR system and is not automatically in scope. Assessment is made by company size, not by product function.",
+      ehdsHeading: "EHDS — future interoperability requirements",
+      ehdsBody: "EHDS is primarily directed at EHR systems and national health-data flows. MediReady is an administrative tool and is out of scope, but the regulatory development is tracked.",
+      actionsHeading: "Recommended actions",
+      actionsItems: [
+        {
+          heading: "1. Refine marketing language",
+          body: (
+            <>
+              Avoid terms that imply clinical function. Use: <em>compliance documentation tool</em>, <em>workflow audit tool</em>, <em>administrative audit engine</em>.
+            </>
+          ),
+        },
+        {
+          heading: "2. Document the classification",
+          body: (
+            <>
+              Maintain an internal document that records why MediReady is not MDSW and not NMI. Reference the MDR administrative-purpose exclusion and the HSLF-FS 2022:42 definitions.
+            </>
+          ),
+        },
+        {
+          heading: "3. Strengthen the data-protection architecture",
+          body: (
+            <>
+              Highlight the stateless design in the DPA and security documentation. Make the no-PHI-stored statement explicit.
+            </>
+          ),
+        },
+        {
+          heading: "4. Legal review before launch",
+          body: (
+            <>
+              Recommended for regulatory reasons. Focus areas: marketing, intended use, DPA, risk analysis.
+            </>
+          ),
+        },
+      ],
+      summaryHeading: "Summary",
+      summaryBody: "MediReady is an administrative tool for compliance documentation and workflow audit, not a medical system. It falls outside MDR, outside NMI, and does not process PHI. GDPR is followed through stateless processing and clear role allocation. NIS2 and EHDS may become relevant depending on company size and future interoperability requirements.",
     },
     productPage: {
       kicker: "PRODUCT",
@@ -1286,13 +1677,13 @@ export const dict: Record<Lang, Dict> = {
       kicker: "WHO IT'S FOR",
       title: "Who It's For",
       items: [
-        "Clinics",
-        "Billing companies",
-        "Healthcare SaaS",
-        "Networks & groups",
-        "Consultants",
-        "Internal audit teams",
-        "Regulators",
+        { label: "Clinics", sub: "Primary care, specialty, dental, and mental-health practices that need structured self-checks, documentation review, and traceable remediation evidence." },
+        { label: "Billing companies", sub: "Organisations handling reimbursement flows that need to verify claims handling, denials, coding, and documentation quality before submission." },
+        { label: "Healthcare SaaS", sub: "Providers of EHR add-ons, AI documentation, patient portals, and other digital health services that need independent review of content, security, and communication." },
+        { label: "Networks & groups", sub: "IDNs, ACOs, and multi-location organisations that require uniform audit processes, shared standards, and comparable reports across sites." },
+        { label: "Consultants", sub: "Advisory and audit partners that need a white-label layer for review, documentation, and standardised reporting." },
+        { label: "Internal audit teams", sub: "Teams running recurring controls, evidence collection, risk assessment, and traceable audit reports." },
+        { label: "Regulators", sub: "Bodies performing independent verification of documentation, processes, information security, and clinical content." },
       ],
     },
     docsPage: {
@@ -1368,6 +1759,8 @@ export const dict: Record<Lang, Dict> = {
           heading: "Legal",
           privacy: "Privacy",
           terms: "Terms of use",
+          regulatory: "Regulatory positioning",
+          classification: "Classification document",
         },
       },
     },
@@ -1665,8 +2058,17 @@ export const dict: Record<Lang, Dict> = {
       },
       phi: {
         heading: "Do not paste real patient data.",
-        body: "Aegis is designed for de-identified content, sample text, policies, and synthetic examples. Do not submit protected health information (PHI) — names, dates of birth, MRNs, addresses, or any of the 18 HIPAA identifiers tied to a real person. Inputs are processed by third-party AI providers.",
-        confirm: "I confirm this input contains no protected health information.",
+        body: "MediReady is for de-identified policies, workflows, sample text, and synthetic examples — not a medical information system (NMI) and not for use in individual patient care. Do not submit protected health information (PHI) — names, dates of birth, personal identity numbers (personnummer), MRNs, addresses, or any of the 18 HIPAA identifiers tied to a real person. Inputs are processed by third-party AI providers.",
+        confirm: "I confirm this input contains no protected health information and is not used for individual patient care.",
+        detectedHeading: "Possible identifier detected — input blocked.",
+        detectedBody: "Your input looks like it contains personal identifiers. Remove or redact the highlighted text before running the audit. If this is a false positive, edit the surrounding text to break the pattern.",
+        labelByType: {
+          se_personnummer: "Swedish personal identity number",
+          us_ssn: "US Social Security Number",
+          labeled_id: "Labeled personal identifier (MRN / Personnummer / Patient ID)",
+          dob_context: "Date of birth with context",
+          phone_se: "Swedish phone number",
+        },
       },
       findings: {
         none: "No findings.",
@@ -1688,17 +2090,17 @@ export const dict: Record<Lang, Dict> = {
     home: {
       heroKicker: "AUDIT ENGINE + COMPLIANCE SUITE",
       heroTitle: (
-        <>Ett system för vårdgranskning och {em("compliance‑dokumentation")}.</>
+        <>En plattform för vårdgranskning och {em("compliance‑dokumentation")}.</>
       ),
       heroBody:
-        "Kör sexkanalsgranskningar, generera underlag, mappa krav och stäng identifierade gap. Allt i samma system.",
-      ctaRunAudit: "Kör en gratis granskning",
-      ctaExploreSuite: "Öppna dokumentationsmodulen",
-      badgeLLM: "LLM + SYNTETISK WEBBLÄSARE",
+        "Kör sex parallella granskningskanaler, generera HIPAA‑anpassade dokument, kartlägg standarder och stäng identifierade gap — på några minuter.",
+      ctaRunAudit: "Kör en kostnadsfri granskning",
+      ctaExploreSuite: "Utforska compliance‑suiten",
+      badgeLLM: "LLM + SYNTHETISK WEBBLÄSARE",
       badgeExport: "WORD + PDF‑EXPORT",
-      badgeIntegration: "INGA INTEGRATIONER",
+      badgeIntegration: "INGEN INTEGRATION",
 
-      twoProductsKicker: "TVÅ PRODUKTER · ETT SYSTEM",
+      twoProductsKicker: "TVÅ PRODUKTER · EN PLATTFORM",
       twoProductsTitle: (
         <>
           Hitta gapen.<br />
@@ -1706,33 +2108,33 @@ export const dict: Record<Lang, Dict> = {
         </>
       ),
 
-      productOneKicker: "PRODUKT ETT",
+      productOneKicker: "PRODUKT 1",
       productOneName: "MediReady Audits",
       productOneBody:
-        "Sex parallella granskningskanaler som visar vad regioner, IVO eller interna kvalitetsgranskare hittar först.",
+        "Sex parallella granskningskanaler som identifierar de brister som betalare, revisorer och tillsynsmyndigheter upptäcker först.",
       productOneList: [
-        "Claims",
-        "HIPAA & säkerhet",
+        "Ersättnings- och kravhantering",
+        "HIPAA och informationssäkerhet",
         "Dokumentation",
         "Patientkommunikation",
         "Kliniskt innehåll",
         "Syntetiskt webbläsarbeteende",
       ],
-      productOneCTA: "Kör en gratis granskning",
+      productOneCTA: "Kör en kostnadsfri granskning",
 
-      productTwoKicker: "PRODUKT TVÅ",
+      productTwoKicker: "PRODUKT 2",
       productTwoName: "MediReady Suite",
-      productTwoBody: "Dokumentation genererad på minuter.",
+      productTwoBody: "Compliance‑dokument genererade på minuter.",
       productTwoList: [
         "Granskningsplaner",
-        "Kravmappning",
-        "Gap‑analys av dokument",
+        "Standardkartläggning",
+        "Dokumentationsgap",
         "HIPAA‑riskbedömningar",
-        "Policy & SOP‑generator",
+        "Policy- och rutinframtagning",
       ],
-      productTwoCTA: "Öppna hela sviten",
+      productTwoCTA: "Visa hela suiten",
 
-      suiteKicker: "SVITEN",
+      suiteKicker: "SUITEN",
       suiteTitle: (
         <>
           Compliance‑dokument,<br />
@@ -1740,26 +2142,26 @@ export const dict: Record<Lang, Dict> = {
         </>
       ),
       suiteBody:
-        "Fem verktyg som delar samma motor och datamodell. Inmatning är strukturerad. Utdata hänvisar till faktiska kravpunkter. Alla dokument laddas ned som PDF och Word.",
-      suiteCTA: "Öppna sviten",
+        "Fem verktyg som delar samma motor och datamodell. Inmatning är strukturerad. Utdata hänvisar till faktiska kravpunkter. Alla dokument kan laddas ned som färdig PDF och redigerbar Word‑fil.",
+      suiteCTA: "Öppna suiten",
       suiteTools: [
-        { title: "Granskningsplan‑generator", desc: "Kompletta interna granskningsplaner — omfattning, mål, metodik, schema, checklista och riskområden. Word + JSON‑export." },
-        { title: "Kravmappning", desc: "Klistra in ett fynd eller krav och få exakta HIPAA‑, CMS‑, OCR‑, NIST‑ och ISO‑klausuler som gäller." },
-        { title: "Gap‑analys av dokument", desc: "Ladda upp en SOP eller policy. AI flaggar saknade avsnitt, svag formulering och klausulgap." },
-        { title: "HIPAA‑riskbedömning", desc: "NIST 800‑30‑metodik med fullständigt riskregister, sannolikhets‑/konsekvensbedömning och rekommenderade kontroller." },
-        { title: "Policy‑ / SOP‑generator", desc: "Utforma kompletta HIPAA‑anpassade policyer och SOP:er med obligatoriska avsnitt och klausulreferenser." },
+        { title: "Audit Plan Generator", desc: "Fullständiga interna granskningsplaner — omfattning, mål, metodik, schema, checklistor och riskområden. Export: Word + JSON." },
+        { title: "Standards Mapping", desc: "Klistra in ett fynd eller krav och få exakta HIPAA‑, CMS‑, OCR‑, NIST‑ och ISO‑referenser." },
+        { title: "Document Gap Analysis", desc: "Ladda upp en rutin eller policy. Systemet markerar saknade avsnitt, svag formulering och kravgap." },
+        { title: "HIPAA Risk Assessment", desc: "NIST 800‑30‑metodik med komplett riskregister, sannolikhet/konsekvens‑bedömning och rekommenderade kontroller." },
+        { title: "Policy / SOP Generator", desc: "Skapar fullständiga HIPAA‑anpassade policys och rutiner med obligatoriska avsnitt och kravreferenser." },
       ],
 
       engineKicker: "GRANSKNINGSMOTORN",
       engineTitle: (
         <>
           Fil in.<br />Rapport ut.<br />
-          {em("Så enkelt.")}
+          {em("Det är allt.")}
         </>
       ),
       engineBody:
-        "Ladda upp en fil, klistra in text eller ange en URL. Sex avgränsade granskningskanaler körs parallellt. Exportera fynd, åtgärdskrav och PDF/JSON‑rapport. Ingen integration. Ingen agent. Ingen SDK.",
-      engineCTA: "Kör en gratis granskning",
+        "Ladda upp en fil, klistra in text eller ange en URL. Sex avgränsade granskningskanaler körs parallellt. Exportera strukturerade fynd, nödvändiga åtgärder och en PDF/JSON‑rapport. Ingen integration, inget SDK, ingen agent i nätverket.",
+      engineCTA: "Kör en kostnadsfri granskning",
 
       whoKicker: "FÖR VEM",
       whoTitle: (
@@ -1769,57 +2171,78 @@ export const dict: Record<Lang, Dict> = {
         </>
       ),
       whoBody:
-        "Om du skriver klinisk dokumentation, skickar anspråk, hanterar patientdata, skriver rutiner eller gör interna granskningar — systemet visar samma bild som dina granskare ser, innan de ser den.",
+        "Om du skapar klinisk dokumentation, skickar claims, hanterar patientdata, skriver policys eller genomför interna revisioner — då ger denna plattform dig samma bild som dina granskare kommer att ha, innan de har den.",
       whoCards: [
-        { label: "Kliniker", sub: "Primärvård, specialist, tandvård, psykiatri." },
-        { label: "Billing‑bolag", sub: "Claims‑stöd och validering." },
-        { label: "Healthcare SaaS", sub: "EHR‑tillägg, AI‑dokumentation, portaler." },
+        { label: "Kliniker", sub: "Primärvård, specialistvård, tandvård, psykiatri." },
+        { label: "Billing‑bolag", sub: "Granska kundflöden; minska avslag." },
+        { label: "Healthcare SaaS", sub: "EHR‑tillägg, AI‑dokumentation, patientportaler." },
         { label: "Nätverk", sub: "IDN, ACO, flerplatsverksamheter." },
-        { label: "Konsulter", sub: "White‑label granskning + dokumentation." },
-        { label: "Compliance‑ansvariga", sub: "Återkommande granskningar + policyunderhåll." },
-        { label: "Interna revisionsteam", sub: "Planer, evidens, rapporter." },
-        { label: "Regulatorer", sub: "Oberoende verifieringsflöden." },
+        { label: "Konsulter", sub: "White‑label‑granskning + dokumentationslager." },
+        { label: "Compliance‑ansvariga", sub: "Återkommande revisioner + policyunderhåll." },
+        { label: "Interna revisionsteam", sub: "Planer, evidens, spårbara rapporter." },
+        { label: "Tillsynsmyndigheter", sub: "Oberoende verifieringsflöden." },
       ],
 
-      safetyKicker: "BYGGT FÖR VÅRDDATA",
+      safetyKicker: "VARFÖR DET ÄR SÄKERT",
       safetyTitle: (
         <>
-          Utformat<br />
-          {em("för PHI")}.
+          Byggt för<br />
+          {em("vårddata")}.
         </>
       ),
       safetyBody:
-        "Allt nedan är standard. Inga inställningar. Ingen enterprise‑nivå krävs.",
+        "Utformat för den enda dataklass som är relevant här: PHI. Allt nedan är standard — inga inställningar, inga premiumkrav.",
       safetyCards: [
-        { title: "Ingen PHI lagras i granskningsmotorn", desc: "Inmatning bearbetas och raderas. Inte sparad. Inte indexerad. Inte aggregerad." },
-        { title: "Inmatning raderas efter körning", desc: "Granskningsmotorn är stateless. Ingen kvarhållning." },
-        { title: "Kryptering i transit", desc: "TLS 1.2+. HSTS. Ingen plaintext." },
-        { title: "Lokal SQLite för Suite‑utdata", desc: "Dokument lagras lokalt. Ingen tredjepartsindexering. Du äger filerna." },
-        { title: "Inte använt för träning", desc: "Körningar sker mot leverantörer med BAA. Inmatning delas inte med träningspipelines." },
-        { title: "HIPAA‑anpassade arbetsflöden", desc: "Audit‑loggar, åtkomstkontroller, retention och incidentrutiner är standard." },
+        { title: "Ingen PHI lagras i granskningsmotorn", desc: "Inmatning bearbetas och raderas — inte sparad, inte indexerad, inte aggregerad." },
+        { title: "Inmatning raderas efter körning", desc: "Audit‑inmatning sparas inte efter körning. Motorn är stateless." },
+        { title: "Krypterat i transit", desc: "TLS 1.2+ på alla endpoints. HSTS. Ingen plaintext‑fallback." },
+        { title: "Lokal SQLite för Suite‑dokument", desc: "Dokument lagras på din server — inte i extern molnindexering." },
+        { title: "Inte använt för träning", desc: "Inferens körs mot leverantörer med BAA. Inmatning delas inte med träningspipelines." },
+        { title: "HIPAA‑anpassade arbetsflöden", desc: "Audit‑loggar, least‑privilege, retention‑kontroller och incidentrapportering." },
       ],
       safetyCTA: "Läs mer om säkerhet",
 
-      pricingKicker: "PRIS",
+      pricingKicker: "PRISSÄTTNING",
       pricingTitle: "Betala för det du behöver.",
-      pricingBody: "Kör en engångsgranskning, generera ett dokument eller abonnera för obegränsat.",
+      pricingBody: "Kör en enskild granskning, generera ett dokument eller abonnera för obegränsat.",
       pricingCTA: "Visa prissättning",
 
       closingTitle: (
-        <>Se vad dina {em("granskare")} ser.</>
+        <>Se vad dina {em("granskare")} skulle se.</>
       ),
-      closingBody: "Kör en gratis granskning. Kritiska fynd visas direkt i gränssnittet. Ingen inloggning krävs.",
+      closingBody: "Kör en kostnadsfri granskning. Kritiska fynd visas direkt i gränssnittet — ingen registrering krävs.",
+      demoCard: {
+        runLabel: "KÖRNING",
+        target: "COPD‑uppföljning efter exacerbation",
+        timestamp: "Ons 20 maj 2026 · 20:58 UTC",
+        overallLabel: "TOTALT",
+        criticalLabel: "KRITISKA",
+        watchLabel: "OBSERVATIONER",
+        infoLabel: "INFORMATION",
+        previewRows: [
+          { ch: "HIPAA",            title: "PHI i URL‑parametrar" },
+          { ch: "CLAIMS",           title: "Saknad taxonomikod" },
+          { ch: "KOMMUNIKATION",    title: "Ingen rutin för avslagshantering" },
+          { ch: "KLINISKT INNEHÅLL", title: "Referens till 2025 GOLD‑riktlinjer" },
+        ],
+        footerTime: "~38 sek · 6/6 kanaler",
+      },
+      pricingCards: [
+        { kicker: "ENGÅNGSGRANSKNINGAR", headline: "Från $49",  body: "Claims · Full · Denial." },
+        { kicker: "COMPLIANCE SUITE",    headline: "Från $29",  body: "Per dokument, eller $99/mån." },
+        { kicker: "PAKET",                headline: "$199/mån",  body: "4 granskningar + 10 dokument per månad." },
+      ],
     },
     about: {
       kicker: "FÖRETAG",
-      title: "Företag",
+      title: "Company",
       para1:
-        "MediReady bygger filbaserade gransknings‑ och compliance‑verktyg för vården. Verktygen identifierar problem innan regioner, revisorer eller tillsynsmyndigheter gör det. Inga integrationer. Inga IT‑projekt. Fil in → rapport ut.",
+        "MediReady utvecklar filbaserade verktyg för vårdgranskning och compliance som identifierar avvikelser innan betalare, revisorer eller tillsynsmyndigheter gör det. Ingen integration. Inga IT‑projekt. Fil in → rapport ut.",
       para2:
-        "Grundat av Glenn Carter. MediReady kombinerar erfarenhet av vårdarbetsflöden, granskningssäker datahantering, HIPAA‑anpassad arkitektur och deterministisk valideringslogik.",
-      para3: "Målet är enkelt: göra healthcare‑compliance snabb, korrekt och tillgänglig.",
-      ctaAudit: "Kör en gratis granskning",
-      ctaSuite: "Utforska sviten",
+        "Grundat av Glenn Carter. MediReady kombinerar erfarenhet av vårdflöden, granskningsklassad datahantering, HIPAA‑anpassad arkitektur och deterministisk valideringslogik.",
+      para3: "Målet är enkelt: att göra compliance‑arbetet inom vården snabbt, korrekt och tillgängligt.",
+      ctaAudit: "Kör en kostnadsfri granskning",
+      ctaSuite: "Utforska suiten",
     },
     contact: {
       kicker: "KONTAKT",
@@ -1886,12 +2309,12 @@ export const dict: Record<Lang, Dict> = {
       },
     },
     channels: {
-      documentation: { label: "Klinisk dokumentation", desc: "ICD‑10, CPT, HCPCS, modifierare, NPI, taxonomi, ärendefullständighet" },
+      documentation: { label: "Klinisk dokumentation", desc: "ICD‑10, CPT, HCPCS, modifierare, NPI, taxonomi, fullständighet i mötesdata" },
       hipaa:         { label: "HIPAA & säkerhet",       desc: "PHI‑exponering, headers, kryptering, trackers, samtycke" },
-      claims:        { label: "Claims‑flöde",           desc: "Payer‑regler, clearinghouse, EDI 837, payer‑ID, avslag" },
-      communication: { label: "Patientkommunikation",   desc: "Påminnelser, avslagsmeddelanden, opt‑outs, integritetssignaler" },
-      content:       { label: "Kliniskt innehåll",      desc: "Riktlinjeaktualitet, evidens, varningsinstruktioner" },
-      synthetic:     { label: "Syntetisk webbläsarkontroll", desc: "JS‑fel, nätverksfel, payer‑API‑anrop, prestanda" },
+      claims:        { label: "Claims workflow",        desc: "Payer‑regler, clearinghouse, EDI 837, payer‑ID, avslag" },
+      communication: { label: "Patientkommunikation",   desc: "Påminnelser, avslag, opt‑out, integritetssignaler" },
+      content:       { label: "Kliniskt innehåll",      desc: "Riktlinjeaktualitet, evidensstöd, riskinstruktioner" },
+      synthetic:     { label: "Syntetisk webbläsarkontroll", desc: "JS‑fel, nätverksfel, API‑anrop, prestanda" },
     },
     settingsPage: {
       kicker: "INSTÄLLNINGAR",
@@ -1954,31 +2377,31 @@ export const dict: Record<Lang, Dict> = {
     reportsPage: {
       kicker: "RAPPORTER",
       title: "Rapportbibliotek",
-      body: "Samlad vy över alla PDF‑ och Word‑exporter du genererat — över granskningar och sviten. Kommer med monitoring‑nivån.",
+      body: "Samlad vy över samtliga PDF‑ och Word‑exporter du genererat — över granskningar och suiten. Tillgängligt med övervakningsnivån.",
       downloadsLine: (
         <>
-          För nu ligger nedladdningar på varje enskild körning — se din{" "}
-          <Link href="/suite/history" style={{ color: "var(--accent)" }}>svithistorik</Link>.
+          För närvarande ligger nedladdningar på varje enskild körning — se din{" "}
+          <Link href="/suite/history" style={{ color: "var(--accent)" }}>suite‑historik</Link>.
         </>
       ),
     },
     suiteHistoryList: {
-      backToSuite: "Sviten",
+      backToSuite: "Suiten",
       kicker: "HISTORIK",
-      title: "Alla genereringar, sparade.",
-      body: "Granskningsplaner, kravmappningar och gap‑analyser du har skapat. Klicka på en post för att öppna eller ladda ned igen.",
+      title: "Samtliga genereringar, sparade.",
+      body: "Granskningsplaner, kravmappningar och gap‑analyser du har skapat. Välj en post för att öppna eller ladda ned igen.",
       freeTierBanner: (days) => (
         <>
-          <strong style={{ color: "var(--ink)" }}>Gratisnivå — senaste {days} dagarna.</strong>{" "}
+          <strong style={{ color: "var(--ink)" }}>Kostnadsfri nivå — senaste {days} dagarna.</strong>{" "}
           Äldre körningar är dolda.{" "}
           <Link href="/contact" style={{ color: "var(--accent)" }}>Kontakta oss</Link>{" "}
-          för att aktivera full historik.
+          för att aktivera fullständig historik.
         </>
       ),
       empty: {
         title: "Ingen historik ännu.",
-        body: "Kör något av svitverktygen för att fylla historiken — eller ladda demodata för att testa utan att använda API‑krediter.",
-        openSuite: "Öppna sviten",
+        body: "Kör något av suite‑verktygen för att fylla historiken — eller ladda demodata för att testa utan att använda API‑krediter.",
+        openSuite: "Öppna suiten",
       },
       toolLabels: {
         "audit-plan": "Audit Plan",
@@ -1996,71 +2419,76 @@ export const dict: Record<Lang, Dict> = {
     },
     securityPage: {
       kicker: "SÄKERHET",
-      title: "Säkerhet",
+      title: "Security",
       sections: [
         {
-          heading: "Ingen PHI lagras",
-          body: "MediReady lagrar eller behåller inte PHI. Inmatningar bearbetas flyktigt och raderas direkt när granskningen är klar.",
+          heading: "Ingen lagring av PHI",
+          body: "MediReady lagrar eller behåller inte PHI. Inmatningar bearbetas flyktigt och raderas när granskningen är slutförd.",
         },
         {
-          heading: "Krypterad överföring",
+          heading: "Kryptering under överföring",
           body: "Alla uppladdningar och nedladdningar använder HTTPS/TLS 1.2+.",
         },
         {
-          heading: "Lokal lagring för svitutdata",
-          body: "Dokument från Compliance‑sviten lagras lokalt i en isolerad SQLite‑databas. De delas aldrig och används inte för träning.",
+          heading: "Lokal lagring av Suite‑utdata",
+          body: "Dokument som genereras i Compliance‑suiten lagras lokalt i en isolerad SQLite‑databas. De delas aldrig och används inte för träning.",
         },
         {
           heading: "HIPAA‑anpassade arbetsflöden",
           bullets: [
             "Ingen bestående PHI",
-            "Ingen integration mot kliniska system",
+            "Ingen integration med kliniska system",
             "Ingen åtkomst till EHR",
             "Ingen bakgrundsinsamling av data",
+            "Minimal datamängd — endast den information som krävs för att generera efterfrågat resultat bearbetas",
           ],
-        },
-        {
-          heading: "Minimal datamängd",
-          body: "Endast den data som krävs för att generera efterfrågat resultat bearbetas.",
         },
       ],
     },
     privacyPage: {
       kicker: "INTEGRITET",
-      title: "Integritet",
+      title: "Privacy",
       noPhiHeading: "Ingen PHI",
       noPhiBody: (
         <>
-          Se{" "}
-          <Link href="/terms" style={{ color: "var(--accent)" }}>användarvillkoren</Link>. Se även{" "}
-          <Link href="/security" style={{ color: "var(--accent)" }}>Säkerhet</Link> för fullständig dataflödesarkitektur.
+          MediReady är utformat för avidentifierat innehåll och tar inte emot skyddade hälsouppgifter (PHI). Inskick av PHI strider mot våra{" "}
+          <Link href="/terms" style={{ color: "var(--accent)" }}>användarvillkor</Link>. Se{" "}
+          <Link href="/security" style={{ color: "var(--accent)" }}>Security‑sidan</Link> för fullständig dataflödesarkitektur.
         </>
       ),
-      inputsHeading: "Hur dina indata hanteras",
+      inputsHeading: "Hur dina inmatningar hanteras",
       inputsList: [
-        (<><strong>/scan (gratis granskning):</strong> bearbetas i minnet och raderas när svaret skickas. Inget skrivs till disk.</>),
-        (<><strong>/suite/* (compliance‑dokument):</strong> indata och genererade dokument sparas lokalt och kan raderas från{" "}<Link href="/suite/history" style={{ color: "var(--accent)" }}>historiksidan</Link>.</>),
+        {
+          heading: "/scan (kostnadsfri granskning)",
+          body: "Bearbetas i processminnet och raderas när svaret returneras. Inget skrivs till disk.",
+        },
+        {
+          heading: "/suite/* (compliance‑dokument)",
+          body: (
+            <>Formulärdata och genererade dokument lagras lokalt i en SQLite‑databas så att du kan ladda ned dokument igen. Du kan permanent ta bort poster via{" "}<Link href="/suite/history" style={{ color: "var(--accent)" }}>historiksidan</Link> när som helst.</>
+          ),
+        },
       ],
       collectHeading: "Data vi samlar in",
       collectList: [
-        "E‑postadress (endast om du lämnar den — väntelista, kontaktformulär)",
-        "Betalningsinformation via Revolut (vi lagrar inte kortdata)",
-        "Icke‑PHI driftloggar (tider, fel)",
+        "E‑postadress (endast om du själv lämnar den — väntelista, kontaktformulär)",
+        "Betalningsinformation, hanteras av Revolut (vi lagrar inte kortdata)",
+        "Icke‑PHI driftloggar från servern (t.ex. svarstider, fel)",
       ],
       notCollectHeading: "Data vi inte samlar in",
       notCollectList: [
-        "Patientidentifierare eller journaldata",
-        "EHR‑innehåll",
+        "Patientidentifierare eller medicinska journaler",
+        "EHR‑data eller innehåll från kliniska system",
         "Bakgrundsanalys, telemetri eller beteendespårning",
       ],
       thirdPartyHeading: "Tredjepartsleverantörer",
       thirdPartyBody:
-        "Indata skickas till AI‑leverantörer (Gemini, Mistral, OpenRouter). Ingen av dem har HIPAA‑BAA. Skicka inte PHI.",
-      deleteHeading: "Radera dina data",
+        "Inmatningar du skickar bearbetas av en eller flera AI‑leverantörer (Google Gemini, Mistral, OpenRouter). Ingen av dessa leverantörer verkar under ett HIPAA Business Associate Agreement med MediReady. Lämna därför inte in PHI.",
+      deleteHeading: "Radering av dina data",
       deleteBody: (
         <>
-          Du kan radera poster via{" "}
-          <Link href="/suite/history" style={{ color: "var(--accent)" }}>historiksidan</Link>. För ytterligare borttagning:{" "}
+          För Suite‑dokument: använd papperskorgsikonen på{" "}
+          <Link href="/suite/history" style={{ color: "var(--accent)" }}>historiksidan</Link> för att permanent ta bort en post. För radering av annan data (e‑postadress, meddelanden från kontaktformulär):{" "}
           <a href="mailto:mrglenncarter@gmail.com" style={{ color: "var(--accent)" }}>mrglenncarter@gmail.com</a>.
         </>
       ),
@@ -2080,11 +2508,11 @@ export const dict: Record<Lang, Dict> = {
         },
         {
           heading: "3. Datahantering",
-          body: "MediReady bearbetar indata flyktigt och lagrar inte PHI. Utdata från Compliance‑sviten lagras lokalt och delas aldrig eller används för träning.",
+          body: "MediReady bearbetar indata flyktigt och lagrar inte PHI. Utdata från Compliance‑suiten lagras lokalt och delas aldrig eller används inte för träning.",
         },
         {
           heading: "4. Betalning och fakturering",
-          body: "Betalningar hanteras via säker tredjepartsleverantör. Alla avgifter är icke‑återbetalningsbara om inte lag kräver annat.",
+          body: "Betalningar hanteras via säker tredjepartsleverantör. Samtliga avgifter är icke‑återbetalningsbara om inte lag föreskriver annat.",
         },
         {
           heading: "5. Ansvarsbegränsning",
@@ -2092,58 +2520,335 @@ export const dict: Record<Lang, Dict> = {
         },
       ],
     },
+    classificationPage: {
+      kicker: "KLASSIFICERINGSDOKUMENT",
+      title: "MediReady — Klassificeringsdokument",
+      verdict: "Bedömning: ej medicinteknisk programvara (MDSW) och ej nationellt medicinskt informationssystem (NMI).",
+      metaVersion: "Version",
+      metaVersionValue: "1.0",
+      metaDate: "Datum",
+      metaDateValue: "2026‑05‑24",
+      metaPreparedBy: "Upprättad av",
+      metaPreparedByValue: "MediReady AB",
+      sections: [
+        {
+          heading: "1. Syfte",
+          paragraphs: [
+            "Detta dokument fastställer MediReadys formella klassificering i förhållande till:",
+          ],
+          bullets: [
+            "EU:s förordning (EU) 2017/745 (MDR) — medicintekniska produkter och medicinteknisk programvara (MDSW).",
+            "HSLF‑FS 2022:42 — nationella medicinska informationssystem (NMI).",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: [
+            "Dokumentet beskriver MediReadys avsedda användning, funktionella begränsningar och regulatoriska avgränsningar som grund för bedömningen att produkten inte omfattas av MDR och inte omfattas av NMI‑regelverket.",
+          ],
+        },
+        {
+          heading: "2. Produktbeskrivning",
+          paragraphs: [
+            "MediReady är ett administrativt verktyg för compliance‑dokumentation och workflow‑revision. Systemet används av administratörer, kvalitetsansvariga och verksamhetschefer för att:",
+          ],
+          bullets: [
+            "generera policyer, SOP:er och riskbedömningar",
+            "genomföra administrativa gap‑analyser",
+            "kartlägga standarder (HIPAA, ISO, NIST m.fl.)",
+            "utföra icke‑kliniska workflow‑revisioner",
+            "skapa rapporter för intern styrning och efterlevnad",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: [
+            "MediReady bearbetar inte medicinska beslut, påverkar inte patientvård och ger inga rekommendationer om diagnos, behandling eller kliniska åtgärder.",
+          ],
+        },
+        {
+          heading: "3. Avsedd användning (Intended Purpose)",
+          paragraphs: ["MediReady är avsett att användas för:"],
+          bullets: [
+            "administrativ dokumentation",
+            "compliance‑arbete",
+            "intern revision av arbetsflöden",
+            "policy‑ och styrdokumentshantering",
+            "icke‑kliniska riskbedömningar",
+          ],
+        },
+        {
+          heading: "",
+          paragraphs: ["MediReady är inte avsett att:"],
+          bullets: [
+            "användas för diagnos, behandling, monitorering eller lindring av sjukdom",
+            "användas för kliniska beslut eller patientnära bedömningar",
+            "hantera journaluppgifter eller medicinska parametrar",
+            "ge rekommendationer som påverkar patienters vård eller behandling",
+            "uppdatera eller läsa myndighetsregister inom hälso‑ och sjukvård",
+          ],
+        },
+        {
+          heading: "4. Bedömning enligt MDR (EU 2017/745)",
+          subsections: [
+            {
+              heading: "4.1 Relevanta kriterier",
+              paragraphs: [
+                "Enligt MDR klassas programvara som medicinteknisk produkt om den har ett medicinskt syfte, exempelvis att:",
+              ],
+              bullets: [
+                "diagnostisera",
+                "förebygga",
+                "övervaka",
+                "behandla",
+                "lindra sjukdom",
+              ],
+            },
+            {
+              heading: "4.2 Bedömning",
+              paragraphs: ["MediReady uppfyller inga av MDR:s medicinska syften. Systemet:"],
+              bullets: [
+                "analyserar inte patientdata",
+                "påverkar inte kliniska beslut",
+                "genererar inte medicinska rekommendationer",
+                "används inte av vårdpersonal i patientnära arbete",
+                "hanterar endast administrativ information",
+              ],
+              quote: "“Software for administrative purposes is not covered.”",
+              quoteAttribution: "— MDR‑tolkning enligt EU:s vägledningar",
+            },
+            {
+              heading: "4.3 Slutsats",
+              paragraphs: [
+                "MediReady är inte en medicinteknisk produkt och omfattas inte av MDR.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "5. Bedömning enligt HSLF‑FS 2022:42 (Nationella medicinska informationssystem)",
+          subsections: [
+            {
+              heading: "5.1 Relevanta kriterier",
+              paragraphs: ["NMI omfattar system som:"],
+              bullets: [
+                "hanterar medicinsk information av betydelse för enskilda patienters vård, eller",
+                "ger direkt åtkomst till eller uppdaterar myndighetsregister, eller",
+                "används för expediering av recept på apotek.",
+              ],
+            },
+            {
+              heading: "5.2 Undantag i föreskriften",
+              paragraphs: ["HSLF‑FS 2022:42 anger att följande inte är NMI:"],
+              quote: "“Generell programvara som används i vårdmiljö, utom i fall då denna anpassats på sätt som uppfyller definitionen för nationella medicinska informationssystem.”",
+            },
+            {
+              heading: "5.3 Bedömning",
+              paragraphs: ["MediReady:"],
+              bullets: [
+                "hanterar inte medicinsk information",
+                "påverkar inte patienters vård",
+                "har ingen koppling till myndighetsregister",
+                "används inte för recept eller expediering",
+                "är inte anpassat för kliniska beslut",
+                "är inte ett system av betydelse för enskilda patienters vård",
+              ],
+            },
+            {
+              heading: "5.4 Slutsats",
+              paragraphs: [
+                "MediReady uppfyller inte definitionen av NMI och omfattas inte av HSLF‑FS 2022:42.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "6. Dataskydd och GDPR",
+          paragraphs: [
+            "Även om MediReady inte är MDSW eller NMI omfattas systemet av GDPR.",
+          ],
+          bullets: [
+            "Inmatningar bearbetas flyktigt i minnet och raderas direkt.",
+            "Ingen PHI lagras.",
+            "Ingen bakgrundsinsamling, telemetri eller profilering.",
+            "Vårdgivaren är personuppgiftsansvarig.",
+            "MediReady är personuppgiftsbiträde.",
+            "Ett biträdesavtal enligt Artikel 28 krävs.",
+          ],
+        },
+        {
+          heading: "7. Samlad slutsats",
+          paragraphs: [
+            "Baserat på avsedd användning, funktionalitet och regulatoriska kriterier bedöms MediReady:",
+          ],
+          bullets: [
+            "inte vara medicinteknisk programvara (MDSW) enligt MDR",
+            "inte vara ett nationellt medicinskt informationssystem (NMI) enligt HSLF‑FS 2022:42",
+            "vara ett administrativt compliance‑ och workflow‑verktyg",
+            "vara föremål för GDPR, men inte för MDR eller NMI‑regelverket",
+          ],
+        },
+      ],
+    },
+    regulatoryPage: {
+      kicker: "REGULATORISK POSITIONERING",
+      title: "Compliance Documentation & Workflow Audit Tool",
+      subtitle: "Regulatorisk svensk version för offentlig publicering",
+      leadHeading: "MediReady är ett administrativt verktyg för compliance‑dokumentation och workflow‑revision",
+      leadPara1: "MediReady är inte ett kliniskt beslutsstöd, inte ett medicintekniskt system och inte ett verktyg för diagnos, behandling eller patientnära beslut. Plattformen är utformad för administratörer, kvalitetsansvariga och verksamhetschefer som behöver strukturera, dokumentera och granska interna arbetsflöden, policyer och efterlevnad.",
+      leadPara2: "Systemet hanterar endast administrativ information och bearbetar inte medicinska beslut, kliniska parametrar eller patientjournaler.",
+      intendedUseHeading: "Avgränsad och tydlig avsedd användning",
+      intendedUseIntro: "MediReady är avsett för:",
+      intendedUseItems: [
+        { label: "Compliance‑dokumentation", sub: "Policyer, SOP:er, riskbedömningar, gap‑analyser, standardkartläggning." },
+        { label: "Workflow‑revisioner", sub: "Administrativa processer, interna rutiner, informationsflöden." },
+        { label: "Interna kontroller och kvalitetsarbete", sub: "Icke‑kliniska granskningsmoment, administrativa risker, organisatoriska brister." },
+        { label: "Administrativ rapportering", sub: "Icke‑patientnära sammanställningar, interna förbättringsplaner." },
+      ],
+      intendedUseOutro: "MediReady påverkar inte medicinska beslut, bearbetar inte kliniska data och ger inte rekommendationer om diagnos, behandling eller vård.",
+      classificationHeading: "Regulatorisk klassificering — varför MediReady inte är MDSW eller NMI",
+      mdrHeading: "1. Ej medicinteknisk programvara (MDR 2017/745)",
+      mdrBody1: "EU:s MDR gäller endast om programvaran har ett medicinskt syfte, t.ex. diagnos, behandling, monitorering eller lindring av sjukdom. MediReady uppfyller inte dessa kriterier.",
+      mdrQuote: "“Software for administrative purposes is not covered.”",
+      mdrQuoteAttribution: "— ur MDR:s administrativa undantag",
+      mdrConclusion: "MediReady är ett administrativt compliance‑verktyg, inte ett kliniskt system.",
+      nmiHeading: "2. Ej nationellt medicinskt informationssystem (NMI) enligt HSLF‑FS 2022:42",
+      nmiIntro: "NMI omfattar system som:",
+      nmiCriteria: [
+        "hanterar medicinsk information av betydelse för enskilda patienters vård, eller",
+        "ger direkt åtkomst till eller uppdaterar myndighetsregister.",
+      ],
+      nmiSupportLead: "Stöd i föreskriften:",
+      nmiSupportBody: "NMI gäller inte generell programvara som används i vårdmiljö om den inte anpassats för medicinskt syfte.",
+      nmiConclusion: "MediReady hanterar inte medicinsk information, inte patientdata och inte registeråtkomst.",
+      gdprHeading: "GDPR — dataskyddsarkitektur och ansvar",
+      gdprIntro: "MediReady är byggt för att minimera dataskyddsrisker och följa IMY:s prioriteringar.",
+      gdprBlocks: [
+        {
+          heading: "Stateless bearbetning",
+          body: (
+            <>
+              Inmatningar bearbetas i minnet och raderas direkt efter körning. Ingen PHI lagras. Ingen bakgrundsinsamling, ingen telemetri, ingen profilering.
+            </>
+          ),
+        },
+        {
+          heading: "Rollfördelning",
+          body: (
+            <>
+              Vårdgivaren är personuppgiftsansvarig. MediReady är personuppgiftsbiträde. Ett GDPR‑kompatibelt biträdesavtal (DPA) krävs enligt Artikel 28.
+            </>
+          ),
+        },
+        {
+          heading: "IMY:s tillsynslogik",
+          body: (
+            <>
+              IMY prioriterar bl.a. AI‑användning, barn och unga, känsliga uppgifter samt vård och omsorg. MediReady hanterar inte känsliga personuppgifter, vilket minskar tillsynsrisken.
+            </>
+          ),
+        },
+      ],
+      nis2Heading: "NIS2 — gäller endast vid viss bolagsstorlek",
+      nis2Intro: "NIS2 gäller om företaget:",
+      nis2Criteria: [
+        "har ≥ 50 anställda, eller",
+        "omsätter ≥ 10 miljoner euro, eller",
+        "klassas som “väsentlig” aktör inom hälso‑ och sjukvård.",
+      ],
+      nis2Conclusion: "MediReady är inte ett EHR‑system och omfattas inte automatiskt. Bedömning görs utifrån bolagsstorlek, inte produktens funktion.",
+      ehdsHeading: "EHDS — framtida interoperabilitetskrav",
+      ehdsBody: "EHDS riktar sig primärt mot EHR‑system och nationella hälsodataflöden. MediReady är ett administrativt verktyg och omfattas inte, men utvecklingen följs.",
+      actionsHeading: "Rekommenderade åtgärder",
+      actionsItems: [
+        {
+          heading: "1. Förfina marknadsföringen",
+          body: (
+            <>
+              Undvik termer som antyder klinisk funktion. Använd: <em>compliance documentation tool</em>, <em>workflow audit tool</em>, <em>administrativ granskningsmotor</em>.
+            </>
+          ),
+        },
+        {
+          heading: "2. Dokumentera klassificeringen",
+          body: (
+            <>
+              Skapa ett internt dokument som visar varför MediReady inte är MDSW eller NMI. Hänvisa till MDR:s administrativa undantag och HSLF‑FS 2022:42:s definitioner.
+            </>
+          ),
+        },
+        {
+          heading: "3. Stärk dataskyddsarkitekturen",
+          body: (
+            <>
+              Lyft fram stateless‑designen i DPA och säkerhetsdokumentation. Beskriv att ingen PHI lagras eller behandlas.
+            </>
+          ),
+        },
+        {
+          heading: "4. Juridisk granskning innan lansering",
+          body: (
+            <>
+              Rekommenderas av regulatoriska skäl. Fokus: marknadsföring, avsedd användning, DPA, riskanalys.
+            </>
+          ),
+        },
+      ],
+      summaryHeading: "Sammanfattning",
+      summaryBody: "MediReady är ett administrativt verktyg för compliance‑dokumentation och workflow‑revision, inte ett medicinskt system. Det faller utanför MDR, utanför NMI, och hanterar inte PHI. GDPR följs genom stateless‑bearbetning och tydlig rollfördelning. NIS2 och EHDS kan bli relevanta beroende på bolagsstorlek och framtida interoperabilitetskrav.",
+    },
     productPage: {
       kicker: "PRODUKT",
       title: "Produkt",
       auditsHeading: "MediReady Audits",
       auditsBody:
-        "Sexkanalsgranskningar för vård och ersättning. Visar det som regioner, revisorer och tillsynsmyndigheter hittar först.",
+        "Sexkanaliga vårdgranskningar som identifierar de brister som betalare, revisorer och tillsynsmyndigheter upptäcker först.",
       auditsList: [
-        "Claims‑ersättning",
-        "HIPAA & säkerhet",
+        "Ersättnings- och kravhantering",
+        "HIPAA och informationssäkerhet",
         "Dokumentationskvalitet",
         "Patientkommunikation",
         "Kliniskt innehåll",
         "Syntetiskt granskarbeteende",
       ],
       auditsOutputs:
-        "Övergripande och kanalvisa poäng, fynd med allvarlighetsgrad, åtgärdskrav, PDF/JSON‑export.",
-      auditsCta: "Kör en gratis granskning",
+        "Utdata inkluderar total- och kanalspecifika poäng, fynd med allvarlighetsgrad, nödvändiga åtgärder samt export i PDF/JSON.",
+      auditsCta: "Kör en kostnadsfri granskning",
       suiteHeading: "MediReady Suite",
       suiteBody:
         "Compliance‑dokument genererade på minuter. Inga mallar. Ingen manuell formatering.",
       suiteList: [
-        "Audit Plan Generator",
-        "Standards Mapping",
-        "Document Gap Analysis",
-        "HIPAA Risk Assessment",
-        "Policy & SOP‑generator",
+        "Granskningsplaner",
+        "Standardkartläggning",
+        "Dokumentationsgap",
+        "HIPAA‑riskbedömning",
+        "Policy- och rutinframtagning",
       ],
-      suiteCta: "Öppna sviten",
-      monitoringHeading: "Monitoring",
-      monitoringBody: "Veckovisa automatiserade granskningar med trendspårning och historiska jämförelser.",
+      suiteCta: "Öppna suiten",
+      monitoringHeading: "Övervakning",
+      monitoringBody: "Veckovisa automatiserade granskningar med trendanalys och historiska jämförelser.",
       monitoringCta: "Gå med i väntelistan",
     },
     statusPage: {
       kicker: "STATUS",
       title: "Status",
-      allOperational: "Alla system fungerar",
-      operationalSuffix: "Operativ",
+      allOperational: "Alla system i drift",
+      operationalSuffix: "I drift",
       systems: {
-        auditEngine: "Audit Engine",
-        complianceSuite: "Compliance‑svit",
-        monitoring: "Monitoring",
+        auditEngine: "Granskningsmotor",
+        complianceSuite: "Compliance‑suite",
+        monitoring: "Övervakning",
         fileUploads: "Filuppladdningar",
         exports: "Exporter",
       },
       maintenanceHeading: "Planerat underhåll",
-      maintenanceBody: "Inget just nu.",
+      maintenanceBody: "Inget planerat underhåll för närvarande.",
     },
     waitlistPage: {
       kicker: "VÄNTELISTA",
-      title: "Var först när monitoreringen lanseras.",
+      title: "Be first when monitoring launches.",
       body:
-        "Kontinuerlig övervakning, veckovisa körningar och trendspårning för alla sex granskningskanaler. Lämna din e‑post — vi meddelar när funktionen är live.",
+        "Kontinuerlig övervakning, veckovisa körningar och trendanalys för samtliga sex granskningskanaler. Lämna din e‑postadress — vi meddelar när funktionen är tillgänglig.",
     },
     waitlistForm: {
       emailLabel: "E‑post",
@@ -2178,7 +2883,7 @@ export const dict: Record<Lang, Dict> = {
       body:
         "Ett bekräftelsemejl skickas inom kort. Om det inte dyker upp inom några minuter, kolla skräpposten.",
       runAuditCta: "Kör en granskning",
-      openSuiteCta: "Öppna sviten",
+      openSuiteCta: "Öppna suiten",
     },
     scanPage: {
       sampleInputs: [
@@ -2186,21 +2891,21 @@ export const dict: Record<Lang, Dict> = {
         "Webbplatsen använder HTTPS med HSTS, CSP och säkra cookies. Ingen PHI i URL:er. Samtyckesbanner laddas före analysverktyg.",
         "Claim inskickad med payer‑ID, taxonomi, NPI och genererad EDI 837. Clearinghouse‑svar 200. Inget workflow för avvisningsnotiser konfigurerat.",
       ],
-      kicker: "GRATIS SCAN",
-      kickerResults: "GRATIS SCAN · RESULTAT",
-      title: "Starta en gratis granskning.",
+      kicker: "KOSTNADSFRI GRANSKNING",
+      kickerResults: "KOSTNADSFRI GRANSKNING · RESULTAT",
+      title: "Starta en kostnadsfri granskning.",
       titleResults: "Kritiska fynd.",
-      body: "Klistra in en klinisk anteckning, beskrivning av claim‑flöde eller vård‑URL. MediReady kör alla sex kanaler parallellt — normalt 15–40 sekunder.",
-      bodyResults: "Översta kritiska fynden från sex kanaler. Full rapport — alla fynd, åtgärdskrav, PDF‑export — låses upp för 49 USD.",
+      body: "Klistra in en klinisk anteckning, beskrivning av claim‑flöde eller vård‑URL. MediReady kör samtliga sex kanaler parallellt — normalt 15–40 sekunder.",
+      bodyResults: "De främsta kritiska fynden från sex kanaler. Fullständig rapport — samtliga fynd, åtgärdskrav och PDF‑export — låses upp för 49 USD.",
       inputLabel: "Inmatning — klinisk anteckning, arbetsflödesbeskrivning eller URL",
       inputPlaceholder: "Klistra in en klinisk anteckning, claim‑flödesbeskrivning eller vård‑URL…",
       uploadIdle: "Ladda upp fil (PDF, DOCX, TXT, MD)",
       uploadBusy: "Läser fil…",
       uploadOrTry: "eller testa:",
       uploadNoText: "Ingen läsbar text hittades i filen.",
-      uploadLoaded: (name) => `Inläst ${name} — granska texten ovan och kör sedan scan.`,
+      uploadLoaded: (name) => `Inläst ${name} — granska texten ovan och kör därefter granskningen.`,
       noStoreBadge: "INMATNING SPARAS INTE OCH ANVÄNDS INTE FÖR TRÄNING",
-      runCta: "Kör scan",
+      runCta: "Kör granskning",
       runningStatus: "STATUS",
       runningTitle: "Kör sex granskningskanaler…",
       runningBody: "Körs parallellt. Normal tid: 15–40 sekunder.",
@@ -2209,25 +2914,25 @@ export const dict: Record<Lang, Dict> = {
       severityCritical: "KRITISK",
       severityWatch: "OBSERVATION",
       severityInfo: "INFO",
-      noCriticalBody: "Inga kritiska fynd i denna körning. Lås upp full rapport för att se observationer och info‑nivå.",
+      noCriticalBody: "Inga kritiska fynd i denna körning. Lås upp fullständig rapport för att se observationer och info‑nivå.",
       unlockTitle: (extra) => `${extra} ytterligare fynd · PDF‑export`,
-      unlockBody: "Lås upp full granskning för att se alla fynd, åtgärdskrav och ladda ned PDF för granskare.",
-      unlockCta: "Lås upp full rapport",
-      subscribeCta: "Prenumerera istället",
-      runErrorDefault: "Misslyckades att köra granskning.",
+      unlockBody: "Lås upp fullständig granskning för att se samtliga fynd, åtgärdskrav och ladda ned PDF för revisor.",
+      unlockCta: "Lås upp fullständig rapport",
+      subscribeCta: "Prenumerera i stället",
+      runErrorDefault: "Granskningen kunde inte slutföras.",
       uploadErrorPrefix: (status) => `Uppladdning misslyckades (HTTP ${status})`,
     },
     reportPage: {
       kicker: "HÄLSORAPPORT",
       kickerRun: (runId) => `RAPPORT · KÖRNING ${runId}`,
-      title: "Kör en full granskning.",
-      titleDone: "Granskning klar.",
-      body: "Klistra in en klinisk anteckning, claim‑flöde eller URL. Motorn kör sex kanaler och returnerar full rapport.",
+      title: "Kör en fullständig granskning.",
+      titleDone: "Granskning slutförd.",
+      body: "Klistra in en klinisk anteckning, claim‑flöde eller URL. Motorn kör sex kanaler och returnerar fullständig rapport.",
       bodyDone: "Sex kanaler analyserade. Expandera en kanal för att se fynd och åtgärdskrav.",
       inputLabel: "Inmatning — klinisk anteckning, arbetsflödesbeskrivning eller URL",
       inputPlaceholder: "Klistra in en klinisk anteckning, claim‑flödesbeskrivning eller vård‑URL…",
       useSampleInput: "Använd exempelinmatning",
-      runCta: "Kör full granskning",
+      runCta: "Kör fullständig granskning",
       runningCta: "Analyserar sex kanaler…",
       runningBody: "Kör kliniska, HIPAA‑, claims‑, kommunikations‑, innehålls‑ och syntetiska kontroller parallellt. Normal tid: 15–40 sekunder.",
       overallLabel: "ÖVERGRIPANDE",
@@ -2236,81 +2941,81 @@ export const dict: Record<Lang, Dict> = {
       severityInfo: "INFO",
       downloadPdf: "Ladda ned PDF",
       runAgain: "Kör igen",
-      bookDemo: "Boka 15‑min demo",
+      bookDemo: "Boka 15‑minuters demo",
       joinWaitlist: "Gå med i väntelistan",
       failedBadge: "MISSLYCKADES",
       noFindings: "Inga fynd för denna kanal.",
       requiredActionsLabel: "ÅTGÄRDSKRAV",
-      runErrorDefault: "Misslyckades att köra granskning.",
-      pdfErrorDefault: "PDF‑generering misslyckades.",
+      runErrorDefault: "Granskningen kunde inte slutföras.",
+      pdfErrorDefault: "PDF‑genereringen kunde inte slutföras.",
     },
     safetyPage: {
       kicker: "SÄKERHET",
-      title: "Säkerhet",
+      title: "Safety",
       intro:
-        "MediReady är utformat för att minimera risk genom att undvika PHI‑lagring, reducera integrationskomplexitet och säkerställa att all bearbetning är flyktig och krypterad.",
+        "MediReady är utformat för att minimera risk genom att undvika lagring av PHI, reducera integrationskomplexitet och säkerställa att all bearbetning är flyktig och krypterad.",
       sections: [
-        { heading: "Flyktig bearbetning", body: "Uppladdade filer och textinmatningar bearbetas i minnet och raderas direkt när granskningen är klar." },
-        { heading: "Ingen PHI‑lagring", body: "MediReady lagrar inte PHI, kliniska anteckningar eller patientidentifierare. Detta eliminerar behovet av BAA och minskar compliance‑belastningen." },
-        { heading: "Lokal dokumentlagring", body: "Utdata från Compliance‑sviten lagras lokalt i en isolerad SQLite‑databas och delas aldrig eller används för träning." },
+        { heading: "Flyktig bearbetning", body: "Uppladdade filer och textinmatningar bearbetas i minnet och raderas omedelbart när granskningen är slutförd." },
+        { heading: "Ingen lagring av PHI", body: "MediReady lagrar inte PHI, kliniska anteckningar eller patientidentifierare. Detta eliminerar behovet av BAAs och minskar administrativt compliance‑arbete." },
+        { heading: "Lokal dokumentlagring", body: "Utdata från Compliance‑suiten lagras lokalt i en isolerad SQLite‑databas och delas aldrig eller används för träning." },
       ],
     },
     pricingPage: {
-      kicker: "PRIS",
+      kicker: "PRISSÄTTNING",
       title: (
         <>
-          En granskning, eller hela<br />
-          {em("compliance‑sviten")}. Du väljer.
+          Enstaka granskning eller full<br />
+          {em("compliance‑suite")}. Du väljer.
         </>
       ),
-      body: "Gratisnivå för inbjudna användare. Per‑dokument‑pris för engångsbehov. Abonnemang för team.",
-      inviteOnly: "ENDAST INBJUDAN",
-      freeTierKicker: "GRATISNIVÅ",
+      body: "Kostnadsfri nivå för inbjudna användare. Per‑dokument‑prissättning för enstaka behov. Abonnemang för team.",
+      inviteOnly: "ENDAST VIA INBJUDAN",
+      freeTierKicker: "KOSTNADSFRI NIVÅ",
       freeName: "Gratis",
       freeBody:
-        "För tidiga användare som utvärderar MediReady. Alla verktyg, åtkomst via inbjudan — begär tillgång så sätter vi upp dig.",
-      freeCta: "Begär tillgång",
+        "För tidiga användare som utvärderar MediReady. Alla verktyg, åtkomst via inbjudan — begär åtkomst så aktiverar vi kontot.",
+      freeCta: "Begär åtkomst",
       freeFeatures: [
         "3 fullständiga granskningar per månad",
         "1 dokument per verktyg per månad",
-        "Obegränsad kravmappning (korta inmatningar)",
-        "7‑dagars historik",
+        "Obegränsad standardkartläggning (korta inmatningar)",
+        "7 dagars historik",
         "Demo‑dashboard för övervakning",
       ],
       perDocKicker: "PER DOKUMENT",
-      perDocTitle: "Per‑dokument‑pris",
-      perDocBody: "För engångsbehov. Betala endast för det du genererar.",
+      perDocTitle: "Per‑dokument‑prissättning",
+      perDocBody: "För enstaka behov. Betala endast för det du genererar.",
       perDocSuffix: {
         document: "/dokument",
-        mapping: "/mappning",
+        mapping: "/kartläggning",
         assessment: "/bedömning",
       },
       payCta: "Betala",
-      subsKicker: "SVIT‑ABONNEMANG",
-      subsTitle: "För team som genererar ofta",
+      subsKicker: "SUITE‑ABONNEMANG",
+      subsTitle: "För team med återkommande behov",
       subsBody:
-        "Abonnemang är inte aktiva än. Gå med i väntelistan för att bli aviserad när de lanseras.",
-      perMonth: "/mån",
-      mostPopular: "MEST POPULÄR",
+        "Abonnemang är ännu inte aktiva. Gå med i väntelistan för att få information vid lansering.",
+      perMonth: "/månad",
+      mostPopular: "Mest populär",
       waitlistCta: "Gå med i väntelistan",
-      contactSalesCta: "Kontakta försäljning",
+      contactSalesCta: "Kontakta sälj",
       cards: {
         clinic: {
-          name: "Klinik",
-          tagline: "Enpunkts­verksamheter och små kliniker.",
+          name: "Clinic",
+          tagline: "För enheter med en plats och mindre kliniker.",
           features: [
-            "10 dokument/månad",
-            "Obegränsad kravmappning",
+            "10 dokument per månad",
+            "Obegränsad standardkartläggning",
             "Obegränsade granskningsplaner",
             "Prioriterad kö",
             "PDF + Word‑export",
           ],
         },
         network: {
-          name: "Nätverk / SaaS",
-          tagline: "Flerorts­nätverk och vård‑SaaS‑leverantörer.",
+          name: "Network / SaaS",
+          tagline: "För flerplatsnätverk och vårdrelaterade SaaS‑leverantörer.",
           features: [
-            "50 dokument/månad",
+            "50 dokument per månad",
             "Obegränsade riskbedömningar",
             "Obegränsad gap‑analys",
             "Teamkonton",
@@ -2319,13 +3024,13 @@ export const dict: Record<Lang, Dict> = {
         },
         enterprise: {
           name: "Enterprise",
-          tagline: "IDN, större konsultbolag, högvolymsoperatörer.",
+          tagline: "För IDN, större konsultorganisationer och verksamheter med hög volym.",
           features: [
-            "Obegränsat allt",
+            "Obegränsad användning",
             "API‑åtkomst",
             "Veckovis övervakning",
             "Dedikerad support",
-            "Egna integrationer",
+            "Anpassade integrationer",
           ],
         },
       },
@@ -2334,30 +3039,30 @@ export const dict: Record<Lang, Dict> = {
       kicker: "FÖR VEM",
       title: "För vem",
       items: [
-        "Kliniker",
-        "Billing‑bolag",
-        "Healthcare SaaS",
-        "Nätverk",
-        "Konsulter",
-        "Interna revisionsteam",
-        "Regulatorer",
+        { label: "Kliniker", sub: "Primärvård, specialistvård, tandvård och psykiatri med behov av strukturerade egenkontroller, dokumentationsgranskning och spårbara åtgärdsunderlag." },
+        { label: "Billing‑bolag", sub: "Organisationer som hanterar ersättningsflöden och behöver verifiera kravhantering, avslag, kodning och dokumentationskvalitet innan inskick." },
+        { label: "Healthcare SaaS", sub: "Leverantörer av EHR‑tillägg, AI‑dokumentation, patientportaler och andra digitala vårdtjänster som behöver oberoende granskning av innehåll, säkerhet och kommunikation." },
+        { label: "Nätverk och grupper", sub: "IDN, ACO och flerplatsverksamheter som kräver enhetliga granskningsprocesser, gemensamma standarder och jämförbara rapporter." },
+        { label: "Konsulter", sub: "Rådgivare och revisionspartners som behöver ett white‑label‑lager för granskning, dokumentation och standardiserade rapporter." },
+        { label: "Interna revisionsteam", sub: "Team som arbetar med återkommande kontroller, evidensinsamling, riskbedömning och spårbara granskningsrapporter." },
+        { label: "Tillsynsmyndigheter", sub: "Enheter som genomför oberoende verifiering av dokumentation, processer, informationssäkerhet och kliniskt innehåll." },
       ],
     },
     docsPage: {
       kicker: "DOKUMENTATION",
-      title: "Dokumentation",
+      title: "Documentation",
       groups: [
         {
           heading: "Kom igång",
-          items: ["Kör din första granskning", "Generera compliance‑dokument", "Använd standards‑mapping", "Exportera rapporter"],
+          items: ["Kör din första granskning", "Generera compliance‑dokument", "Använd standards mapping", "Exportera rapporter"],
         },
         {
-          heading: "Audit Engine",
-          items: ["Claims‑granskning", "Full compliance‑granskning", "Denial‑granskning", "Allvarlighetsmodell", "Åtgärdskrav"],
+          heading: "Granskningsmotorn",
+          items: ["Claims‑granskning", "Full compliance‑granskning", "Denial‑granskning", "Allvarlighetsmodell", "Nödvändiga åtgärder"],
         },
         {
-          heading: "Compliance‑svit",
-          items: ["Audit Plan Generator", "Standards Mapping", "Document Gap Analysis", "HIPAA Risk Assessment", "Policy & SOP‑generator"],
+          heading: "Compliance‑suiten",
+          items: ["Audit Plan Generator", "Standards Mapping", "Document Gap Analysis", "HIPAA Risk Assessment", "Policy & SOP Generator"],
         },
       ],
     },
@@ -2386,20 +3091,20 @@ export const dict: Record<Lang, Dict> = {
     },
     footer: {
       tagline:
-        "En plattform för vårdgranskningar och compliance‑dokumentation. Sexkanals audit‑motor plus en svit av HIPAA‑anpassade dokumentgeneratorer. Fil in. Rapport ut.",
+        "En plattform för vårdgranskning och compliance‑dokumentation. Sexkanalig granskningsmotor + HIPAA‑anpassad dokumentationssuite. Fil in. Rapport ut.",
       copyright: "© 2026 MEDIREADY",
       cols: {
         product: {
           heading: "Produkt",
           productOverview: "Produktöversikt",
-          complianceSuite: "Compliance‑svit",
+          complianceSuite: "Compliance‑suite",
           pricing: "Prissättning",
-          freeAudit: "Gratis granskning",
+          freeAudit: "Kostnadsfri granskning",
           sampleReport: "Exempelrapport",
         },
         company: {
           heading: "Företag",
-          company: "Företag",
+          company: "Om oss",
           whoItsFor: "För vem",
           contact: "Kontakt",
           waitlist: "Väntelista",
@@ -2409,13 +3114,15 @@ export const dict: Record<Lang, Dict> = {
           documentation: "Dokumentation",
           status: "Status",
           safety: "Säkerhet",
-          security: "Security",
-          monitoring: "Monitoring",
+          security: "Informationsskydd",
+          monitoring: "Övervakning",
         },
         legal: {
           heading: "Juridik",
           privacy: "Integritet",
           terms: "Användarvillkor",
+          regulatory: "Regulatorisk positionering",
+          classification: "Klassificeringsdokument",
         },
       },
     },
@@ -2467,15 +3174,15 @@ export const dict: Record<Lang, Dict> = {
       newAudit: "Ny granskning",
     },
     monitoring: {
-      kicker: "MONITORERING",
-      title: "Veckovisa granskningar. Trendspårning. Aviseringar.",
+      kicker: "ÖVERVAKNING",
+      title: "Veckovisa granskningar. Trendanalys. Regressionsaviseringar.",
       body:
-        "Engångsgranskningar visar dagens läge. Monitorering visar om läget förbättras eller försämras — och meddelar dig när något går bakåt.",
+        "Engångsgranskningar visar nuläget. Övervakning visar om compliance‑status förbättras eller försämras över tid — och aviserar när status förändras.",
       features: [
-        { title: "Veckovisa automatiserade granskningar", desc: "Sätt ett mål en gång. Få en ny rapport varje vecka utan manuell körning." },
-        { title: "Trendspårning", desc: "Historik per kanal över flera körningar. Tidiga regressionssignaler och tydliga förbättringar." },
-        { title: "Regressionsaviseringar", desc: "E‑postavisering när totalpoängen sjunker eller ett nytt kritiskt fynd uppstår." },
-        { title: "Historiska jämförelser", desc: "Jämför aktuell körning med de senaste fyra veckorna. Se vilka fynd som återkommer och vilka som stängts." },
+        { title: "Veckovisa automatiserade granskningar", desc: "Konfigurera ett mål en gång. Ny rapport genereras varje vecka utan manuell körning." },
+        { title: "Trendanalys", desc: "Historik per kanal över samtliga körningar. Tidiga regressionssignaler och dokumenterade förbättringar." },
+        { title: "Regressionsaviseringar", desc: "E‑postavisering när totalpoängen sjunker eller ett nytt kritiskt fynd registreras." },
+        { title: "Historiska jämförelser", desc: "Jämför aktuell körning mot de senaste fyra veckorna. Se vilka fynd som återkommer och vilka som åtgärdats." },
       ],
       pricingKicker: "PRISSÄTTNING",
       pricingBody: (
@@ -2498,10 +3205,10 @@ export const dict: Record<Lang, Dict> = {
             {em("genererade på minuter")}.
           </>
         ),
-        body: "Verktyg för vårdgranskningsplaner, kravmappning och dokumentanalys. Utdata sparas i din lokala historik och laddas ned som Word.",
+        body: "Verktyg för granskningsplaner, standardkartläggning och dokumentationsgap inom vård och hälsa. Utdata sparas i lokal historik och kan laddas ned som Word‑dokument.",
         history: "Historik",
-        backToScan: "Tillbaka till gratis granskning",
-        aboutLabel: "Om sviten —",
+        backToScan: "Tillbaka till kostnadsfri granskning",
+        aboutLabel: "Om denna suite —",
         aboutBody: (
           <> utdata sparas lokalt på servern i en SQLite‑databas. De delas inte, indexeras inte och används inte för träning. Din inmatning stannar i din </>
         ),
@@ -2518,9 +3225,9 @@ export const dict: Record<Lang, Dict> = {
             "Word + JSON‑export",
           ],
           pageKicker: "AUDIT PLAN GENERATOR",
-          pageTitle: "Generera en komplett intern granskningsplan.",
+          pageTitle: "Generera en fullständig intern granskningsplan.",
           pageBody:
-            "Omfattning, metodik, schema, checklista och riskområden med allvarlighetsgrad — skrivna för vårdoperatörer under HIPAA. Sparas i din historik; laddas ned som Word.",
+            "Omfattning, metodik, schema, checklista och riskområden med allvarlighetsgrad — skrivna för vårdverksamheter under HIPAA. Sparas i lokal historik; laddas ned som Word‑dokument.",
           cta: "Generera granskningsplan",
           loadingCta: "Genererar…",
         },
@@ -2552,7 +3259,7 @@ export const dict: Record<Lang, Dict> = {
           pageKicker: "DOCUMENT GAP ANALYSIS",
           pageTitle: "Ladda upp ett dokument. Se vad som saknas.",
           pageBody:
-            "Accepterar PDF, DOCX, TXT eller klistrad text (upp till 5 MB). AI flaggar saknade sektioner, svag formulering och saknade kravreferenser mot valt ramverk.",
+            "Accepterar PDF, DOCX, TXT eller inklistrad text (upp till 5 MB). AI identifierar saknade avsnitt, otillräcklig formulering och saknade kravreferenser mot valt ramverk.",
           cta: "Kör gap‑analys",
           loadingCta: "Analyserar…",
         },
@@ -2566,9 +3273,9 @@ export const dict: Record<Lang, Dict> = {
             "OCR‑klart format",
           ],
           pageKicker: "HIPAA RISK ASSESSMENT",
-          pageTitle: "Det årliga dokumentet OCR efterfrågar.",
+          pageTitle: "Det årliga dokumentet som OCR kommer att begära.",
           pageBody:
-            "Krävs enligt 45 CFR §164.308(a)(1)(ii)(A). NIST 800‑30‑metodik, fullständigt riskregister med sannolikhet × konsekvens, inherent vs residual risk, rekommenderade kontroller och klausulreferenser.",
+            "Obligatoriskt enligt 45 CFR §164.308(a)(1)(ii)(A). Metodik enligt NIST 800‑30, fullständigt riskregister med sannolikhet × konsekvens, inherent och residual risk, rekommenderade kontroller och klausulreferenser.",
           cta: "Kör riskanalys",
           loadingCta: "Kör riskanalys…",
         },
@@ -2590,7 +3297,7 @@ export const dict: Record<Lang, Dict> = {
         },
       },
       common: {
-        backToSuite: "Sviten",
+        backToSuite: "Suiten",
         organisation: "Organisation",
         type: "Organisationstyp",
         scope: "Omfattning",
@@ -2713,8 +3420,17 @@ export const dict: Record<Lang, Dict> = {
       },
       phi: {
         heading: "Klistra inte in riktig patientdata.",
-        body: "Aegis är utformat för avidentifierat innehåll, exempeltext, policyer och syntetiska exempel. Skicka inte skyddad patientinformation (PHI) — namn, födelsedatum, journalnummer, adresser eller någon av de 18 HIPAA‑identifierarna kopplade till en verklig person. Inmatning bearbetas av tredjeparts AI‑leverantörer.",
-        confirm: "Jag bekräftar att inmatningen inte innehåller skyddad patientinformation.",
+        body: "MediReady är avsett för avidentifierade policyer, arbetsflöden, exempeltext och syntetiska exempel — inte ett nationellt medicinskt informationssystem (NMI) och får inte användas för individuell patientvård. Skicka inte skyddad patientinformation (PHI) — namn, födelsedatum, personnummer, journalnummer, adresser eller någon av de 18 HIPAA‑identifierarna kopplade till en verklig person. Inmatning bearbetas av tredjeparts AI‑leverantörer.",
+        confirm: "Jag bekräftar att inmatningen inte innehåller skyddad patientinformation och inte används för individuell patientvård.",
+        detectedHeading: "Möjlig identifierare upptäckt — inmatning blockerad.",
+        detectedBody: "Din inmatning ser ut att innehålla personidentifierare. Ta bort eller maskera den markerade texten innan du kör granskningen. Om detta är en falsk träff: redigera den omgivande texten så mönstret bryts.",
+        labelByType: {
+          se_personnummer: "Personnummer",
+          us_ssn: "US Social Security Number",
+          labeled_id: "Märkt personidentifierare (Personnummer / Patient‑ID / MRN)",
+          dob_context: "Födelsedatum med kontext",
+          phone_se: "Telefonnummer",
+        },
       },
       findings: {
         none: "Inga fynd.",

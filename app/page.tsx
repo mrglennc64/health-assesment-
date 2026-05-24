@@ -125,50 +125,53 @@ export default function HomePage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
                 <div className="mono" style={{ fontSize: 10, color: "var(--muted-2)", marginBottom: 6, letterSpacing: "0.06em" }}>
-                  RUN {SAMPLE_RUN_TEASER.scanId}
+                  {h.demoCard.runLabel} {SAMPLE_RUN_TEASER.scanId}
                 </div>
                 <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 2 }}>
-                  COPD exacerbation follow-up
+                  {h.demoCard.target}
                 </div>
                 <div className="mono" style={{ fontSize: 10.5, color: "var(--muted-2)" }}>
-                  {SAMPLE_RUN_TEASER.ts.toUpperCase()}
+                  {h.demoCard.timestamp.toUpperCase()}
                 </div>
               </div>
-              <ScoreRing score={SAMPLE_RUN_TEASER.overall} size={68} label="OVERALL" />
+              <ScoreRing score={SAMPLE_RUN_TEASER.overall} size={68} label={h.demoCard.overallLabel} />
             </div>
             <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" }}>
-              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.critical} CRITICAL</span>
-              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--warn-soft)", color: "var(--warn)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.watch} WATCH</span>
-              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--info-soft)", color: "var(--info)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.info} INFO</span>
+              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.critical} {h.demoCard.criticalLabel}</span>
+              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--warn-soft)", color: "var(--warn)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.watch} {h.demoCard.watchLabel}</span>
+              <span className="mono" style={{ fontSize: 10.5, padding: "4px 8px", background: "var(--info-soft)", color: "var(--info)", borderRadius: 4, fontWeight: 600 }}>{SAMPLE_RUN_TEASER.counts.info} {h.demoCard.infoLabel}</span>
             </div>
             <div style={{ borderTop: "1px solid var(--line)", paddingTop: 14 }}>
-              {SAMPLE_RUN_TEASER.preview.map((row, i, arr) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "9px 0",
-                    borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                    <span className="mono" style={{ fontSize: 9.5, color: "var(--muted-2)", width: 56, flexShrink: 0, letterSpacing: "0.04em" }}>
-                      {row.ch}
-                    </span>
-                    <span style={{ fontSize: 12.5, color: "var(--ink-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {row.title}
-                    </span>
+              {SAMPLE_RUN_TEASER.preview.map((row, i, arr) => {
+                const txt = h.demoCard.previewRows[i] ?? { ch: row.ch, title: row.title };
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "9px 0",
+                      borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+                      <span className="mono" style={{ fontSize: 9.5, color: "var(--muted-2)", width: 56, flexShrink: 0, letterSpacing: "0.04em" }}>
+                        {txt.ch}
+                      </span>
+                      <span style={{ fontSize: 12.5, color: "var(--ink-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {txt.title}
+                      </span>
+                    </div>
+                    <SevBadge severity={row.sev} />
                   </div>
-                  <SevBadge severity={row.sev} />
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <ModelPill model={SAMPLE_RUN_TEASER.modelPrimary} />
               <span className="mono" style={{ fontSize: 10, color: "var(--muted-2)", letterSpacing: "0.04em" }}>
-                ~38s · 6/6 CHANNELS
+                {h.demoCard.footerTime}
               </span>
             </div>
           </div>
@@ -448,9 +451,9 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
-            <PricingPreview kicker="ONE-OFF AUDITS" headline="From $49" body="Claims · Full · Denial." />
-            <PricingPreview kicker="COMPLIANCE SUITE" headline="From $29" body="Per document, or $99/mo subscription." accent />
-            <PricingPreview kicker="BUNDLE" headline="$199/mo" body="4 audits + 10 documents per month." />
+            <PricingPreview kicker={h.pricingCards[0].kicker} headline={h.pricingCards[0].headline} body={h.pricingCards[0].body} />
+            <PricingPreview kicker={h.pricingCards[1].kicker} headline={h.pricingCards[1].headline} body={h.pricingCards[1].body} accent />
+            <PricingPreview kicker={h.pricingCards[2].kicker} headline={h.pricingCards[2].headline} body={h.pricingCards[2].body} />
           </div>
 
           <div style={{ textAlign: "center" }}>

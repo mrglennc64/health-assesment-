@@ -5,6 +5,7 @@ import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { useLang } from "@/lib/i18n/LanguageContext";
 
 const h2: React.CSSProperties = { fontSize: 20, fontWeight: 600, margin: "0 0 12px" };
+const h3: React.CSSProperties = { fontSize: 14, fontWeight: 600, color: "var(--ink)", margin: "16px 0 6px" };
 const para: React.CSSProperties = { fontSize: 15, color: "var(--ink-2)", lineHeight: 1.7, margin: 0 };
 const li: React.CSSProperties = { fontSize: 15, color: "var(--ink-2)", lineHeight: 1.7, marginBottom: 4 };
 const block: React.CSSProperties = { marginBottom: 36 };
@@ -30,11 +31,12 @@ export default function PrivacyPage() {
 
         <div style={block}>
           <h2 style={h2}>{p.inputsHeading}</h2>
-          <ul style={{ paddingLeft: 22, margin: 0 }}>
-            {p.inputsList.map((item, i) => (
-              <li key={i} style={li}>{item}</li>
-            ))}
-          </ul>
+          {p.inputsList.map((item) => (
+            <div key={item.heading}>
+              <h3 style={h3}>{item.heading}</h3>
+              <p style={para}>{item.body}</p>
+            </div>
+          ))}
         </div>
 
         <div style={block}>

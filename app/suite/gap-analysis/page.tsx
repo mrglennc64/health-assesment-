@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Download, Upload, FileText } from "lucide-react"
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PhiInputWarning } from "@/components/site/PhiInputWarning";
+import { PhiDetectionBanner } from "@/components/site/PhiDetectionBanner";
+import { detectPhi } from "@/lib/phi/detector";
 import { Button } from "@/components/ui/primitives";
 import { SuiteFindingsList } from "@/components/site/SuiteFindingsList";
 import type { GapAnalysisOutput } from "@/lib/suite/types";
@@ -85,7 +87,9 @@ export default function GapAnalysisPage() {
     }
   };
 
-  const canSubmit = !loading && phiAcknowledged && (
+  const phiMatches = tab === "paste" ? detectPhi(pastedText) : [];
+  const phiBlocked = phiMatches.length > 0;
+  const canSubmit = !loading && phiAcknowledged && !phiBlocked && (
     (tab === "upload" && file) ||
     (tab === "paste" && pastedText.trim().length >= 80)
   );
@@ -150,12 +154,15 @@ export default function GapAnalysisPage() {
             {tab === "upload" ? (
               <UploadInput file={file} onFile={setFile} c={c} />
             ) : (
-              <textarea
-                value={pastedText}
-                onChange={(e) => setPastedText(e.target.value)}
-                placeholder={c.pasteHere}
-                style={{ width: "100%", minHeight: 200, padding: "12px 14px", borderRadius: 8, border: "1px solid var(--line-2)", fontSize: 13.5, fontFamily: "inherit", background: "var(--paper)", color: "var(--ink)", outline: "none", lineHeight: 1.55 }}
-              />
+              <>
+                <textarea
+                  value={pastedText}
+                  onChange={(e) => setPastedText(e.target.value)}
+                  placeholder={c.pasteHere}
+                  style={{ width: "100%", minHeight: 200, padding: "12px 14px", borderRadius: 8, border: phiBlocked ? "1px solid var(--accent)" : "1px solid var(--line-2)", fontSize: 13.5, fontFamily: "inherit", background: "var(--paper)", color: "var(--ink)", outline: "none", lineHeight: 1.55 }}
+                />
+                <PhiDetectionBanner matches={phiMatches} />
+              </>
             )}
 
             <div style={{ marginTop: 20 }}>

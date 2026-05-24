@@ -18,21 +18,23 @@ export default function WhoItsForPage() {
           {w.title}
         </h1>
 
-        <ul style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, listStyle: "none", padding: 0, margin: 0 }}>
-          {w.items.map((label) => (
+        <ul style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, listStyle: "none", padding: 0, margin: 0 }}>
+          {w.items.map((item) => (
             <li
-              key={label}
+              key={item.label}
               style={{
                 background: "var(--card)",
                 border: "1px solid var(--line)",
                 borderRadius: 10,
-                padding: "16px 20px",
-                fontSize: 15,
-                color: "var(--ink-2)",
-                fontWeight: 500,
+                padding: "20px 22px",
               }}
             >
-              {label}
+              <h3 className="serif" style={{ fontSize: 18, fontWeight: 500, margin: "0 0 8px", color: "var(--ink)" }}>
+                {item.label}
+              </h3>
+              <p style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, margin: 0 }}>
+                {item.sub}
+              </p>
             </li>
           ))}
         </ul>

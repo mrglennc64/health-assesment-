@@ -6,6 +6,8 @@ import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PhiInputWarning } from "@/components/site/PhiInputWarning";
+import { PhiDetectionBanner } from "@/components/site/PhiDetectionBanner";
+import { detectPhi } from "@/lib/phi/detector";
 import { Button } from "@/components/ui/primitives";
 import type { StandardsMappingOutput } from "@/lib/suite/types";
 import { useLang } from "@/lib/i18n/LanguageContext";
@@ -33,6 +35,8 @@ export default function StandardsMappingPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
+  const phiMatches = detectPhi(query);
+  const phiBlocked = phiMatches.length > 0;
 
   const run = async () => {
     setLoading(true);
@@ -89,10 +93,12 @@ export default function StandardsMappingPage() {
               placeholder="Describe what you observed or what you need to map…"
               style={{
                 width: "100%", minHeight: 130, padding: "12px 14px", borderRadius: 8,
-                border: "1px solid var(--line-2)", fontSize: 14, fontFamily: "inherit",
+                border: phiBlocked ? "1px solid var(--accent)" : "1px solid var(--line-2)",
+                fontSize: 14, fontFamily: "inherit",
                 background: "var(--paper)", color: "var(--ink)", outline: "none", lineHeight: 1.55,
               }}
             />
+            <PhiDetectionBanner matches={phiMatches} />
             <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 12, color: "var(--muted-2)" }}>{c.tryLabel}</span>
               {EXAMPLES.map((ex) => (
@@ -110,7 +116,7 @@ export default function StandardsMappingPage() {
             </div>
             <div style={{ marginTop: 20 }}>
               <PhiInputWarning acknowledged={phiAcknowledged} onAcknowledgedChange={setPhiAcknowledged} />
-              <Button variant="primary" icon={ArrowRight} onClick={run} disabled={loading || !query.trim() || !phiAcknowledged}>
+              <Button variant="primary" icon={ArrowRight} onClick={run} disabled={loading || !query.trim() || !phiAcknowledged || phiBlocked}>
                 {loading ? tool.loadingCta : tool.cta}
               </Button>
             </div>

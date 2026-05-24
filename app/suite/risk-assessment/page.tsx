@@ -6,6 +6,8 @@ import { ArrowRight, Download, ArrowLeft, FileText } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PhiInputWarning } from "@/components/site/PhiInputWarning";
+import { PhiDetectionBanner } from "@/components/site/PhiDetectionBanner";
+import { detectPhi } from "@/lib/phi/detector";
 import { Button } from "@/components/ui/primitives";
 import { SUITE_SEVERITY_COLOR, SUITE_SEVERITY_BG } from "@/lib/suite/severity";
 import type { RiskAssessmentOutput, SuiteSeverity } from "@/lib/suite/types";
@@ -70,7 +72,9 @@ export default function RiskAssessmentPage() {
     }
   };
 
-  const canSubmit = !loading && organisation.trim() && scope.trim() && ephiInventory.trim() && phiAcknowledged;
+  const phiMatches = detectPhi(`${ephiInventory}\n${priorIncidents}\n${knownGaps}`);
+  const phiBlocked = phiMatches.length > 0;
+  const canSubmit = !loading && organisation.trim() && scope.trim() && ephiInventory.trim() && phiAcknowledged && !phiBlocked;
 
   return (
     <>
@@ -90,18 +94,21 @@ export default function RiskAssessmentPage() {
         </p>
 
         {!result && (
-          <FormCard
-            c={c}
-            organisation={organisation} setOrganisation={setOrganisation}
-            organisationType={organisationType} setOrganisationType={setOrganisationType}
-            scope={scope} setScope={setScope}
-            ephiInventory={ephiInventory} setEphiInventory={setEphiInventory}
-            priorIncidents={priorIncidents} setPriorIncidents={setPriorIncidents}
-            knownGaps={knownGaps} setKnownGaps={setKnownGaps}
-            phiAcknowledged={phiAcknowledged} setPhiAcknowledged={setPhiAcknowledged}
-            canSubmit={!!canSubmit} loading={loading} onRun={run}
-            cta={tool.cta} loadingCta={tool.loadingCta}
-          />
+          <>
+            <PhiDetectionBanner matches={phiMatches} />
+            <FormCard
+              c={c}
+              organisation={organisation} setOrganisation={setOrganisation}
+              organisationType={organisationType} setOrganisationType={setOrganisationType}
+              scope={scope} setScope={setScope}
+              ephiInventory={ephiInventory} setEphiInventory={setEphiInventory}
+              priorIncidents={priorIncidents} setPriorIncidents={setPriorIncidents}
+              knownGaps={knownGaps} setKnownGaps={setKnownGaps}
+              phiAcknowledged={phiAcknowledged} setPhiAcknowledged={setPhiAcknowledged}
+              canSubmit={!!canSubmit} loading={loading} onRun={run}
+              cta={tool.cta} loadingCta={tool.loadingCta}
+            />
+          </>
         )}
 
         {error && (
