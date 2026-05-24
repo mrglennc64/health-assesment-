@@ -257,18 +257,9 @@ type MarketingPage = {
     metaDateValue: string;
     metaPreparedBy: string;
     metaPreparedByValue: string;
-    sections: {
-      heading: string;
-      paragraphs?: string[];
-      bullets?: string[];
-      subsections?: {
-        heading: string;
-        paragraphs?: string[];
-        bullets?: string[];
-        quote?: string;
-        quoteAttribution?: string;
-      }[];
-    }[];
+    tocHeading: string;
+    sections: { heading: string; blocks: DpaBlock[] }[];
+    endLabel: string;
   };
   regulatoryPage: {
     kicker: string;
@@ -1663,131 +1654,124 @@ export const dict: Record<Lang, Dict> = {
       endOfAgreement: "End of Agreement",
     },
     classificationPage: {
-      kicker: "CLASSIFICATION DOCUMENT",
-      title: "MediReady — Classification Document",
-      verdict: "Assessment: not medical device software (MDSW) and not a national medical information system (NMI).",
+      kicker: "CLASSIFICATION & READINESS",
+      title: "MediReady — Swedish Market Classification & Readiness Document",
+      verdict: "Assessment: not medical device software (MDSW) and not a national medical information system (NMI). Fully aligned with Swedish regulatory expectations for administrative compliance tools.",
       metaVersion: "Version",
-      metaVersionValue: "1.0",
+      metaVersionValue: "2.0",
       metaDate: "Date",
       metaDateValue: "2026-05-24",
       metaPreparedBy: "Prepared by",
       metaPreparedByValue: "MediReady AB",
+      tocHeading: "Table of contents",
       sections: [
         {
           heading: "1. Purpose",
-          paragraphs: [
-            "This document establishes MediReady's formal classification in relation to:",
-          ],
-          bullets: [
-            "EU Regulation (EU) 2017/745 (MDR) — medical devices and medical device software (MDSW).",
-            "HSLF-FS 2022:42 — national medical information systems (NMI).",
-          ],
-        },
-        {
-          heading: "",
-          paragraphs: [
-            "The document describes MediReady's intended use, functional limitations, and regulatory boundaries as the basis for the assessment that the product is not within the scope of MDR and not within the scope of the NMI framework.",
-          ],
-        },
-        {
-          heading: "2. Product description",
-          paragraphs: [
-            "MediReady is an administrative tool for compliance documentation and workflow audit. The system is used by administrators, quality leads, and operations managers to:",
-          ],
-          bullets: [
-            "generate policies, SOPs, and risk assessments",
-            "perform administrative gap analyses",
-            "map standards (HIPAA, ISO, NIST, etc.)",
-            "perform non-clinical workflow audits",
-            "produce reports for internal governance and compliance",
+          blocks: [
+            { kind: "p", text: "This document establishes MediReady's formal classification and regulatory readiness for the Swedish market in relation to:" },
+            {
+              kind: "ul",
+              items: [
+                "EU Regulation (EU) 2017/745 (MDR) — medical devices and medical device software (MDSW)",
+                "HSLF-FS 2022:42 — national medical information systems (NMI)",
+                "GDPR (EU 2016/679) — data protection framework",
+                "Patientdatalagen (2008:355) — Swedish patient data law",
+                "IMY supervisory priorities — Swedish Data Protection Authority guidance",
+                "NIS2 Directive (2022/2555) — cybersecurity for critical infrastructure",
+                "EHDS Regulation (2023/2664) — European Health Data Space (future monitoring)",
+              ],
+            },
+            { kind: "p", text: "The document describes MediReady's intended use, functional limitations, and regulatory boundaries as the basis for the assessment that the product is not within the scope of MDR and not within the scope of the NMI framework, while remaining fully aligned with Swedish data protection expectations." },
           ],
         },
         {
-          heading: "",
-          paragraphs: [
-            "MediReady does not process medical decisions, does not influence patient care, and does not provide recommendations on diagnosis, treatment, or clinical actions.",
+          heading: "2. Product Description",
+          blocks: [
+            { kind: "p", text: "MediReady is an administrative tool for compliance documentation and workflow audit. The system is used by administrators, quality leads, and operations managers to:" },
+            {
+              kind: "ul",
+              items: [
+                "generate policies, SOPs, and risk assessments",
+                "perform administrative gap analyses",
+                "map standards (HIPAA, ISO, NIST, etc.)",
+                "perform non-clinical workflow audits",
+                "produce reports for internal governance and compliance",
+              ],
+            },
+            { kind: "p", text: "MediReady does not process medical decisions, does not influence patient care, and does not provide recommendations on diagnosis, treatment, or clinical actions." },
           ],
         },
         {
-          heading: "3. Intended purpose",
-          paragraphs: ["MediReady is intended for:"],
-          bullets: [
-            "administrative documentation",
-            "compliance work",
-            "internal workflow audits",
-            "policy and governance-document management",
-            "non-clinical risk assessments",
-          ],
-        },
-        {
-          heading: "",
-          paragraphs: ["MediReady is not intended to:"],
-          bullets: [
-            "be used for diagnosis, treatment, monitoring, or alleviation of disease",
-            "be used for clinical decisions or patient-facing assessments",
-            "process medical records or clinical parameters",
-            "provide recommendations that affect patient care or treatment",
-            "update or read authority registers in healthcare",
+          heading: "3. Intended Purpose",
+          blocks: [
+            { kind: "p", text: "MediReady is intended for:" },
+            {
+              kind: "ul",
+              items: [
+                "administrative documentation",
+                "compliance work",
+                "internal workflow audits",
+                "policy and governance document management",
+                "non-clinical risk assessments",
+              ],
+            },
+            { kind: "p", text: "MediReady is not intended to:" },
+            {
+              kind: "ul",
+              items: [
+                "be used for diagnosis, treatment, monitoring, or alleviation of disease",
+                "be used for clinical decisions or patient-facing assessments",
+                "process medical records or clinical parameters",
+                "provide recommendations that affect patient care or treatment",
+                "update or read authority registers in healthcare",
+              ],
+            },
           ],
         },
         {
           heading: "4. Assessment under MDR (EU 2017/745)",
-          subsections: [
+          blocks: [
+            { kind: "h3", text: "4.1 Relevant Criteria" },
+            { kind: "p", text: "Under MDR, software is classified as a medical device if it has a medical purpose, for example to:" },
+            { kind: "ul", items: ["diagnose", "prevent", "monitor", "treat", "alleviate disease"] },
+            { kind: "h3", text: "4.2 Assessment" },
+            { kind: "p", text: "MediReady meets none of MDR's medical purposes. The system:" },
             {
-              heading: "4.1 Relevant criteria",
-              paragraphs: [
-                "Under MDR, software is classified as a medical device if it has a medical purpose, for example to:",
-              ],
-              bullets: [
-                "diagnose",
-                "prevent",
-                "monitor",
-                "treat",
-                "alleviate disease",
-              ],
-            },
-            {
-              heading: "4.2 Assessment",
-              paragraphs: ["MediReady meets none of MDR's medical purposes. The system:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "does not analyse patient data",
                 "does not influence clinical decisions",
                 "does not generate medical recommendations",
                 "is not used by clinical staff in patient-facing work",
                 "processes administrative information only",
               ],
-              quote: "“Software for administrative purposes is not covered.”",
-              quoteAttribution: "— MDR interpretation per EU guidance",
             },
-            {
-              heading: "4.3 Conclusion",
-              paragraphs: [
-                "MediReady is not a medical device and is not within the scope of MDR.",
-              ],
-            },
+            { kind: "note", text: "“Software for administrative purposes is not covered.” — MDR interpretation per EU guidance" },
+            { kind: "h3", text: "4.3 Conclusion" },
+            { kind: "p", text: "MediReady is not a medical device and is not within the scope of MDR." },
           ],
         },
         {
-          heading: "5. Assessment under HSLF-FS 2022:42 (National medical information systems)",
-          subsections: [
+          heading: "5. Assessment under HSLF-FS 2022:42 (National Medical Information Systems)",
+          blocks: [
+            { kind: "h3", text: "5.1 Relevant Criteria" },
+            { kind: "p", text: "NMI covers systems that:" },
             {
-              heading: "5.1 Relevant criteria",
-              paragraphs: ["NMI covers systems that:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "process medical information of significance for an individual patient's care, or",
                 "provide direct access to or update authority registers, or",
-                "are used to dispense prescriptions at pharmacies.",
+                "are used to dispense prescriptions at pharmacies",
               ],
             },
+            { kind: "h3", text: "5.2 Exception in the Regulation" },
+            { kind: "p", text: "HSLF-FS 2022:42 states that the following is not NMI:" },
+            { kind: "note", text: "“Generic software used in a care environment, except where the software has been adapted in a way that meets the definition of a national medical information system.”" },
+            { kind: "h3", text: "5.3 Assessment" },
+            { kind: "p", text: "MediReady:" },
             {
-              heading: "5.2 Exception in the regulation",
-              paragraphs: ["HSLF-FS 2022:42 states that the following is not NMI:"],
-              quote: "“Generic software used in a care environment, except where the software has been adapted in a way that meets the definition of a national medical information system.”",
-            },
-            {
-              heading: "5.3 Assessment",
-              paragraphs: ["MediReady:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "does not process medical information",
                 "does not affect patient care",
                 "has no connection to authority registers",
@@ -1796,41 +1780,235 @@ export const dict: Record<Lang, Dict> = {
                 "is not a system of significance for an individual patient's care",
               ],
             },
+            { kind: "h3", text: "5.4 Conclusion" },
+            { kind: "p", text: "MediReady does not meet the definition of NMI and is not within the scope of HSLF-FS 2022:42." },
+          ],
+        },
+        {
+          heading: "6. Swedish Regulatory Framework Context",
+          blocks: [
+            { kind: "p", text: "MediReady operates in Sweden under the following regulatory framework:" },
             {
-              heading: "5.4 Conclusion",
-              paragraphs: [
-                "MediReady does not meet the definition of NMI and is not within the scope of HSLF-FS 2022:42.",
+              kind: "table",
+              headers: ["Regulation", "Reference", "Relevance"],
+              rows: [
+                ["GDPR", "EU 2016/679", "Data protection framework"],
+                ["Patientdatalagen", "2008:355", "Swedish patient data law"],
+                ["HSLF-FS 2022:42", "Swedish National Board of Health and Welfare", "Regulations on national medical information systems (NMI)"],
+                ["MDR", "EU 2017/745", "EU medical device regulations (applicable in Sweden)"],
+                ["IMY Supervisory Practices", "Integritetsskyddsmyndigheten", "Swedish DPA guidance on AI, healthcare, and sensitive data"],
+              ],
+            },
+            { kind: "p", text: "Critical classification question for Swedish healthcare providers: Is MediReady a medical device (MDSW) or a national medical information system (NMI)?" },
+            { kind: "p", text: "The answer is no to both. MediReady is subject to GDPR but not to medical device or NMI-specific regulations." },
+          ],
+        },
+        {
+          heading: "7. Data Protection and GDPR",
+          blocks: [
+            { kind: "p", text: "Even though MediReady is neither MDSW nor NMI, the system is subject to GDPR." },
+            {
+              kind: "table",
+              headers: ["Aspect", "MediReady Commitment"],
+              rows: [
+                ["Data processing", "Inputs are processed ephemerally in memory and discarded immediately"],
+                ["Data storage", "No PHI is stored; stateless architecture"],
+                ["Collection", "No background collection, telemetry, or profiling"],
+                ["Controller", "The healthcare provider is the controller"],
+                ["Processor", "MediReady is the processor"],
+                ["Agreement", "A data processing agreement under Article 28 is required (provided separately)"],
               ],
             },
           ],
         },
         {
-          heading: "6. Data protection and GDPR",
-          paragraphs: [
-            "Even though MediReady is neither MDSW nor NMI, the system is subject to GDPR.",
-          ],
-          bullets: [
-            "Inputs are processed ephemerally in memory and discarded immediately.",
-            "No PHI is stored.",
-            "No background collection, telemetry, or profiling.",
-            "The healthcare provider is the controller.",
-            "MediReady is the processor.",
-            "A data processing agreement under Article 28 is required.",
+          heading: "8. Swedish Data Protection Authority (IMY) Alignment",
+          blocks: [
+            { kind: "p", text: "IMY (Integritetsskyddsmyndigheten) has published supervisory priorities for 2024–2025 that include:" },
+            {
+              kind: "ul",
+              items: [
+                "AI use in healthcare and sensitive data processing",
+                "Healthcare sector data protection practices",
+                "Transparency and human oversight in automated decision-making",
+              ],
+            },
+            { kind: "p", text: "MediReady's design aligns with IMY priorities as follows:" },
+            { kind: "h3", text: "8.1 AI Transparency" },
+            {
+              kind: "table",
+              headers: ["Requirement", "MediReady Commitment"],
+              rows: [
+                ["Model disclosure", "Mistral Large LLM with signed BAA (no training use)"],
+                ["Human oversight", "Critical findings reviewed by qualified auditors"],
+                ["Input deletion", "Stateless processing eliminates data retention risk"],
+              ],
+            },
+            { kind: "h3", text: "8.2 Sensitive Data Minimization" },
+            {
+              kind: "table",
+              headers: ["Aspect", "MediReady Position"],
+              rows: [
+                ["Data type", "Administrative data only, not patient medical records or PHI"],
+                ["GDPR Article 9", "No categorization under special categories in normal use"],
+                ["Incidental sensitive data", "Stateless architecture and immediate deletion mitigate risk"],
+              ],
+            },
+            { kind: "h3", text: "8.3 Data Subject Rights" },
+            { kind: "p", text: "MediReady assists the Company in responding to Data Subject Access Requests (DSAR) and other rights under GDPR Articles 12–22. (See §6 of the Data Processing Agreement.)" },
+            { kind: "h3", text: "8.4 Accountability Documentation" },
+            { kind: "p", text: "MediReady maintains:" },
+            {
+              kind: "ul",
+              items: [
+                "Audit logs",
+                "Breach records",
+                "Processing documentation as required by GDPR Article 5(2)",
+              ],
+            },
+            { kind: "p", text: "Documentation is made available to IMY upon inspection request." },
+            { kind: "h3", text: "8.5 Commitment to Swedish Law" },
+            {
+              kind: "table",
+              headers: ["Element", "Commitment"],
+              rows: [
+                ["Governing law", "All disputes and legal questions governed by Swedish law"],
+                ["DPA jurisdiction", "Swedish governing law and jurisdiction"],
+              ],
+            },
           ],
         },
         {
-          heading: "7. Overall conclusion",
-          paragraphs: [
-            "Based on intended use, functionality, and regulatory criteria, MediReady is assessed:",
+          heading: "9. NIS2 Directive — Scope and Applicability",
+          blocks: [
+            { kind: "p", text: "The EU NIS2 Directive (2022/2555) sets cybersecurity obligations for critical infrastructure operators and essential service providers." },
+            { kind: "h3", text: "9.1 When NIS2 Applies" },
+            { kind: "p", text: "NIS2 applies where a company:" },
+            {
+              kind: "ul",
+              items: [
+                "Has ≥ 50 employees, or",
+                "Has annual turnover ≥ EUR 10 million, or",
+                "Is classified as an “essential” actor in healthcare (e.g., operates an EHR system or national health-data platform)",
+              ],
+            },
+            { kind: "h3", text: "9.2 MediReady's Position" },
+            {
+              kind: "table",
+              headers: ["Question", "Answer"],
+              rows: [
+                ["Is MediReady automatically in scope for NIS2?", "No"],
+                ["Why?", "Not an EHR system; does not maintain national health-data infrastructure; does not directly deliver healthcare services"],
+              ],
+            },
+            { kind: "h3", text: "9.3 Important Note for Swedish Healthcare Providers" },
+            { kind: "p", text: "If MediReady is used by a Swedish healthcare provider (e.g., region, clinic, hospital) that is itself a NIS2 essential actor, that provider's NIS2 obligations may extend to evaluating MediReady's security posture as part of their supply-chain risk management." },
+            { kind: "h3", text: "9.4 MediReady's NIS2 Commitments" },
+            {
+              kind: "table",
+              headers: ["Requirement", "MediReady Commitment"],
+              rows: [
+                ["Security measures", "Comply with NIST Cybersecurity Framework (CSF) principles"],
+                ["Incident reporting", "Align with NIS2 reporting timelines (72-hour breach notification)"],
+                ["Documentation", "Available upon request for healthcare providers' NIS2 compliance assessment"],
+              ],
+            },
           ],
-          bullets: [
-            "not to be medical device software (MDSW) under MDR",
-            "not to be a national medical information system (NMI) under HSLF-FS 2022:42",
-            "to be an administrative compliance and workflow tool",
-            "to be subject to GDPR, but not to MDR or the NMI framework",
+        },
+        {
+          heading: "10. European Health Data Space (EHDS) — Future Monitoring",
+          blocks: [
+            { kind: "p", text: "The EHDS Regulation (2023/2664) is under implementation." },
+            { kind: "h3", text: "10.1 What EHDS Addresses" },
+            {
+              kind: "ul",
+              items: [
+                "Secondary use of health data for research and policy",
+                "Interoperability of electronic health records",
+                "Rights to data portability in healthcare",
+              ],
+            },
+            { kind: "h3", text: "10.2 MediReady's Position" },
+            {
+              kind: "table",
+              headers: ["Question", "Answer"],
+              rows: [
+                ["Is EHDS currently applicable to MediReady?", "No"],
+                ["Why?", "Applies to EHR systems and national data-sharing infrastructure, not compliance-audit tools"],
+              ],
+            },
+            { kind: "h3", text: "10.3 Monitoring Commitment" },
+            { kind: "p", text: "MediReady:" },
+            {
+              kind: "ul",
+              items: [
+                "Monitors EHDS implementation phases",
+                "Will assess scope if EHDS interoperability requirements evolve to include compliance-audit tools",
+                "Will implement as required",
+              ],
+            },
+            { kind: "h3", text: "10.4 EHDS Implementation Timeline" },
+            {
+              kind: "table",
+              headers: ["Phase", "Timeline", "Primary Focus"],
+              rows: [
+                ["Phase 1", "2025–2026", "EHR interoperability"],
+                ["Phase 2", "2027+", "Secondary use and data-sharing frameworks"],
+              ],
+            },
+            { kind: "p", text: "MediReady evaluation timeline: Q1–Q2 2026" },
+          ],
+        },
+        {
+          heading: "11. Data Residency and Geographic Processing",
+          blocks: [
+            { kind: "h3", text: "MediReady Guarantee" },
+            {
+              kind: "table",
+              headers: ["Commitment", "Detail"],
+              rows: [
+                ["Processing location", "All processing of Company Personal Data occurs within the European Economic Area (EEA)"],
+                ["Inference location", "Mistral AI occurs within EU data centers"],
+                ["Non-EEA transfer", "No non-EEA data transfer without explicit Company written consent"],
+                ["Restricted jurisdictions", "No data transferred to the United States, Asia, or any non-EEA jurisdiction"],
+              ],
+            },
+            { kind: "p", text: "This commitment applies to all Company Personal Data, including administrative records, policies, and workflow documentation provided to MediReady." },
+          ],
+        },
+        {
+          heading: "12. Overall Conclusion",
+          blocks: [
+            { kind: "p", text: "Based on intended use, functionality, and regulatory criteria, MediReady is assessed as follows:" },
+            {
+              kind: "table",
+              headers: ["Regulatory Area", "Status"],
+              rows: [
+                ["Medical device (MDSW) under MDR (EU 2017/745)", "✓ Not a medical device"],
+                ["National medical information system (NMI) under HSLF-FS 2022:42", "✓ Not an NMI"],
+                ["NIS2 Directive automatic scope", "✓ Not in automatic scope"],
+                ["EHDS current scope", "✓ Not in current scope"],
+                ["GDPR and Swedish data protection law", "✓ Subject to"],
+                ["Patientdatalagen (2008:355)", "✓ Aligned with"],
+                ["IMY supervisory authority", "✓ Subject to"],
+                ["Swedish data-protection expectations for healthcare software", "✓ Aligned with"],
+              ],
+            },
+            { kind: "h3", text: "For Swedish Healthcare Providers" },
+            { kind: "p", text: "You can use MediReady as an administrative compliance and workflow tool. You must:" },
+            {
+              kind: "ul",
+              items: [
+                "Sign a GDPR-compliant Data Processing Agreement (provided separately)",
+                "Assess MediReady's security posture for your own risk management (documentation available)",
+                "Apply MediReady's findings with independent professional judgment",
+              ],
+            },
+            { kind: "p", text: "The tool does not substitute for legal or clinical counsel." },
           ],
         },
       ],
+      endLabel: "End of document",
     },
     regulatoryPage: {
       kicker: "REGULATORY POSITIONING",
@@ -3501,131 +3679,124 @@ export const dict: Record<Lang, Dict> = {
       endOfAgreement: "Avtalets slut",
     },
     classificationPage: {
-      kicker: "KLASSIFICERINGSDOKUMENT",
-      title: "MediReady — Klassificeringsdokument",
-      verdict: "Bedömning: ej medicinteknisk programvara (MDSW) och ej nationellt medicinskt informationssystem (NMI).",
+      kicker: "KLASSIFICERING OCH BEREDSKAP",
+      title: "MediReady — Klassificerings‑ och beredskapsdokument för den svenska marknaden",
+      verdict: "Bedömning: ej medicinteknisk programvara (MDSW) och ej nationellt medicinskt informationssystem (NMI). Fullt anpassad till svenska regulatoriska förväntningar på administrativa compliance‑verktyg.",
       metaVersion: "Version",
-      metaVersionValue: "1.0",
+      metaVersionValue: "2.0",
       metaDate: "Datum",
       metaDateValue: "2026‑05‑24",
       metaPreparedBy: "Upprättad av",
       metaPreparedByValue: "MediReady AB",
+      tocHeading: "Innehållsförteckning",
       sections: [
         {
           heading: "1. Syfte",
-          paragraphs: [
-            "Detta dokument fastställer MediReadys formella klassificering i förhållande till:",
-          ],
-          bullets: [
-            "EU:s förordning (EU) 2017/745 (MDR) — medicintekniska produkter och medicinteknisk programvara (MDSW).",
-            "HSLF‑FS 2022:42 — nationella medicinska informationssystem (NMI).",
-          ],
-        },
-        {
-          heading: "",
-          paragraphs: [
-            "Dokumentet beskriver MediReadys avsedda användning, funktionella begränsningar och regulatoriska avgränsningar som grund för bedömningen att produkten inte omfattas av MDR och inte omfattas av NMI‑regelverket.",
+          blocks: [
+            { kind: "p", text: "Detta dokument fastställer MediReadys formella klassificering och regulatoriska beredskap för den svenska marknaden i förhållande till:" },
+            {
+              kind: "ul",
+              items: [
+                "EU:s förordning (EU) 2017/745 (MDR) — medicintekniska produkter och medicinteknisk programvara (MDSW)",
+                "HSLF‑FS 2022:42 — nationella medicinska informationssystem (NMI)",
+                "GDPR (EU 2016/679) — dataskyddsramverk",
+                "Patientdatalagen (2008:355) — svensk lag om patientdata",
+                "IMY:s tillsynsprioriteringar — vägledning från Integritetsskyddsmyndigheten",
+                "NIS2‑direktivet (2022/2555) — cybersäkerhet för kritisk infrastruktur",
+                "EHDS‑förordningen (2023/2664) — Europeiska hälsodataområdet (framtida bevakning)",
+              ],
+            },
+            { kind: "p", text: "Dokumentet beskriver MediReadys avsedda användning, funktionella begränsningar och regulatoriska avgränsningar som grund för bedömningen att produkten inte omfattas av MDR och inte omfattas av NMI‑regelverket, samtidigt som den fullt ut motsvarar svenska förväntningar på dataskydd." },
           ],
         },
         {
           heading: "2. Produktbeskrivning",
-          paragraphs: [
-            "MediReady är ett administrativt verktyg för compliance‑dokumentation och workflow‑revision. Systemet används av administratörer, kvalitetsansvariga och verksamhetschefer för att:",
-          ],
-          bullets: [
-            "generera policyer, SOP:er och riskbedömningar",
-            "genomföra administrativa gap‑analyser",
-            "kartlägga standarder (HIPAA, ISO, NIST m.fl.)",
-            "utföra icke‑kliniska workflow‑revisioner",
-            "skapa rapporter för intern styrning och efterlevnad",
-          ],
-        },
-        {
-          heading: "",
-          paragraphs: [
-            "MediReady bearbetar inte medicinska beslut, påverkar inte patientvård och ger inga rekommendationer om diagnos, behandling eller kliniska åtgärder.",
+          blocks: [
+            { kind: "p", text: "MediReady är ett administrativt verktyg för compliance‑dokumentation och workflow‑revision. Systemet används av administratörer, kvalitetsansvariga och verksamhetschefer för att:" },
+            {
+              kind: "ul",
+              items: [
+                "generera policyer, SOP:er och riskbedömningar",
+                "genomföra administrativa gap‑analyser",
+                "kartlägga standarder (HIPAA, ISO, NIST m.fl.)",
+                "utföra icke‑kliniska workflow‑revisioner",
+                "skapa rapporter för intern styrning och efterlevnad",
+              ],
+            },
+            { kind: "p", text: "MediReady bearbetar inte medicinska beslut, påverkar inte patientvård och ger inga rekommendationer om diagnos, behandling eller kliniska åtgärder." },
           ],
         },
         {
-          heading: "3. Avsedd användning (Intended Purpose)",
-          paragraphs: ["MediReady är avsett att användas för:"],
-          bullets: [
-            "administrativ dokumentation",
-            "compliance‑arbete",
-            "intern revision av arbetsflöden",
-            "policy‑ och styrdokumentshantering",
-            "icke‑kliniska riskbedömningar",
-          ],
-        },
-        {
-          heading: "",
-          paragraphs: ["MediReady är inte avsett att:"],
-          bullets: [
-            "användas för diagnos, behandling, monitorering eller lindring av sjukdom",
-            "användas för kliniska beslut eller patientnära bedömningar",
-            "hantera journaluppgifter eller medicinska parametrar",
-            "ge rekommendationer som påverkar patienters vård eller behandling",
-            "uppdatera eller läsa myndighetsregister inom hälso‑ och sjukvård",
+          heading: "3. Avsedd användning",
+          blocks: [
+            { kind: "p", text: "MediReady är avsett för:" },
+            {
+              kind: "ul",
+              items: [
+                "administrativ dokumentation",
+                "compliance‑arbete",
+                "intern revision av arbetsflöden",
+                "policy‑ och styrdokumentshantering",
+                "icke‑kliniska riskbedömningar",
+              ],
+            },
+            { kind: "p", text: "MediReady är inte avsett att:" },
+            {
+              kind: "ul",
+              items: [
+                "användas för diagnos, behandling, monitorering eller lindring av sjukdom",
+                "användas för kliniska beslut eller patientnära bedömningar",
+                "hantera journaluppgifter eller medicinska parametrar",
+                "ge rekommendationer som påverkar patienters vård eller behandling",
+                "uppdatera eller läsa myndighetsregister inom hälso‑ och sjukvård",
+              ],
+            },
           ],
         },
         {
           heading: "4. Bedömning enligt MDR (EU 2017/745)",
-          subsections: [
+          blocks: [
+            { kind: "h3", text: "4.1 Relevanta kriterier" },
+            { kind: "p", text: "Enligt MDR klassas programvara som medicinteknisk produkt om den har ett medicinskt syfte, exempelvis att:" },
+            { kind: "ul", items: ["diagnostisera", "förebygga", "övervaka", "behandla", "lindra sjukdom"] },
+            { kind: "h3", text: "4.2 Bedömning" },
+            { kind: "p", text: "MediReady uppfyller inga av MDR:s medicinska syften. Systemet:" },
             {
-              heading: "4.1 Relevanta kriterier",
-              paragraphs: [
-                "Enligt MDR klassas programvara som medicinteknisk produkt om den har ett medicinskt syfte, exempelvis att:",
-              ],
-              bullets: [
-                "diagnostisera",
-                "förebygga",
-                "övervaka",
-                "behandla",
-                "lindra sjukdom",
-              ],
-            },
-            {
-              heading: "4.2 Bedömning",
-              paragraphs: ["MediReady uppfyller inga av MDR:s medicinska syften. Systemet:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "analyserar inte patientdata",
                 "påverkar inte kliniska beslut",
                 "genererar inte medicinska rekommendationer",
                 "används inte av vårdpersonal i patientnära arbete",
                 "hanterar endast administrativ information",
               ],
-              quote: "“Software for administrative purposes is not covered.”",
-              quoteAttribution: "— MDR‑tolkning enligt EU:s vägledningar",
             },
-            {
-              heading: "4.3 Slutsats",
-              paragraphs: [
-                "MediReady är inte en medicinteknisk produkt och omfattas inte av MDR.",
-              ],
-            },
+            { kind: "note", text: "“Software for administrative purposes is not covered.” — MDR‑tolkning enligt EU:s vägledningar" },
+            { kind: "h3", text: "4.3 Slutsats" },
+            { kind: "p", text: "MediReady är inte en medicinteknisk produkt och omfattas inte av MDR." },
           ],
         },
         {
           heading: "5. Bedömning enligt HSLF‑FS 2022:42 (Nationella medicinska informationssystem)",
-          subsections: [
+          blocks: [
+            { kind: "h3", text: "5.1 Relevanta kriterier" },
+            { kind: "p", text: "NMI omfattar system som:" },
             {
-              heading: "5.1 Relevanta kriterier",
-              paragraphs: ["NMI omfattar system som:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "hanterar medicinsk information av betydelse för enskilda patienters vård, eller",
                 "ger direkt åtkomst till eller uppdaterar myndighetsregister, eller",
-                "används för expediering av recept på apotek.",
+                "används för expediering av recept på apotek",
               ],
             },
+            { kind: "h3", text: "5.2 Undantag i föreskriften" },
+            { kind: "p", text: "HSLF‑FS 2022:42 anger att följande inte är NMI:" },
+            { kind: "note", text: "“Generell programvara som används i vårdmiljö, utom i fall då denna anpassats på sätt som uppfyller definitionen för nationella medicinska informationssystem.”" },
+            { kind: "h3", text: "5.3 Bedömning" },
+            { kind: "p", text: "MediReady:" },
             {
-              heading: "5.2 Undantag i föreskriften",
-              paragraphs: ["HSLF‑FS 2022:42 anger att följande inte är NMI:"],
-              quote: "“Generell programvara som används i vårdmiljö, utom i fall då denna anpassats på sätt som uppfyller definitionen för nationella medicinska informationssystem.”",
-            },
-            {
-              heading: "5.3 Bedömning",
-              paragraphs: ["MediReady:"],
-              bullets: [
+              kind: "ul",
+              items: [
                 "hanterar inte medicinsk information",
                 "påverkar inte patienters vård",
                 "har ingen koppling till myndighetsregister",
@@ -3634,41 +3805,235 @@ export const dict: Record<Lang, Dict> = {
                 "är inte ett system av betydelse för enskilda patienters vård",
               ],
             },
+            { kind: "h3", text: "5.4 Slutsats" },
+            { kind: "p", text: "MediReady uppfyller inte definitionen av NMI och omfattas inte av HSLF‑FS 2022:42." },
+          ],
+        },
+        {
+          heading: "6. Svensk regulatorisk kontext",
+          blocks: [
+            { kind: "p", text: "MediReady är verksamt i Sverige under följande regulatoriska ramverk:" },
             {
-              heading: "5.4 Slutsats",
-              paragraphs: [
-                "MediReady uppfyller inte definitionen av NMI och omfattas inte av HSLF‑FS 2022:42.",
+              kind: "table",
+              headers: ["Regelverk", "Referens", "Relevans"],
+              rows: [
+                ["GDPR", "EU 2016/679", "Dataskyddsramverk"],
+                ["Patientdatalagen", "2008:355", "Svensk lag om patientdata"],
+                ["HSLF‑FS 2022:42", "Socialstyrelsen", "Föreskrift om nationella medicinska informationssystem (NMI)"],
+                ["MDR", "EU 2017/745", "EU:s förordning om medicintekniska produkter (gäller i Sverige)"],
+                ["IMY:s tillsynspraxis", "Integritetsskyddsmyndigheten", "Vägledning från svenska dataskyddsmyndigheten om AI, vård och känsliga uppgifter"],
+              ],
+            },
+            { kind: "p", text: "Avgörande klassificeringsfråga för svenska vårdgivare: Är MediReady en medicinteknisk produkt (MDSW) eller ett nationellt medicinskt informationssystem (NMI)?" },
+            { kind: "p", text: "Svaret är nej på båda. MediReady omfattas av GDPR men inte av regelverk specifika för medicintekniska produkter eller NMI." },
+          ],
+        },
+        {
+          heading: "7. Dataskydd och GDPR",
+          blocks: [
+            { kind: "p", text: "Även om MediReady inte är MDSW eller NMI omfattas systemet av GDPR." },
+            {
+              kind: "table",
+              headers: ["Aspekt", "MediReadys åtagande"],
+              rows: [
+                ["Databearbetning", "Inmatningar bearbetas flyktigt i minnet och raderas omedelbart"],
+                ["Datalagring", "Ingen PHI lagras; stateless arkitektur"],
+                ["Insamling", "Ingen bakgrundsinsamling, telemetri eller profilering"],
+                ["Personuppgiftsansvarig", "Vårdgivaren är personuppgiftsansvarig"],
+                ["Personuppgiftsbiträde", "MediReady är personuppgiftsbiträde"],
+                ["Avtal", "Personuppgiftsbiträdesavtal enligt artikel 28 krävs (tillhandahålls separat)"],
               ],
             },
           ],
         },
         {
-          heading: "6. Dataskydd och GDPR",
-          paragraphs: [
-            "Även om MediReady inte är MDSW eller NMI omfattas systemet av GDPR.",
-          ],
-          bullets: [
-            "Inmatningar bearbetas flyktigt i minnet och raderas direkt.",
-            "Ingen PHI lagras.",
-            "Ingen bakgrundsinsamling, telemetri eller profilering.",
-            "Vårdgivaren är personuppgiftsansvarig.",
-            "MediReady är personuppgiftsbiträde.",
-            "Ett biträdesavtal enligt Artikel 28 krävs.",
+          heading: "8. Anpassning till Integritetsskyddsmyndigheten (IMY)",
+          blocks: [
+            { kind: "p", text: "IMY (Integritetsskyddsmyndigheten) har publicerat tillsynsprioriteringar för 2024–2025 som omfattar:" },
+            {
+              kind: "ul",
+              items: [
+                "AI‑användning inom vård och behandling av känsliga uppgifter",
+                "Vårdsektorns dataskyddspraxis",
+                "Transparens och mänsklig övervakning vid automatiserat beslutsfattande",
+              ],
+            },
+            { kind: "p", text: "MediReadys utformning är anpassad till IMY:s prioriteringar enligt följande:" },
+            { kind: "h3", text: "8.1 AI‑transparens" },
+            {
+              kind: "table",
+              headers: ["Krav", "MediReadys åtagande"],
+              rows: [
+                ["Redovisning av modell", "Mistral Large LLM med signerat BAA (ingen träningsanvändning)"],
+                ["Mänsklig övervakning", "Kritiska fynd granskas av kvalificerade revisorer"],
+                ["Radering av inmatning", "Stateless bearbetning eliminerar risk för datalagring"],
+              ],
+            },
+            { kind: "h3", text: "8.2 Minimering av känsliga uppgifter" },
+            {
+              kind: "table",
+              headers: ["Aspekt", "MediReadys position"],
+              rows: [
+                ["Datatyp", "Endast administrativa uppgifter, inga patientjournaler eller PHI"],
+                ["GDPR artikel 9", "Ingen kategorisering som särskilda kategorier vid normal användning"],
+                ["Tillfälligt känsliga uppgifter", "Stateless arkitektur och omedelbar radering minskar risken"],
+              ],
+            },
+            { kind: "h3", text: "8.3 Den registrerades rättigheter" },
+            { kind: "p", text: "MediReady bistår Företaget vid hantering av begäran om registerutdrag (DSAR) och övriga rättigheter enligt GDPR artiklarna 12–22 (se §6 i personuppgiftsbiträdesavtalet)." },
+            { kind: "h3", text: "8.4 Ansvarsskyldighetsdokumentation" },
+            { kind: "p", text: "MediReady upprätthåller:" },
+            {
+              kind: "ul",
+              items: [
+                "Granskningsloggar",
+                "Incidentregister",
+                "Behandlingsdokumentation enligt GDPR artikel 5(2)",
+              ],
+            },
+            { kind: "p", text: "Dokumentation tillgängliggörs för IMY vid begäran om inspektion." },
+            { kind: "h3", text: "8.5 Åtagande gentemot svensk rätt" },
+            {
+              kind: "table",
+              headers: ["Element", "Åtagande"],
+              rows: [
+                ["Tillämplig lag", "Samtliga tvister och juridiska frågor regleras av svensk rätt"],
+                ["DPA‑jurisdiktion", "Svensk tillämplig lag och jurisdiktion"],
+              ],
+            },
           ],
         },
         {
-          heading: "7. Samlad slutsats",
-          paragraphs: [
-            "Baserat på avsedd användning, funktionalitet och regulatoriska kriterier bedöms MediReady:",
+          heading: "9. NIS2‑direktivet — omfattning och tillämplighet",
+          blocks: [
+            { kind: "p", text: "EU:s NIS2‑direktiv (2022/2555) anger cybersäkerhetsskyldigheter för operatörer av kritisk infrastruktur och leverantörer av samhällsviktiga tjänster." },
+            { kind: "h3", text: "9.1 När NIS2 gäller" },
+            { kind: "p", text: "NIS2 gäller om företaget:" },
+            {
+              kind: "ul",
+              items: [
+                "har ≥ 50 anställda, eller",
+                "omsätter ≥ 10 miljoner euro per år, eller",
+                "klassas som “väsentlig” aktör inom vården (t.ex. driver ett EHR‑system eller nationell hälsodataplattform)",
+              ],
+            },
+            { kind: "h3", text: "9.2 MediReadys position" },
+            {
+              kind: "table",
+              headers: ["Fråga", "Svar"],
+              rows: [
+                ["Omfattas MediReady automatiskt av NIS2?", "Nej"],
+                ["Varför?", "Inte ett EHR‑system; upprätthåller inte nationell hälsodatainfrastruktur; tillhandahåller inte vårdtjänster direkt"],
+              ],
+            },
+            { kind: "h3", text: "9.3 Viktigt för svenska vårdgivare" },
+            { kind: "p", text: "Om MediReady används av en svensk vårdgivare (t.ex. region, klinik, sjukhus) som själv är en väsentlig aktör enligt NIS2 kan vårdgivarens NIS2‑skyldigheter omfatta utvärdering av MediReadys säkerhetsläge som del av leverantörskedjans riskhantering." },
+            { kind: "h3", text: "9.4 MediReadys NIS2‑åtaganden" },
+            {
+              kind: "table",
+              headers: ["Krav", "MediReadys åtagande"],
+              rows: [
+                ["Säkerhetsåtgärder", "Följer NIST Cybersecurity Framework (CSF)‑principerna"],
+                ["Incidentrapportering", "Följer NIS2:s rapporteringstider (72 timmars incidentanmälan)"],
+                ["Dokumentation", "Tillgänglig på begäran för vårdgivares NIS2‑efterlevnadsbedömning"],
+              ],
+            },
           ],
-          bullets: [
-            "inte vara medicinteknisk programvara (MDSW) enligt MDR",
-            "inte vara ett nationellt medicinskt informationssystem (NMI) enligt HSLF‑FS 2022:42",
-            "vara ett administrativt compliance‑ och workflow‑verktyg",
-            "vara föremål för GDPR, men inte för MDR eller NMI‑regelverket",
+        },
+        {
+          heading: "10. Europeiska hälsodataområdet (EHDS) — framtida bevakning",
+          blocks: [
+            { kind: "p", text: "EHDS‑förordningen (2023/2664) är under genomförande." },
+            { kind: "h3", text: "10.1 Vad EHDS reglerar" },
+            {
+              kind: "ul",
+              items: [
+                "Sekundär användning av hälsodata för forskning och policy",
+                "Interoperabilitet för elektroniska patientjournaler",
+                "Rätt till dataportabilitet inom vården",
+              ],
+            },
+            { kind: "h3", text: "10.2 MediReadys position" },
+            {
+              kind: "table",
+              headers: ["Fråga", "Svar"],
+              rows: [
+                ["Är EHDS för närvarande tillämpligt för MediReady?", "Nej"],
+                ["Varför?", "Gäller EHR‑system och nationell datadelningsinfrastruktur, inte verktyg för compliance‑granskning"],
+              ],
+            },
+            { kind: "h3", text: "10.3 Bevakningsåtagande" },
+            { kind: "p", text: "MediReady:" },
+            {
+              kind: "ul",
+              items: [
+                "Bevakar EHDS‑genomförandets faser",
+                "Kommer att bedöma omfattningen om EHDS interoperabilitetskrav utvecklas till att omfatta compliance‑granskningsverktyg",
+                "Kommer att implementera enligt krav",
+              ],
+            },
+            { kind: "h3", text: "10.4 Tidsplan för EHDS‑genomförande" },
+            {
+              kind: "table",
+              headers: ["Fas", "Tidsram", "Primärt fokus"],
+              rows: [
+                ["Fas 1", "2025–2026", "EHR‑interoperabilitet"],
+                ["Fas 2", "2027+", "Sekundär användning och ramverk för datadelning"],
+              ],
+            },
+            { kind: "p", text: "MediReadys utvärderingstidsplan: Q1–Q2 2026" },
+          ],
+        },
+        {
+          heading: "11. Dataresidens och geografisk bearbetning",
+          blocks: [
+            { kind: "h3", text: "MediReadys garanti" },
+            {
+              kind: "table",
+              headers: ["Åtagande", "Detalj"],
+              rows: [
+                ["Bearbetningsplats", "All bearbetning av Företagets personuppgifter sker inom Europeiska ekonomiska samarbetsområdet (EES)"],
+                ["Inferensplats", "Mistral AI utförs inom EU‑datacenter"],
+                ["Överföring utanför EES", "Ingen dataöverföring utanför EES utan Företagets uttryckliga skriftliga samtycke"],
+                ["Begränsade jurisdiktioner", "Inga data överförs till USA, Asien eller annan jurisdiktion utanför EES"],
+              ],
+            },
+            { kind: "p", text: "Åtagandet omfattar samtliga av Företagets personuppgifter, inklusive administrativa register, policyer och workflow‑dokumentation som tillhandahålls MediReady." },
+          ],
+        },
+        {
+          heading: "12. Samlad slutsats",
+          blocks: [
+            { kind: "p", text: "Baserat på avsedd användning, funktionalitet och regulatoriska kriterier bedöms MediReady enligt följande:" },
+            {
+              kind: "table",
+              headers: ["Regulatoriskt område", "Status"],
+              rows: [
+                ["Medicinteknisk produkt (MDSW) enligt MDR (EU 2017/745)", "✓ Inte en medicinteknisk produkt"],
+                ["Nationellt medicinskt informationssystem (NMI) enligt HSLF‑FS 2022:42", "✓ Inte ett NMI"],
+                ["Automatisk omfattning under NIS2‑direktivet", "✓ Inte automatiskt omfattat"],
+                ["EHDS nuvarande omfattning", "✓ Inte inom nuvarande omfattning"],
+                ["GDPR och svensk dataskyddsrätt", "✓ Omfattas"],
+                ["Patientdatalagen (2008:355)", "✓ Anpassad till"],
+                ["IMY som tillsynsmyndighet", "✓ Omfattas"],
+                ["Svenska dataskyddsförväntningar på programvara för vård", "✓ Anpassad till"],
+              ],
+            },
+            { kind: "h3", text: "För svenska vårdgivare" },
+            { kind: "p", text: "Ni kan använda MediReady som administrativt compliance‑ och workflow‑verktyg. Ni måste:" },
+            {
+              kind: "ul",
+              items: [
+                "Teckna ett GDPR‑kompatibelt personuppgiftsbiträdesavtal (tillhandahålls separat)",
+                "Bedöma MediReadys säkerhetsläge som del av er egen riskhantering (dokumentation tillgänglig)",
+                "Tillämpa oberoende professionell bedömning när MediReadys fynd används",
+              ],
+            },
+            { kind: "p", text: "Verktyget ersätter inte juridisk eller klinisk rådgivning." },
           ],
         },
       ],
+      endLabel: "Dokumentets slut",
     },
     regulatoryPage: {
       kicker: "REGULATORISK POSITIONERING",
