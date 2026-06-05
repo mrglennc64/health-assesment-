@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { channels, type Channel, type Job, type Run } from "@/lib/jobs/types";
+import { getUsernameFromRequest, isAdmin } from "@/lib/quotas/identity";
 
 function newRunId(): string {
   const ts = Date.now().toString(36);
@@ -94,5 +95,5 @@ export async function POST(req: NextRequest) {
     jobs,
   };
 
-  return NextResponse.json({ run }, { status: 200 });
+  return NextResponse.json({ run, isAdmin: isAdmin(getUsernameFromRequest(req)) }, { status: 200 });
 }

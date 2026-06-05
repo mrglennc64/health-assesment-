@@ -60,6 +60,7 @@ export default function ScanPage() {
   const [step, setStep] = useState<"input" | "running" | "results">("input");
   const [text, setText] = useState("");
   const [run, setRun] = useState<EngineRun | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
@@ -81,13 +82,14 @@ export default function ScanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
-      const data = (await res.json()) as { run?: EngineRun; error?: string };
+      const data = (await res.json()) as { run?: EngineRun; isAdmin?: boolean; error?: string };
       if (!res.ok || !data.run) {
         setError(data.error || s.runErrorDefault);
         setStep("input");
         return;
       }
       setRun(data.run);
+      setIsAdmin(Boolean(data.isAdmin));
       setStep("results");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -119,7 +121,7 @@ export default function ScanPage() {
           <ScanInputForm s={s} text={text} setText={setText} onRun={runScan} />
         )}
         {step === "running" && <ScanRunning s={s} t={t} elapsed={elapsed} />}
-        {step === "results" && run && <ScanResults s={s} t={t} run={run} />}
+        {step === "results" && run && <ScanResults s={s} t={t} run={run} isAdmin={isAdmin} />}
       </div>
       <MarketingFooter />
     </>
@@ -337,13 +339,14 @@ function ScanRunning({ s, t, elapsed }: { s: Dict["scanPage"]; t: Dict; elapsed:
   );
 }
 
-function ScanResults({ s, t, run }: { s: Dict["scanPage"]; t: Dict; run: EngineRun }) {
+function ScanResults({ s, t, run, isAdmin }: { s: Dict["scanPage"]; t: Dict; run: EngineRun; isAdmin: boolean }) {
   const findings = collectFindings(run, t);
   const critical = findings.filter((f) => f.severity === "critical");
   const watch = findings.filter((f) => f.severity === "watch");
   const info = findings.filter((f) => f.severity === "info");
 
-  const visible = critical.slice(0, 3);
+  // Admins (logged in via Basic Auth) see the full report; everyone else sees a 3-finding preview.
+  const visible = isAdmin ? [...critical, ...watch, ...info] : critical.slice(0, 3);
   const overall = computeOverall(run);
 
   return (
@@ -385,7 +388,8 @@ function ScanResults({ s, t, run }: { s: Dict["scanPage"]; t: Dict; run: EngineR
         </div>
       </div>
 
-      {/* Locked unlock card */}
+      {/* Locked unlock card — hidden for admins, who already see the full report */}
+      {!isAdmin && (
       <div
         style={{
           background: "var(--card)",
@@ -411,6 +415,7 @@ function ScanResults({ s, t, run }: { s: Dict["scanPage"]; t: Dict; run: EngineR
           </Link>
         </div>
       </div>
+      )}
     </div>
   );
 }
