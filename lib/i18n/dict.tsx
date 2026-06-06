@@ -399,6 +399,8 @@ type MarketingPage = {
     unlockBody: string;
     unlockCta: string;
     subscribeCta: string;
+    pdfCta: string;
+    pdfBusy: string;
     runErrorDefault: string;
     uploadErrorPrefix: (status: number) => string;
   };
@@ -2239,6 +2241,8 @@ export const dict: Record<Lang, Dict> = {
       unlockBody: "Unlock the full audit to see every finding, required action, and download the PDF for auditors.",
       unlockCta: "Unlock full report",
       subscribeCta: "Subscribe instead",
+      pdfCta: "Download PDF report",
+      pdfBusy: "Generating PDF…",
       runErrorDefault: "Failed to run audit.",
       uploadErrorPrefix: (status) => `Upload failed (HTTP ${status})`,
     },
@@ -4264,6 +4268,8 @@ export const dict: Record<Lang, Dict> = {
       unlockBody: "Lås upp fullständig granskning för att se samtliga fynd, åtgärdskrav och ladda ned PDF för revisor.",
       unlockCta: "Lås upp fullständig rapport",
       subscribeCta: "Prenumerera i stället",
+      pdfCta: "Ladda ner PDF-rapport",
+      pdfBusy: "Genererar PDF…",
       runErrorDefault: "Granskningen kunde inte slutföras.",
       uploadErrorPrefix: (status) => `Uppladdning misslyckades (HTTP ${status})`,
     },

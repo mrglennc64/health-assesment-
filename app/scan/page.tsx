@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Play, Lock, Upload } from "lucide-react";
+import { ArrowRight, Play, Lock, Upload, Download } from "lucide-react";
 import { MarketingNav } from "@/components/site/MarketingNav";
 import { MarketingFooter } from "@/components/site/MarketingFooter";
 import { PhiInputWarning } from "@/components/site/PhiInputWarning";
@@ -349,6 +349,32 @@ function ScanResults({ s, t, run, isAdmin }: { s: Dict["scanPage"]; t: Dict; run
   const visible = isAdmin ? [...critical, ...watch, ...info] : critical.slice(0, 3);
   const overall = computeOverall(run);
 
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const downloadPdf = async () => {
+    setPdfBusy(true);
+    try {
+      const res = await fetch("/api/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run }),
+      });
+      if (!res.ok) throw new Error(`PDF generation failed (${res.status})`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `health-report-${run.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPdfBusy(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, padding: 32, marginBottom: 24 }}>
@@ -387,6 +413,15 @@ function ScanResults({ s, t, run, isAdmin }: { s: Dict["scanPage"]; t: Dict; run
           )}
         </div>
       </div>
+
+      {/* Full-report PDF export — admins only (public visitors see the paywall below) */}
+      {isAdmin && (
+        <div style={{ marginBottom: 24, display: "flex", justifyContent: "flex-end" }}>
+          <Button variant="primary" icon={Download} onClick={downloadPdf} disabled={pdfBusy}>
+            {pdfBusy ? s.pdfBusy : s.pdfCta}
+          </Button>
+        </div>
+      )}
 
       {/* Locked unlock card — hidden for admins, who already see the full report */}
       {!isAdmin && (
